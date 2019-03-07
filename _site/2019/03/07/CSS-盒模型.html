@@ -1,0 +1,56 @@
+<p>##CSS 盒模型</p>
+
+<p>###什么是盒子模型</p>
+
+<p>当你对一个文档进行布局(laying out)时候, 浏览器引擎会根据CSS-Box模型将所有元素描述为一个盒子, CSS会决定这些盒子的大小, 位置, 属性(颜色, 边框…)。</p>
+
+<p>####盒模型分类</p>
+
+<p>盒模型分为两类: IE盒模型和标准盒模型。 两者的区别在于:</p>
+
+<p>IE盒模型的width/height = content + border + padding</p>
+
+<p>标准盒模型的width/height = content</p>
+
+<p>####普通文档流块元素的<strong>CSS</strong>外边距合并问题</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style&gt;</span>
+   <span class="err">\</span><span class="o">*</span> <span class="p">{</span>
+        <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+        <span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nc">.demo1</span> <span class="p">{</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">40px</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">40px</span><span class="p">;</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="no">pink</span><span class="p">;</span>
+        <span class="nl">padding</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+        <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">2px</span> <span class="nb">solid</span> <span class="no">pink</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nc">.demo2</span> <span class="p">{</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">40px</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">40px</span><span class="p">;</span>
+        <span class="nl">padding</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+        <span class="nl">margin</span><span class="p">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">2px</span> <span class="nb">solid</span> <span class="no">blue</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class = </span><span class="s">'demo1'</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class = </span><span class="s">'demo2'</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>可见demo1与demo2的外边距为20px。而不是30px。</p>
+
+<p>需要注意的是：只有普通文档流中块框的垂直外边距才会发生外边距合并。行内框、浮动框或绝对定位之间的外边距不会合并。</p>
+
+<p>####改变盒子模型</p>
+
+<p>CSS3支持改变盒子模型。</p>
+
+<p>box-sizing用来改变计算盒子高度/宽度的默认盒子模型。可以使用此属性来模拟不正确支持CSS盒子模型规范的浏览器的行为。</p>
+
+<p>box-sizing: content-box;</p>
+
+<p>box-sizing: border-box;</p>
+
