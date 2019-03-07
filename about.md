@@ -1,9 +1,12 @@
 ---
 layout: page
-title: About
+title: 
 permalink: /about/
 ---
 
-SWJTU CS
+[South West Jiao Tong Univerity.][SWJTU] [Computer Science][CS]
 
 Web Dev.
+
+[SWJTU]:https://www.swjtu.edu.cn/
+[CS]:http://sist.swjtu.edu.cn/index.do?action=index

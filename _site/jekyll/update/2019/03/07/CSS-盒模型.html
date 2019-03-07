@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Z1hgq</title>
-  <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-">
+  <title>CSS 盒模型</title>
+  <meta name="description" content="什么是盒子模型">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/jekyll/update/2019/03/07/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B.html">
   <link rel="alternate" type="application/rss+xml" title="Z1hgq" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -41,31 +40,64 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Mar 7, 2019</span>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">CSS 盒模型</h1>
+    <p class="post-meta"><time datetime="2019-03-07T00:00:00+08:00" itemprop="datePublished">Mar 7, 2019</time></p>
+  </header>
 
-        <h2>
-          <a class="post-link" href="/jekyll/update/2019/03/07/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B.html">CSS 盒模型</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 2, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <p>什么是盒子模型</p>
 
-        <h2>
-          <a class="post-link" href="/jekyll/update/2016/01/02/welcome-to-jekyll.html">Welcome to Jekyll!</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p>当你对一个文档进行布局(laying out)时候, 浏览器引擎会根据CSS-Box模型将所有元素描述为一个盒子, CSS会决定这些盒子的大小, 位置, 属性(颜色, 边框…)。</p>
 
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
+<p>盒模型分类</p>
 
-</div>
+<p>盒模型分为两类: IE盒模型和标准盒模型。 两者的区别在于:
+IE盒模型的width/height = content + border + padding
+标准盒模型的width/height = content
+普通文档流块元素的<strong>CSS</strong>外边距合并问题</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">style</span><span class="o">&gt;</span>
+   <span class="p">\</span><span class="o">*</span> <span class="p">{</span>
+        <span class="ss">margin: </span><span class="mi">0</span><span class="p">;</span>
+        <span class="ss">padding: </span><span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="nf">demo1</span> <span class="p">{</span>
+        <span class="ss">width: </span><span class="mi">40</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">height: </span><span class="mi">40</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">background: </span><span class="n">pink</span><span class="p">;</span>
+        <span class="ss">padding: </span><span class="mi">10</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">margin: </span><span class="mi">10</span><span class="n">px</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="ss">border: </span><span class="mi">2</span><span class="n">px</span> <span class="n">solid</span> <span class="n">pink</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="nf">demo2</span> <span class="p">{</span>
+        <span class="ss">width: </span><span class="mi">40</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">height: </span><span class="mi">40</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">padding: </span><span class="mi">10</span><span class="n">px</span><span class="p">;</span>
+        <span class="ss">background: </span><span class="n">blue</span><span class="p">;</span>
+        <span class="ss">margin: </span><span class="mi">20</span><span class="n">px</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="ss">border: </span><span class="mi">2</span><span class="n">px</span> <span class="n">solid</span> <span class="n">blue</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="sr">/style&gt;
+&lt;div class = 'demo1'&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="k">class</span> <span class="o">=</span> <span class="s1">'demo2'</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></figure>
+
+<p>可见demo1与demo2的外边距为20px。而不是30px。
+需要注意的是：只有普通文档流中块框的垂直外边距才会发生外边距合并。行内框、浮动框或绝对定位之间的外边距不会合并。</p>
+
+<p>改变盒子模型</p>
+
+<p>CSS3支持改变盒子模型。
+box-sizing用来改变计算盒子高度/宽度的默认盒子模型。可以使用此属性来模拟不正确支持CSS盒子模型规范的浏览器的行为。
+box-sizing: content-box;
+box-sizing: border-box;</p>
+
+
+  </div>
+
+</article>
 
       </div>
     </div>
