@@ -4,7 +4,7 @@ title:
 permalink: /about/
 ---
 
-[South West Jiao Tong Univerity.][SWJTU] [Computer Science][CS]
+[South West Jiao Tong University.][SWJTU] [Computer Science][CS]
 
 Web Dev.
 
