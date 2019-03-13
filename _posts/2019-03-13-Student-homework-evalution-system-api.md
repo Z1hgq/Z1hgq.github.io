@@ -142,6 +142,7 @@ HTTP/1.1 200 OK
 | --- | --- | --- |
 | userid | Number | 用户id |
 | name | String | 作业名称 |
+| address | String | 作业地址 |
 | description | String | 作业描述 |
 
 {% highlight ruby %}
@@ -151,6 +152,25 @@ HTTP/1.1 200 OK
 }
 {% endhighlight %}
 
+### **文件上传**
+> `address:/api/post_file`
+> `method:post`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| userid | Number | 用户id |
+| name | String | 作业名称 |
+| description | String | 作业描述 |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//上传失败返回0
+    data:{
+        address:''//作业地址
+    }
+}
+{% endhighlight %}
 
 
 
