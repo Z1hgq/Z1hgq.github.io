@@ -103,7 +103,7 @@ HTTP/1.1 200 OK
 ### **老师查看作业情况**
 
 > `address:/api/get_homework`
-> `method:post`
+> `method:get`
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -118,8 +118,16 @@ HTTP/1.1 200 OK
             {
                 id:'',//作业id
                 name:'',//作业名称
-                stu_name:'',//学生名字
-                score:'',//得分
+                status:[
+                    {
+                        stu_name:'',//学生名字
+                        score:'',//得分
+                    },
+                    {
+                        stu_name:'',//学生名字
+                        score:'',//得分
+                    },
+                ]
             }
         ]
     }
