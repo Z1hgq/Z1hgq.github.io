@@ -23,7 +23,8 @@ HTTP/1.1 200 OK
         gender:'',//性别
         school:'',//学院
         position:'',//职称,学生没有这条信息
-    }
+    },
+    token:''//返回的token
 }
 {% endhighlight %}
 
