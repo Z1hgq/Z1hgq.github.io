@@ -17,7 +17,7 @@ HTTP/1.1 200 OK
 {
     code:1,//登录失败返回0
     data:{
-        userid:2015111926,//学生或者老师的id
+        userid:2015111926,//学生或者老师的编号
         usertype:0,    //0表示老师，1表示学生
         username:'',//姓名
         gender:'',//性别
@@ -43,7 +43,7 @@ HTTP/1.1 200 OK
     data:{
         homework_to_be_done:[  //所有待完成的作业都放进这个数组
             {
-                id:123,//作业id
+                id:123,//教师上传作业编号
                 name:'',//作业名称
                 address:''//作业地址
                 description:'',//作业描述
@@ -51,7 +51,7 @@ HTTP/1.1 200 OK
                 end_time:'',//截止日期
             },
             {
-                id:123,//作业id
+                id:123,//教师上传作业编号
                 name:'',//作业名称
                 address:''//作业地址
                 description:'',//作业描述
@@ -61,19 +61,19 @@ HTTP/1.1 200 OK
         ],
         homework_to_be_evalution:[//所有待测评的作业
             {
-                id:123,//待测评作业id
+                id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 address:''//待测评作业地址
             },
             {
-                id:123,//待测评作业id
+                id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 address:''//待测评作业地址
             },
             {
-                id:123,//待测评作业id
+                id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 address:''//待测评作业地址
@@ -91,7 +91,7 @@ HTTP/1.1 200 OK
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
 | student_id | Number | 被批改学生学号 |
-| homework_id | Number | 作业编号 |
+| homework_id | Number | 提交作业编号 |
 | grade | Number | 分数 |
 
 {% highlight ruby %}
@@ -117,14 +117,16 @@ HTTP/1.1 200 OK
     data:{
         homework:[
             {
-                id:'',//作业id
+                id:'',//教师上传作业编号
                 name:'',//作业名称
                 status:[
                     {
+                        id:'',//学生提交作业编号
                         stu_name:'',//学生名字
                         score:'',//得分
                     },
                     {
+                        id:'',//学生提交作业编号
                         stu_name:'',//学生名字
                         score:'',//得分
                     },
