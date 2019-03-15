@@ -123,12 +123,42 @@ HTTP/1.1 200 OK
                     {
                         id:'',//学生提交作业编号
                         stu_name:'',//学生名字
+                        stu_id:'',//学生编号
                         score:'',//得分
+                        address:'',//作业地址
+                        evaluted:[]//三个评分人
                     },
                     {
                         id:'',//学生提交作业编号
                         stu_name:'',//学生名字
+                        stu_id:'',//学生编号
                         score:'',//得分
+                        address:'',//作业地址
+                        evaluted:[]//三个评分人
+                    },
+                ]
+            }
+        ],
+        bad_homework:[//存在恶意评价的作业
+            {
+                id:'',//教师上传作业编号
+                name:'',//作业名称
+                status:[
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        address:'',//作业地址
+                        evaluted:'',//有恶意评价的学生的姓名
+                        evaluted_id:''//有恶意评价的学生的编号
+                    },
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        address:'',//作业地址
+                        evaluted:'',//有恶意评价的学生的姓名
+                        evaluted_id:''//有恶意评价的学生的编号
                     },
                 ]
             }
