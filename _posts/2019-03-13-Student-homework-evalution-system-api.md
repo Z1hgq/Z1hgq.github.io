@@ -23,6 +23,18 @@ HTTP/1.1 200 OK
         gender:'',//性别
         school:'',//学院
         position:'',//职称,学生没有这条信息
+        message:[
+            {
+                message_id:'',//消息id
+                content:'',//消息内容
+                state: 0, //消息状态,0表示未读,1表示已读
+            },
+            {
+                message_id:'',//消息id
+                content:'',//消息内容
+                state: 0, //消息状态,0表示未读,1表示已读
+            }
+        ],//消息
     },
     token:''//返回的token
 }
@@ -46,6 +58,7 @@ HTTP/1.1 200 OK
                 id:123,//教师上传作业编号
                 name:'',//作业名称
                 address:''//作业地址
+                file_name: 'filename', //文件名字
                 description:'',//作业描述
                 create_time:'',//上传日期
                 end_time:'',//截止日期
@@ -54,6 +67,7 @@ HTTP/1.1 200 OK
                 id:123,//教师上传作业编号
                 name:'',//作业名称
                 address:''//作业地址
+                file_name: 'filename', //文件名字
                 description:'',//作业描述
                 create_time:'',//上传日期
                 end_time:'',//截止日期
@@ -64,18 +78,21 @@ HTTP/1.1 200 OK
                 id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
+                file_name: 'filename', //文件名字
                 address:''//待测评作业地址
             },
             {
                 id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
+                file_name: 'filename', //文件名字
                 address:''//待测评作业地址
             },
             {
                 id:123,//待测评的提交作业编号
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
+                file_name: 'filename', //文件名字
                 address:''//待测评作业地址
             }
         ]
@@ -126,6 +143,7 @@ HTTP/1.1 200 OK
                         stu_id:'',//学生编号
                         score:'',//得分
                         address:'',//作业地址
+                        file_name: 'filename', //文件名字
                         evaluted:[]//三个评分人
                     },
                     {
@@ -134,6 +152,7 @@ HTTP/1.1 200 OK
                         stu_id:'',//学生编号
                         score:'',//得分
                         address:'',//作业地址
+                        file_name: 'filename', //文件名字
                         evaluted:[]//三个评分人
                     },
                 ]
@@ -149,6 +168,7 @@ HTTP/1.1 200 OK
                         stu_name:'',//学生名字
                         stu_id:'',//学生编号
                         address:'',//作业地址
+                        file_name: 'filename', //文件名字
                         evaluted:'',//有恶意评价的学生的姓名
                         evaluted_id:''//有恶意评价的学生的编号
                     },
@@ -157,6 +177,7 @@ HTTP/1.1 200 OK
                         stu_name:'',//学生名字
                         stu_id:'',//学生编号
                         address:'',//作业地址
+                        file_name: 'filename', //文件名字
                         evaluted:'',//有恶意评价的学生的姓名
                         evaluted_id:''//有恶意评价的学生的编号
                     },
@@ -200,7 +221,8 @@ HTTP/1.1 200 OK
 {
     code:1,//上传失败返回0
     data:{
-        address:''//作业地址
+        address:'',//作业地址
+        file_name: 'filename', //文件名字
     }
 }
 {% endhighlight %}
