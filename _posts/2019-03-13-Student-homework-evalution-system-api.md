@@ -206,6 +206,22 @@ HTTP/1.1 200 OK
 }
 {% endhighlight %}
 
+### **老师上传作业答案**
+> `address:/api/post_answer`
+> `method:post`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| homework_id | String | 作业id |
+| answer_address | String | 答案地址 |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//上传失败返回0
+}
+{% endhighlight %}
+
 ### **文件上传**
 > `address:/api/post_file`
 > `method:post`
@@ -221,9 +237,42 @@ HTTP/1.1 200 OK
 {
     code:1,//上传失败返回0
     data:{
-        address:'',//作业地址
+        address:'',//文件地址
         file_name: 'filename', //文件名字
     }
+}
+{% endhighlight %}
+
+### **发送消息**
+> `address:/api/send_message`
+> `method:post`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| userid | Number | 用户id |
+| message_id| String | 消息id |
+| content | String | 消息内容 |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//发送失败返回0
+}
+{% endhighlight %}
+
+### **更新消息状态**
+> `address:/api/update_message`
+> `method:post`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| userid | Number | 用户id |
+| message_id| String | 消息id |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//在读完消息之后将消息修改成已读状态,修改失败返回0
 }
 {% endhighlight %}
 
