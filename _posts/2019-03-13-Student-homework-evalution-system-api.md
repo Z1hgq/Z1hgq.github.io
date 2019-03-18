@@ -23,14 +23,22 @@ HTTP/1.1 200 OK
         gender:'',//性别
         school:'',//学院
         position:'',//职称,学生没有这条信息
+        class: [{
+            id: '', //课程编号,
+            name: '', //课程名字
+        }], //这个老师当前教授的课程
         message:[
             {
                 message_id:'',//消息id
+                from: '教师名', //消息来源
                 content:'',//消息内容
+                to: '', //发送对象
                 state: 0, //消息状态,0表示未读,1表示已读
             },
             {
                 message_id:'',//消息id
+                from: '教师名', //消息来源
+                to: '', //发送对象
                 content:'',//消息内容
                 state: 0, //消息状态,0表示未读,1表示已读
             }
@@ -107,6 +115,7 @@ HTTP/1.1 200 OK
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
+| id | Number | 批改学生学号 |
 | student_id | Number | 被批改学生学号 |
 | homework_id | Number | 提交作业编号 |
 | grade | Number | 分数 |
@@ -249,8 +258,8 @@ HTTP/1.1 200 OK
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
-| userid | Number | 用户id |
-| message_id| String | 消息id |
+| teacher_id | Number | 教师id |
+| student_id | Number | 学生id |
 | content | String | 消息内容 |
 
 {% highlight ruby %}
