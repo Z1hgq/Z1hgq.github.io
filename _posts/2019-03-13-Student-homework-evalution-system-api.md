@@ -275,7 +275,6 @@ HTTP/1.1 200 OK
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
-| userid | Number | 用户id |
 | message_id| String | 消息id |
 
 {% highlight ruby %}
