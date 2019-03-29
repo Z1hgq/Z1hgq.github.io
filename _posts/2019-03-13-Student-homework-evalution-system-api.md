@@ -127,6 +127,24 @@ HTTP/1.1 200 OK
 }
 {% endhighlight %}
 
+### **学生提交作业**
+
+> `address:/api/post_homework`
+> `method:post`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| id | Number | 学生编号 |
+| homework_id | Number | 作业编号 |
+| address | String | 作业地址 |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//上传失败返回0
+}
+{% endhighlight %}
+
 ### **老师查看作业情况**
 
 > `address:/api/get_homework`
