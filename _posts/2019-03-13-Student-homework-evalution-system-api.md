@@ -64,6 +64,7 @@ HTTP/1.1 200 OK
         homework_to_be_done:[  //所有待完成的作业都放进这个数组
             {
                 id:123,//教师上传作业编号
+                class:'英语',//作业所属科目
                 name:'',//作业名称
                 address:''//作业地址
                 file_name: 'filename', //文件名字
@@ -73,6 +74,7 @@ HTTP/1.1 200 OK
             },
             {
                 id:123,//教师上传作业编号
+                class:'英语',//作业所属科目
                 name:'',//作业名称
                 address:''//作业地址
                 file_name: 'filename', //文件名字
@@ -84,6 +86,7 @@ HTTP/1.1 200 OK
         homework_to_be_evalution:[//所有待测评的作业
             {
                 id:123,//待测评的提交作业编号
+                class:'英语',//作业所属科目
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 file_name: 'filename', //文件名字
@@ -91,6 +94,7 @@ HTTP/1.1 200 OK
             },
             {
                 id:123,//待测评的提交作业编号
+                class:'英语',//作业所属科目
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 file_name: 'filename', //文件名字
@@ -98,6 +102,7 @@ HTTP/1.1 200 OK
             },
             {
                 id:123,//待测评的提交作业编号
+                class:'英语',//作业所属科目
                 student_id:'',//该作业的学生编号
                 name:'',//待测评作业文件名称
                 file_name: 'filename', //文件名字
@@ -135,7 +140,7 @@ HTTP/1.1 200 OK
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
 | id | Number | 学生编号 |
-| homework_id | Number | 作业编号 |
+| homework_id | Number | 教师上传a作业编号 |
 | address | String | 作业地址 |
 
 {% highlight ruby %}
@@ -144,6 +149,80 @@ HTTP/1.1 200 OK
     code:1,//上传失败返回0
 }
 {% endhighlight %}
+
+### **根据课程编号查询作业**
+
+> `address:/api/get_homework_by_class`
+> `method:get`
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| userid | Number | 教师id |
+| classid | Number | 课程id |
+
+{% highlight ruby %}
+HTTP/1.1 200 OK
+{
+    code:1,//请求失败返回0
+    data:{
+        homework:[
+            {
+                id:'',//教师上传作业编号
+                class:'英语',//作业所属科目
+                name:'',//作业名称
+                status:[
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        score:'',//得分
+                        address:'',//作业地址
+                        file_name: 'filename', //文件名字
+                        evaluted:[]//三个评分人
+                    },
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        score:'',//得分
+                        address:'',//作业地址
+                        file_name: 'filename', //文件名字
+                        evaluted:[]//三个评分人
+                    },
+                ]
+            }
+        ],
+        bad_homework:[//存在恶意评价的作业
+            {
+                id:'',//教师上传作业编号
+                class:'英语',//作业所属科目
+                name:'',//作业名称
+                status:[
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        address:'',//作业地址
+                        file_name: 'filename', //文件名字
+                        evaluted:'',//有恶意评价的学生的姓名
+                        evaluted_id:''//有恶意评价的学生的编号
+                    },
+                    {
+                        id:'',//学生提交作业编号
+                        stu_name:'',//学生名字
+                        stu_id:'',//学生编号
+                        address:'',//作业地址
+                        file_name: 'filename', //文件名字
+                        evaluted:'',//有恶意评价的学生的姓名
+                        evaluted_id:''//有恶意评价的学生的编号
+                    },
+                ]
+            }
+        ]
+    }
+}
+{% endhighlight %}
+
 
 ### **老师查看作业情况**
 
@@ -216,13 +295,15 @@ HTTP/1.1 200 OK
 {% endhighlight %}
 
 ### **老师上传作业**
-> `address:/api/post_homework`
+> `address:/api/tea_post_homework`
 > `method:post`
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
 | userid | Number | 用户id |
+| classid | Number | 课程id |
 | name | String | 作业名称 |
+| file_name | String | 文件名称 |
 | address | String | 作业地址 |
 | description | String | 作业描述 |
 
@@ -255,9 +336,7 @@ HTTP/1.1 200 OK
 
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
-| userid | Number | 用户id |
-| name | String | 作业名称 |
-| description | String | 作业描述 |
+| files | FormData | 上传的文件是以FormData对象的形式上传的 |
 
 {% highlight ruby %}
 HTTP/1.1 200 OK
