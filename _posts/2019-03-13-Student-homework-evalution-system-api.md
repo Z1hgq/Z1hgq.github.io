@@ -68,6 +68,8 @@ HTTP/1.1 200 OK
                 name:'',//作业名称
                 address:''//作业地址
                 file_name: 'filename', //文件名字
+                answer_address: "http://127.0.0.1/#", //答案地址
+                an_file_name: 'filename', //答案文件名字
                 description:'',//作业描述
                 create_time:'',//上传日期
                 end_time:'',//截止日期
@@ -76,8 +78,10 @@ HTTP/1.1 200 OK
                 id:123,//教师上传作业编号
                 class:'英语',//作业所属科目
                 name:'',//作业名称
-                address:''//作业地址
+                address:'',//作业地址
                 file_name: 'filename', //文件名字
+                answer_address: "http://127.0.0.1/#", //答案地址
+                an_file_name: 'filename', //答案文件名字
                 description:'',//作业描述
                 create_time:'',//上传日期
                 end_time:'',//截止日期
@@ -305,6 +309,7 @@ HTTP/1.1 200 OK
 | name | String | 作业名称 |
 | file_name | String | 文件名称 |
 | address | String | 作业地址 |
+| end_time | String | 截止时间 |
 | description | String | 作业描述 |
 
 {% highlight ruby %}
@@ -321,6 +326,7 @@ HTTP/1.1 200 OK
 | 字段名 | 类型 | 说明 |
 | --- | --- | --- |
 | homework_id | String | 作业id |
+| an_file_name | String | 答案文件名称 |
 | answer_address | String | 答案地址 |
 
 {% highlight ruby %}
