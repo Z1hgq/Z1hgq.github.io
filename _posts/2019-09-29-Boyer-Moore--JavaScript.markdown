@@ -61,7 +61,7 @@ tags:
 从尾部开始逐位比较，发现全部匹配，于是搜索结束。如果还要继续查找（即找出全部匹配），则根据"好后缀规则"，后移 6 - 0 = 6位，即头部的"E"移到尾部的"E"的位置。
 
 ## 算法实现
-```javascript
+```js
 function Bm(parent, child) {
     let baseP = 0;
 
@@ -94,7 +94,7 @@ function Bm(parent, child) {
 }
 
 function bad(badC, child, i) {
-    return i - child.indexOf(badC);
+    return i - child.lastIndexOf(badC);
 }
 
 function good(goodS, child) {
