@@ -1,0 +1,146 @@
+I"�?<blockquote>
+  <p>“ 在人类历史的长河中，真理因为像黄金一样重，总是沉于河底而很难被人发现，相反地，那些牛粪一样轻的谬误倒漂浮在上面到处泛滥。 —— 培根 ”</p>
+</blockquote>
+
+<h2 id="算法原理">算法原理</h2>
+<p>参考阮一峰博客 <a href="http://www.ruanyifeng.com/blog/2013/05/boyer-moore_string_search_algorithm.html">字符串匹配的Boyer-Moore算法</a></p>
+
+<hr />
+<ul>
+  <li>
+    <ol>
+      <li>父 <code class="highlighter-rouge">HERE IS A SIMPLE EXAMPLE</code>，子 <code class="highlighter-rouge">EXAMPLE</code>。
+<img class="shadow" src="/img/20190930/p1.png" width="500" /></li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>子字符串与父子符串<strong>头部对齐</strong>，从尾部开始比较。如果最后一个字符对不上，那么父子符串前面的整体上一定不是待搜索的字符串，我们把这个对不上的字符<strong>S</strong>称为<strong>坏字符（bad character）</strong>。
+<img class="shadow" src="/img/20190930/p2.png" width="500" />
+坏字符<strong>S</strong>没有出现在子字符串中，那么现在可以直接将子字符串整体移到<strong>坏字符</strong>的后面。</li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>还是从子字符串尾部开始比较，<strong>P</strong>是坏字符，但是它出现在了子字符串中，因此我们向后移动子字符串，使得子字符串中上一次出现的<strong>P</strong>与坏字符<strong>P</strong>对齐。
+<img class="shadow" src="/img/20190930/p3.png" width="500" /></li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>
+        <blockquote>
+          <p>移动的位数 = 坏字符的位置 - 在子字符串中上一次出现的位置</p>
+        </blockquote>
+
+        <p>比如此处，坏字符<strong>P</strong>的位置在第6位（从0开始计数），它在子字符串中上一次出现的位置是4，因此向后移动的位数就是2。
+<img class="shadow" src="/img/20190930/p4.png" width="500" />
+   从步骤2到3的过程，坏字符<strong>S</strong>的位置是6，在子字符串中并未出现，即-1，因此向后移动7位。</p>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>再次从尾部开始比较
+<img class="shadow" src="/img/20190930/p5.png" width="500" />
+<img class="shadow" src="/img/20190930/p6.png" width="500" />
+<img class="shadow" src="/img/20190930/p7.png" width="500" />
+<img class="shadow" src="/img/20190930/p8.png" width="500" />
+把这些能与父子符串匹配的后缀称为<strong>好后缀（good suffix）</strong>，<strong>E\LE\PLE\MPLE</strong>都是好后缀。
+<img class="shadow" src="/img/20190930/p9.png" width="500" />
+此时，坏字符为<strong>I</strong>，根据坏字符规则，子字符串下次移动的位数是<code class="highlighter-rouge">2-(-1)=3</code>。</li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>现在有一个新的后移规则<strong>好后缀规则</strong>：
+        <blockquote>
+          <p>后移位数 = 好后缀的位置 - 搜索词中的上一次出现位置</p>
+        </blockquote>
+
+        <p>其中这个位置都是指<strong>好后缀</strong>中最后一个字符的位置。例如现在有子串<strong>ABCDAB</strong>，末尾的<strong>AB</strong>是好后缀，它在子串中的位置（及字符B的位置）是5，<strong>AB</strong>上一次出现的位置为1（上一次出现的<strong>AB</strong>中字符B在字串中的位置），它向后移动的位数就为4。现在有字串<strong>ABCDEF</strong>，其中<strong>EF</strong>为好后缀，F在子串中的位置是5，它在子串中只出现了一次，即上次出现的位置是-1，因此移动的位数为6。</p>
+
+        <blockquote>
+          <p>“好后缀”规则注意点：
+（1）”好后缀”的位置以最后一个字符为准。假定”ABCDEF”的”EF”是好后缀，则它的位置以”F”为准，即5（从0开始计算）。
+（2）如果”好后缀”在搜索词中只出现一次，则它的上一次出现位置为 -1。 比如，”EF”在”ABCDEF”之中只出现一次，则它的上一次出现位置为-1（即未出现）。
+（3）如果”好后缀”有多个，则除了最长的那个”好后缀”，其他”好后缀”的上一次出现位置必须在头部。比如，假定”BABCDAB”的”好后缀”是”DAB”、”AB”、”B”，请问这时”好后缀”的上一次出现位置是什么？回答是，此时采用的好后缀是”B”，它的上一次出现位置是头部，即第0位。这个规则也可以这样表达：如果最长的那个”好后缀”只出现一次，则可以把搜索词改写成如下形式进行位置计算”(DA)BABCDAB”，即虚拟加入最前面的”DA”。</p>
+        </blockquote>
+
+        <p>在图中的例子，所有的好后缀<strong>E\LE\PLE\MPLE</strong>只有<strong>E</strong>还出现在了字符串头部，因此根据<strong>好后缀</strong>规则，向后移动的位数是<code class="highlighter-rouge">6-0=6</code>位。</p>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <ol>
+      <li>Boyer-Moore算法根据<strong>坏字符</strong>和<strong>好后缀</strong>规则，选择其中移动位数较大的进行移动。
+<img class="shadow" src="/img/20190930/p10.png" width="500" />
+这两个规则的移动位数，只与搜索词有关，与原字符串无关。因此，可以预先计算生成《坏字符规则表》和《好后缀规则表》。使用时，只要查表比较一下就可以了。
+<img class="shadow" src="/img/20190930/p11.png" width="500" />
+继续从尾部开始比较，”P”与”E”不匹配，因此”P”是”坏字符”。根据”坏字符规则”，后移 6 - 4 = 2位。
+<img class="shadow" src="/img/20190930/p12.png" width="500" />
+从尾部开始逐位比较，发现全部匹配，于是搜索结束。如果还要继续查找（即找出全部匹配），则根据”好后缀规则”，后移 6 - 0 = 6位，即头部的”E”移到尾部的”E”的位置。</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="算法实现">算法实现</h2>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Bm</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">badC</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+        <span class="kd">let</span> <span class="nx">goodS</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+        <span class="kd">let</span> <span class="nx">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">child</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">parent</span><span class="p">[</span><span class="nx">baseP</span> <span class="o">+</span> <span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
+                <span class="nx">flag</span><span class="o">++</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">flag</span> <span class="o">==</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">baseP</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">badC</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">[</span><span class="nx">baseP</span> <span class="o">+</span> <span class="nx">i</span><span class="p">];</span>
+                <span class="nx">goodS</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="c1">//选择坏字符规则和好后缀规则计算出的较长的后移位数</span>
+                <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bad</span><span class="p">(</span><span class="nx">badC</span><span class="p">,</span> <span class="nx">child</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+                <span class="kd">let</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">good</span><span class="p">(</span><span class="nx">goodS</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">b</span> <span class="o">&gt;</span> <span class="nx">g</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">baseP</span> <span class="o">+=</span> <span class="nx">b</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">baseP</span> <span class="o">+=</span> <span class="nx">g</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">baseP</span> <span class="o">&gt;=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">bad</span><span class="p">(</span><span class="nx">badC</span><span class="p">,</span> <span class="nx">child</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">child</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">badC</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">good</span><span class="p">(</span><span class="nx">goodS</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">goodS</span> <span class="o">==</span> <span class="dl">""</span><span class="p">)</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">//最长的好后缀至在字串中出现了一次</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="nx">goodS</span><span class="p">)</span> <span class="o">==</span> <span class="nx">child</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">goodS</span><span class="p">))</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">let</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+                <span class="kd">let</span> <span class="nx">newChild</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">+</span> <span class="nx">child</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nx">newChild</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span>
+    <span class="c1">//最长的好后缀至在字串中出现了多次</span>
+    <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">child</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span> <span class="c1">//去除字串末尾的最长好后缀</span>
+        <span class="kd">let</span> <span class="nx">lastIndex</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="nx">goodS</span><span class="p">)</span> <span class="o">+</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">//最长好后缀的最后一个字符上一次出现的位置</span>
+        <span class="k">return</span> <span class="nx">goodS</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">lastIndex</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+:ET
