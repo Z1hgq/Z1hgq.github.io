@@ -89,7 +89,8 @@ function Bm(parent, child) {
                 break;
             }
         }
-        if (baseP >= parent.length - child.length) return -1;
+        if (baseP > parent.length - child.length && baseP < parent.length) baseP = parent.length - child.length; //防止加过的情况
+        if (baseP == parent.length ) return -1;
     }
 }
 
@@ -102,7 +103,7 @@ function good(goodS, child) {
     //最长的好后缀至在字串中出现了一次
     if (child.lastIndexOf(goodS) == child.indexOf(goodS)) {
         let tmp = "";
-        for (let i = 1; i < goodS.length; i--) {
+        for (let i = 1; i < goodS.length; i++) {
             tmp = goodS.slice(i);
             if (child.indexOf(tmp) == 0) {
                 let str = child.slice(0, child.length - goodS.length);
