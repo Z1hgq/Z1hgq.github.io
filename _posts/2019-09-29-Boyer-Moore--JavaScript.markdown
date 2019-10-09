@@ -78,6 +78,7 @@ function Bm(parent, child) {
             } else {
                 badC = parent[baseP + i];
                 goodS = child.substring(i + 1);
+
                 //选择坏字符规则和好后缀规则计算出的较长的后移位数
                 let b = bad(badC, child, i);
                 let g = good(goodS, child)
@@ -95,7 +96,8 @@ function Bm(parent, child) {
 }
 
 function bad(badC, child, i) {
-    return i - child.lastIndexOf(badC);
+    let sub = child.substring(0, i + 1); //去除好后缀
+    return i - sub.lastIndexOf(badC);
 }
 
 function good(goodS, child) {
@@ -147,10 +149,20 @@ function Bf(parent,child){
     return -1;
 }
 ```
-当数据为`1000万`个字符时，两者匹配最尾部的字符串结果如下
+当数据为`1000万`个字符时，两者匹配最尾部的长度为`20`的字符串结果如下
 <img class="shadow" src="/img/20190930/p13.png" width="500">
-当数据为`3000万`个字符时，两者匹配最尾部的字符串结果如下
+当数据为`3000万`个字符时，两者匹配最尾部的长度为`20`的字符串结果如下
 <img class="shadow" src="/img/20190930/p14.png" width="500">
-当数据为`6000万`个字符时，两者匹配最尾部的字符串结果如下
+
+**BM和BF算法都是在父字符串上从左往右匹配的，因此增加父字符串的长度不会对对比结果产生较大的影响。**
+
+当数据为`3000万`个字符时，两者匹配最尾部的长度为`50`的字符串结果如下
 <img class="shadow" src="/img/20190930/p15.png" width="500">
+当数据为`3000万`个字符时，两者匹配最尾部的长度为`100`的字符串结果如下
+<img class="shadow" src="/img/20190930/p16.png" width="500">
+当数据为`3000万`个字符时，两者匹配最尾部的长度为`500`的字符串结果如下
+<img class="shadow" src="/img/20190930/p17.png" width="500">
+
+**当子字符串的长度增加之后，BM较BF更有优势。**
+
 

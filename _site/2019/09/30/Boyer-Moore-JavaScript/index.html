@@ -277,6 +277,7 @@
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                 <span class="nx">badC</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">[</span><span class="nx">baseP</span> <span class="o">+</span> <span class="nx">i</span><span class="p">];</span>
                 <span class="nx">goodS</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+
                 <span class="c1">//选择坏字符规则和好后缀规则计算出的较长的后移位数</span>
                 <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bad</span><span class="p">(</span><span class="nx">badC</span><span class="p">,</span> <span class="nx">child</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
                 <span class="kd">let</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">good</span><span class="p">(</span><span class="nx">goodS</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span>
@@ -294,7 +295,8 @@
 <span class="p">}</span>
 
 <span class="kd">function</span> <span class="nx">bad</span><span class="p">(</span><span class="nx">badC</span><span class="p">,</span> <span class="nx">child</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">child</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="nx">badC</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">sub</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">//去除好后缀</span>
+    <span class="k">return</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">sub</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="nx">badC</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kd">function</span> <span class="nx">good</span><span class="p">(</span><span class="nx">goodS</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
@@ -349,12 +351,21 @@
     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p>当数据为<code class="highlighter-rouge">1000万</code>个字符时，两者匹配最尾部的字符串结果如下
+<p>当数据为<code class="highlighter-rouge">1000万</code>个字符时，两者匹配最尾部的长度为<code class="highlighter-rouge">20</code>的字符串结果如下
 <img class="shadow" src="/img/20190930/p13.png" width="500" />
-当数据为<code class="highlighter-rouge">3000万</code>个字符时，两者匹配最尾部的字符串结果如下
-<img class="shadow" src="/img/20190930/p14.png" width="500" />
-当数据为<code class="highlighter-rouge">6000万</code>个字符时，两者匹配最尾部的字符串结果如下
-<img class="shadow" src="/img/20190930/p15.png" width="500" /></p>
+当数据为<code class="highlighter-rouge">3000万</code>个字符时，两者匹配最尾部的长度为<code class="highlighter-rouge">20</code>的字符串结果如下
+<img class="shadow" src="/img/20190930/p14.png" width="500" /></p>
+
+<p><strong>BM和BF算法都是在父字符串上从左往右匹配的，因此增加父字符串的长度不会对对比结果产生较大的影响。</strong></p>
+
+<p>当数据为<code class="highlighter-rouge">3000万</code>个字符时，两者匹配最尾部的长度为<code class="highlighter-rouge">50</code>的字符串结果如下
+<img class="shadow" src="/img/20190930/p15.png" width="500" />
+当数据为<code class="highlighter-rouge">3000万</code>个字符时，两者匹配最尾部的长度为<code class="highlighter-rouge">100</code>的字符串结果如下
+<img class="shadow" src="/img/20190930/p16.png" width="500" />
+当数据为<code class="highlighter-rouge">3000万</code>个字符时，两者匹配最尾部的长度为<code class="highlighter-rouge">500</code>的字符串结果如下
+<img class="shadow" src="/img/20190930/p17.png" width="500" /></p>
+
+<p><strong>当子字符串的长度增加之后，BM较BF更有优势。</strong></p>
 
 
 
