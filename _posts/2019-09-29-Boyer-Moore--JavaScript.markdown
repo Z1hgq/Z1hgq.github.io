@@ -124,9 +124,12 @@ function good(goodS, child) {
 
 ## 小结
 
-- BM算法匹配最差时间复杂度为`O(mn)`，最佳为`O(n/m)`。
+- BM算法匹配最差时间复杂度为`O(mn)`，最佳为`O(n/m)`
+
 ---
+
 - 下面是从左往右暴力匹配的算法
+
 ```js
 function Bf(parent,child){
     for(let i = 0;i < parent.length; i++){
@@ -145,3 +148,9 @@ function Bf(parent,child){
 }
 ```
 当数据为`1000万`个字符时，两者匹配最尾部的字符串结果如下
+<img class="shadow" src="/img/20190930/p13.png" width="500">
+当数据为`3000万`个字符时，两者匹配最尾部的字符串结果如下
+<img class="shadow" src="/img/20190930/p14.png" width="500">
+当数据为`6000万`个字符时，两者匹配最尾部的字符串结果如下
+<img class="shadow" src="/img/20190930/p15.png" width="500">
+
