@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "BoyerMoore-JavaScript"
+title:      "BoyerMoore算法的JavaScript实现"
 subtitle:   "字符串匹配算法"
 date:       2019-09-29 23:04:00
 author:     "Z1hgq"
