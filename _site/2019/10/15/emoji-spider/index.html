@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>mongo远程连接设置 - Z1hgq | Z1hgq Blog</title>
+    <title>一段表情包爬虫demo - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/10/15/mongo-remote-connection-settings/">
+    <link rel="canonical" href="http://localhost:4000/2019/10/15/emoji-spider/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -170,13 +170,13 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#linux" title="linux">linux</a>
+                        <a class="tag" href="/tags/#爬虫" title="爬虫">爬虫</a>
                         
                     </div>
-                    <h1>mongo远程连接设置</h1>
+                    <h1>一段表情包爬虫demo</h1>
                     
                     
-                    <h2 class="subheading">mongo远程连接设置</h2>
+                    <h2 class="subheading">py-spider</h2>
                     
                     <span class="meta">Posted by Z1hgq on October 15, 2019</span>
                 </div>
@@ -200,85 +200,72 @@
                 
 
 				<blockquote>
-  <p>“自然界没有凤凤雨雨，大地就不会有春华秋实”</p>
+  <p>“活在世界上，有时候人家不害你，就是对你最大的帮忙。”</p>
 </blockquote>
 
 <hr />
-<h2 id="服务器设置">服务器设置</h2>
-<h4 id="0-创建配置文件etcmongodconf">0. 创建配置文件<code class="highlighter-rouge">/etc/mongod.conf</code></h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bind_ip = 0.0.0.0        #允许访问本机mongo服务的ip
-port = 27017             #mongo服务监听的端口
-auth=false               #是否开启用户验证，false：不必使用用户名和密码就可以连接
-dbpath=/data/db          #mongo的本地数据文件地址
-logpath=/log/mongodb.log #mongo日志记录文件地址
-logappend=true
-fork=true                #后台启动配置
+
+<h2 id="源码">源码</h2>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python
+# encoding=utf-8
+</span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">DOWNLOAD_URL</span>  <span class="o">=</span> <span class="s">'https://pic.sogou.com/pic/emo/searchList.jsp?statref=home_form&amp;spver=0&amp;rcer=&amp;keyword='</span>
+
+
+<span class="k">def</span> <span class="nf">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="s">"""获取url地址页面内容"""</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36'</span><span class="p">,</span>
+        <span class="s">"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"</span><span class="p">,</span>
+        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36"</span><span class="p">,</span>
+        <span class="s">"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0"</span><span class="p">,</span>
+        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14"</span><span class="p">,</span>
+        <span class="s">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">random_header</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">"User-Agent"</span><span class="p">:</span> <span class="n">random_header</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s">'html.parser'</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="s">r'rsrc="(.+?)"'</span><span class="p">)</span>
+    <span class="n">imgList</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">imgList</span>
+
+<span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">):</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="n">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">imgList</span><span class="p">:</span>
+        <span class="n">img_content</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+        <span class="n">img_path</span> <span class="o">=</span> <span class="s">'img/'</span><span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">'/'</span> <span class="o">+</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span> <span class="o">+</span> <span class="s">'.jfif'</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img_content</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s">"giao"</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">DOWNLOAD_URL</span> <span class="o">+</span> <span class="n">key</span>
+    <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">imgList</span> <span class="o">=</span> <span class="n">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="n">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </code></pre></div></div>
-<h4 id="1-重启mongo服务">1. 重启mongo服务</h4>
-<p><code class="highlighter-rouge">ps -ef|grep mongo</code>查看mongod服务的<strong>pid</strong>，如：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root     19978     1  0 15:31 ?        00:00:09 mongod -f /etc/mongod.conf
-root     20076 18938  0 16:05 pts/2    00:00:00 vi /etc/mongod.conf
-root     20120 18938  0 16:21 pts/2    00:00:00 grep --color=auto mongo
-</code></pre></div></div>
-
-<p>这里使用<code class="highlighter-rouge">kill</code>命令把进程结束掉，pid是第二列。</p>
-
-<p>使用配置文件启动mongo服务<code class="highlighter-rouge">mongod -f /etc/mongod.conf </code>，这样mongo就在后台运行了。</p>
-
-<h4 id="2添加用户">2.添加用户</h4>
-
-<p>使用<code class="highlighter-rouge">mongo</code>命令进入mongo的控制命令行</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//添加管理员用户（role:root表示最高权限）
-use admin
-
-db.createUser({
-    user:"admin",
-    pwd:"admin",
-    roles:[{
-        role:"root",
-        db:"admin"
-    }]
-})
-
-db.auth("admin", "admin")
-</code></pre></div></div>
-
-<h4 id="3设置防火墙允许访问端口">3.设置防火墙允许访问端口</h4>
-
-<p>添加端口访问权限<code class="highlighter-rouge">iptables -A INPUT -p tcp --dport 27017 -j ACCEPT</code></p>
-
-<p>CentOS重启防火墙<code class="highlighter-rouge">firewall-cmd --reload</code></p>
-
-<p>如果是云服务器，在服务器的安全组配置中，将端口添加进规则即可，如下图：</p>
-
-<p><img src="/img/20191014/1.png" alt="1" title="1" />
-<img src="/img/20191014/2.png" alt="2" title="2" />
-<img src="/img/20191014/3.png" alt="3" title="3" />
-<img src="/img/20191014/4.png" alt="4" title="4" />
-<img src="/img/20191014/5.png" alt="5" title="5" /></p>
-
-<hr />
-
-<h2 id="外部连接设置">外部连接设置</h2>
-
-<p>连接地址为<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port</code>，如果授权验证<code class="highlighter-rouge">auth</code>设置的false，则地址为<code class="highlighter-rouge">mongodb://host:port</code>。</p>
-
-<p>推荐一个mongo可视化工具：<a href="https://github.com/mrvautin/adminMongo">adminMongo</a></p>
-
-<hr />
-<h2 id="参考文献">参考文献</h2>
-
-<p><a href="https://blog.csdn.net/roler_/article/details/38820247"><em>0. Mongodb后台daemon方式启动</em></a></p>
-
-<p><a href="https://blog.csdn.net/zZ_life/article/details/78664794"><em>1. MongoDB 3.4.2 添加用户、设置权限</em></a></p>
-
-<p><a href="https://blog.csdn.net/AggressionStorm/article/details/79956231"><em>2. mongoDB的远程连接配置</em></a></p>
-
-<p><a href="https://blog.csdn.net/u011846257/article/details/54707864"><em>3. Centos防火墙设置与端口开放的方法</em></a></p>
-
-<p><a href="https://github.com/mrvautin/adminMongo"><em>4. adminMongo</em></a></p>
+<h2 id="爬取结果">爬取结果</h2>
+<p><img src="/img/20191018/1.png" alt="res" title="res" /></p>
 
 <hr />
 
@@ -289,19 +276,12 @@ db.auth("admin", "admin")
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
+                        <a href="/2019/10/15/mongo-remote-connection-settings/" data-toggle="tooltip" data-placement="top" title="mongo远程连接设置">
                         Previous<br>
-                        <span>BoyerMoore算法的JavaScript实现</span>
+                        <span>mongo远程连接设置</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/10/15/emoji-spider/" data-toggle="tooltip" data-placement="top" title="一段表情包爬虫demo">
-                        Next<br>
-                        <span>一段表情包爬虫demo</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
