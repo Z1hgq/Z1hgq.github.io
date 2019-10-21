@@ -5,8 +5,8 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 18 Oct 2019 18:24:02 +0800</pubDate>
-    <lastBuildDate>Fri, 18 Oct 2019 18:24:02 +0800</lastBuildDate>
+    <pubDate>Mon, 21 Oct 2019 14:38:34 +0800</pubDate>
+    <lastBuildDate>Mon, 21 Oct 2019 14:38:34 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -157,7 +157,7 @@ db.auth(&quot;admin&quot;, &quot;admin&quot;)
 
 &lt;h2 id=&quot;外部连接设置&quot;&gt;外部连接设置&lt;/h2&gt;
 
-&lt;p&gt;连接地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://&amp;lt;username&amp;gt;:&amp;lt;password&amp;gt;@host:port&lt;/code&gt;，如果授权验证&lt;code class=&quot;highlighter-rouge&quot;&gt;auth&lt;/code&gt;设置的false，则地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://host:port&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;连接地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://&amp;lt;username&amp;gt;:&amp;lt;password&amp;gt;@host:port&lt;/code&gt;，如果授权验证&lt;code class=&quot;highlighter-rouge&quot;&gt;auth&lt;/code&gt;设置的false，则地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://host:port&lt;/code&gt;。配置mongodb地址时，如果不设置连接方式默认是&lt;code class=&quot;highlighter-rouge&quot;&gt;MONGODB-CR&lt;/code&gt;，如果安装的时候设置的是&lt;code class=&quot;highlighter-rouge&quot;&gt;SCRAM-SHA-1&lt;/code&gt;，连接地址为：&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://&amp;lt;username&amp;gt;:&amp;lt;password&amp;gt;@host:port/&amp;lt;dbname&amp;gt;?authSource=admin&amp;amp;authMechanism=SCRAM-SHA-1&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;推荐一个mongo可视化工具：&lt;a href=&quot;https://github.com/mrvautin/adminMongo&quot;&gt;adminMongo&lt;/a&gt;&lt;/p&gt;
 
@@ -173,6 +173,8 @@ db.auth(&quot;admin&quot;, &quot;admin&quot;)
 &lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/u011846257/article/details/54707864&quot;&gt;&lt;em&gt;3. Centos防火墙设置与端口开放的方法&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/mrvautin/adminMongo&quot;&gt;&lt;em&gt;4. adminMongo&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/qq_29143909/article/details/81909991&quot;&gt;&lt;em&gt;5. mongodb连接认证失败&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 

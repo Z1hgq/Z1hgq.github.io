@@ -75,7 +75,7 @@ CentOS重启防火墙`firewall-cmd --reload`
 
 ## 外部连接设置
 
-连接地址为`mongodb://<username>:<password>@host:port`，如果授权验证`auth`设置的false，则地址为`mongodb://host:port`。
+连接地址为`mongodb://<username>:<password>@host:port`，如果授权验证`auth`设置的false，则地址为`mongodb://host:port`。配置mongodb地址时，如果不设置连接方式默认是`MONGODB-CR`，如果安装的时候设置的是`SCRAM-SHA-1`，连接地址为：`mongodb://<username>:<password>@host:port/<dbname>?authSource=admin&authMechanism=SCRAM-SHA-1`
 
 推荐一个mongo可视化工具：[adminMongo](https://github.com/mrvautin/adminMongo)
 
@@ -92,6 +92,8 @@ CentOS重启防火墙`firewall-cmd --reload`
 [*3. Centos防火墙设置与端口开放的方法*](https://blog.csdn.net/u011846257/article/details/54707864)
 
 [*4. adminMongo*](https://github.com/mrvautin/adminMongo)
+
+[*5. mongodb连接认证失败*](https://blog.csdn.net/qq_29143909/article/details/81909991)
 
 ---
 

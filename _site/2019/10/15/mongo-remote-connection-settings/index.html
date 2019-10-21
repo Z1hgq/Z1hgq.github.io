@@ -263,7 +263,7 @@ db.auth("admin", "admin")
 
 <h2 id="外部连接设置">外部连接设置</h2>
 
-<p>连接地址为<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port</code>，如果授权验证<code class="highlighter-rouge">auth</code>设置的false，则地址为<code class="highlighter-rouge">mongodb://host:port</code>。</p>
+<p>连接地址为<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port</code>，如果授权验证<code class="highlighter-rouge">auth</code>设置的false，则地址为<code class="highlighter-rouge">mongodb://host:port</code>。配置mongodb地址时，如果不设置连接方式默认是<code class="highlighter-rouge">MONGODB-CR</code>，如果安装的时候设置的是<code class="highlighter-rouge">SCRAM-SHA-1</code>，连接地址为：<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port/&lt;dbname&gt;?authSource=admin&amp;authMechanism=SCRAM-SHA-1</code></p>
 
 <p>推荐一个mongo可视化工具：<a href="https://github.com/mrvautin/adminMongo">adminMongo</a></p>
 
@@ -279,6 +279,8 @@ db.auth("admin", "admin")
 <p><a href="https://blog.csdn.net/u011846257/article/details/54707864"><em>3. Centos防火墙设置与端口开放的方法</em></a></p>
 
 <p><a href="https://github.com/mrvautin/adminMongo"><em>4. adminMongo</em></a></p>
+
+<p><a href="https://blog.csdn.net/qq_29143909/article/details/81909991"><em>5. mongodb连接认证失败</em></a></p>
 
 <hr />
 
