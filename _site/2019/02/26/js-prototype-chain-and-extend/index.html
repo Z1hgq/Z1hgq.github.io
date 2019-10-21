@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>一段表情包爬虫demo - Z1hgq | Z1hgq Blog</title>
+    <title>js原型链及对象的继承 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/10/15/emoji-spider/">
+    <link rel="canonical" href="http://localhost:4000/2019/02/26/js-prototype-chain-and-extend/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-universe.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-js-version.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-universe.jpg')
+        background-image: url('/img/post-bg-js-version.jpg')
     }
 
     
@@ -170,15 +170,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#爬虫" title="爬虫">爬虫</a>
+                        <a class="tag" href="/tags/#js" title="js">js</a>
                         
                     </div>
-                    <h1>一段表情包爬虫demo</h1>
+                    <h1>js原型链及对象的继承</h1>
                     
                     
-                    <h2 class="subheading">py-spider</h2>
+                    <h2 class="subheading">原型链图解及对象的几种继承方式</h2>
                     
-                    <span class="meta">Posted by Z1hgq on October 15, 2019</span>
+                    <span class="meta">Posted by Z1hgq on February 26, 2019</span>
                 </div>
             </div>
         </div>
@@ -200,88 +200,121 @@
                 
 
 				<blockquote>
-  <p>“活在世界上，有时候人家不害你，就是对你最大的帮忙。”</p>
+  <p>“”</p>
 </blockquote>
 
 <hr />
 
-<h2 id="源码">源码</h2>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python
-# encoding=utf-8
-</span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">string</span>
+<h2 id="原型链">原型链</h2>
 
-<span class="n">DOWNLOAD_URL</span>  <span class="o">=</span> <span class="s">'https://pic.sogou.com/pic/emo/searchList.jsp?statref=home_form&amp;spver=0&amp;rcer=&amp;keyword='</span>
+<p>JavaScript对象的原型（prototype）：</p>
 
+<ul>
+  <li>每一个构造函数都拥有一个prototype属性，这个属性指向一个对象，也就是原型对象。当使用这个构造函数创建实例的时候，prototype属性指向的原型对象就成为实例的原型对象。</li>
+  <li>原型对象默认拥有一个constructor属性，指向指向它的那个构造函数（也就是说构造函数和原型对象是互相指向的关系）。</li>
+  <li>每个对象都拥有一个隐藏的属性<code class="highlighter-rouge">[[prototype]]</code>，指向它的原型对象，这个属性可以通过
+<code class="highlighter-rouge">Object.getPrototypeOf(obj)</code> 或 <code class="highlighter-rouge">obj.__proto__</code> 来访问。</li>
+  <li>实际上，构造函数的prototype属性与它创建的实例对象的<code class="highlighter-rouge">[[prototype]]</code>属性指向的是同一个对象，即 对象<code class="highlighter-rouge">.__proto__ === 函数.prototype</code>。</li>
+  <li>原型对象就是用来存放实例中共有的那部分属性或方法的对象。</li>
+  <li>在JavaScript中，所有的对象都是由它的原型对象继承而来，反之，所有的对象都可以作为原型对象存在。</li>
+  <li>访问对象的属性时，JavaScript会首先在对象自身的属性内查找，若没有找到，则会跳转到该对象的原型对象中查找，直到找到Object对象上去。</li>
+  <li>Object对象的原型对象指向的是NULL，即<code class="highlighter-rouge">Object.__proto__ == NULL</code>。</li>
+</ul>
 
-<span class="k">def</span> <span class="nf">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
-    <span class="s">"""获取url地址页面内容"""</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36'</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)"</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">random_header</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">"User-Agent"</span><span class="p">:</span> <span class="n">random_header</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">)</span>
+<p>如图：
+<img src="/img/20191021/1.png" alt="prototype chain" title="prototype chain" /></p>
 
-<span class="k">def</span> <span class="nf">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s">'html.parser'</span><span class="p">)</span>
-    <span class="n">img</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="s">r'rsrc="(.+?)"'</span><span class="p">)</span>
-    <span class="n">imgList</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">imgList</span>
+<h2 id="继承">继承</h2>
 
-<span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">):</span>
-		<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">)</span>
+<h4 id="0构造函数实现继承">0.构造函数实现继承</h4>
 
-<span class="k">def</span> <span class="nf">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="n">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">imgList</span><span class="p">:</span>
-        <span class="n">img_content</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
-        <span class="n">img_path</span> <span class="o">=</span> <span class="s">'img/'</span><span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">'/'</span> <span class="o">+</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span> <span class="o">+</span> <span class="s">'.jfif'</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img_content</span><span class="p">)</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s">"giao"</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">DOWNLOAD_URL</span> <span class="o">+</span> <span class="n">key</span>
-    <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
-        <span class="n">html</span> <span class="o">=</span> <span class="n">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="n">imgList</span> <span class="o">=</span> <span class="n">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
-        <span class="n">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent1</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">Parent1</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
+<span class="kd">function</span> <span class="nx">Child1</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Parent1</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span><span class="c1">//apply,将父构造函数this指向子构造函数的实例上，导致父构造函数的所有属性在子构造函数中也有</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nx">age</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="爬取结果">爬取结果</h2>
-<p><img src="/img/20191018/1.png" alt="res" title="res" /></p>
+<p>这种继承方式不能继承父类原型链上的属性方法，因此这种继承方式是不完整的，即<code class="highlighter-rouge">Child1</code>中没有<code class="highlighter-rouge">say</code>方法。</p>
 
-<hr />
+<h4 id="1原型链实现继承">1.原型链实现继承</h4>
 
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent2</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent2</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">Child2</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child2</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">Child2</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//重点</span>
+
+<span class="k">new</span> <span class="nx">Child2</span><span class="p">().</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//true</span>
+</code></pre></div></div>
+
+<p>缺点:当一个实例对象去修改来自原型对象上的属性时，另一个实例对象这个属性也会跟着改变，因为它们都是引用的同一个原型对象的属性。</p>
+
+<h4 id="2组合方式常用">2.组合方式(常用)</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent3</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent3</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">Child3</span><span class="p">(){</span>
+  <span class="nx">Parent3</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child3</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">Child3</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent3</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>缺点：父级构造函数执行了两次。</p>
+
+<h4 id="3组合继承的优化1">3.组合继承的优化1</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent4</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent4</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">Child4</span><span class="p">(){</span>
+  <span class="nx">Parent4</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child4</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">Child4</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">Parent4</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>问题所在：<code class="highlighter-rouge">Child4实例对象.__proto__.constructor === Parent4</code> 而不是Child4，所以不能正确找到构造函数。</p>
+
+<h4 id="4组合继承的优化2完美写法">4.组合继承的优化2(完美写法)</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent5</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent5</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">Child5</span><span class="p">(){</span>
+  <span class="nx">Parent5</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child5</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Parent5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span><span class="c1">//隔离</span>
+<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child5</span>
+</code></pre></div></div>
+
+<h2 id="参考文献">参考文献</h2>
+
+<p><a href="https://juejin.im/post/5a94c0de5188257a8929d837"><em>0. 三分钟看完JavaScript原型与原型链</em></a></p>
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2019/10/15/mongo-remote-connection-settings/" data-toggle="tooltip" data-placement="top" title="mongo远程连接设置">
-                        Previous<br>
-                        <span>mongo远程连接设置</span>
+                    
+                    <li class="next">
+                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
+                        Next<br>
+                        <span>BoyerMoore算法的JavaScript实现</span>
                         </a>
                     </li>
-                    
                     
                 </ul>
 
