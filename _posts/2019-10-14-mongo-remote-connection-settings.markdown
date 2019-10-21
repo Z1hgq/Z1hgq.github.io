@@ -4,9 +4,10 @@ title:      "mongo远程连接设置"
 subtitle:   "mongo远程连接设置"
 date:       2019-10-14 16:04:00
 author:     "Z1hgq"
-header-img: "img/post-bg-universe.jpg"
+header-img: "img/contact-bg.jpg"
 catalog: true
 tags:
+    - mongodb
     - linux
 ---
 

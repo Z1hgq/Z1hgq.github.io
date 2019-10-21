@@ -7,7 +7,7 @@ author:     "Z1hgq"
 header-img: "img/post-bg-js-version.jpg"
 catalog: true
 tags:
-    - js
+    - JavaScript
 ---
 
 > “”

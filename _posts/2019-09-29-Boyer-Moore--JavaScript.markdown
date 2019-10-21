@@ -7,6 +7,7 @@ author:     "Z1hgq"
 header-img: "img/post-bg-2015.jpg"
 catalog: true
 tags:
+    - JavaScript
     - 算法
 ---
 

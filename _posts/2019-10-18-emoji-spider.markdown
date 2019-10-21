@@ -8,6 +8,7 @@ header-img: "img/post-bg-universe.jpg"
 catalog: true
 tags:
     - 爬虫
+    - Python
 ---
 
 > “活在世界上，有时候人家不害你，就是对你最大的帮忙。”
