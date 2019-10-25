@@ -5,9 +5,175 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 21 Oct 2019 17:00:37 +0800</pubDate>
-    <lastBuildDate>Mon, 21 Oct 2019 17:00:37 +0800</lastBuildDate>
+    <pubDate>Fri, 25 Oct 2019 15:01:02 +0800</pubDate>
+    <lastBuildDate>Fri, 25 Oct 2019 15:01:02 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>JS 事件循环--宏任务与微任务</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;“”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+&lt;h2 id=&quot;event-loop&quot;&gt;Event Loop&lt;/h2&gt;
+
+&lt;p&gt;JavaScript是一门单线程的脚本语言，在一行代码执行的过程中，必然不会存在同时执行的另一行代码，就像使用&lt;code class=&quot;highlighter-rouge&quot;&gt;alert()&lt;/code&gt;以后进行疯狂&lt;code class=&quot;highlighter-rouge&quot;&gt;console.log&lt;/code&gt;，如果没有关闭弹框，控制台是不会显示出一条log信息的。&lt;/p&gt;
+
+&lt;p&gt;js的主线程只负责维护任务队列，并通过事件循环机制（Event Loop）按照顺序将需要执行的任务放进栈中。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/20191025/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;同步和异步任务分别进入不同的执行”场所”，同步的进入主线程，异步的进入Event Table并注册函数&lt;/li&gt;
+  &lt;li&gt;当指定的事情完成时，Event Table会将这个函数移入Event Queue。&lt;/li&gt;
+  &lt;li&gt;主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行。&lt;/li&gt;
+  &lt;li&gt;上述过程会不断重复，也就是常说的Event Loop(事件循环)。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;宏任务与微任务&quot;&gt;宏任务与微任务&lt;/h2&gt;
+
+&lt;p&gt;在Js中，有两类任务队列：宏任务队列（macro tasks）和微任务队列（micro tasks）。宏任务队列可以有多个，微任务队列只有一个。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;宏任务：script（全局任务）, setTimeout, setInterval, setImmediate, I/O, UI rendering.&lt;/p&gt;
+
+  &lt;p&gt;微任务：process.nextTick, Promise, Object.observer, MutationObserver.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/20191025/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;浏览器event-loop&quot;&gt;浏览器Event Loop&lt;/h4&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;取一个宏任务来执行。执行完毕后，下一步。&lt;/li&gt;
+    &lt;li&gt;取一个微任务来执行，执行完毕后，再取一个微任务来执行。直到微任务队列为空，执行下一步。&lt;/li&gt;
+    &lt;li&gt;更新UI渲染&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;每执行下一次宏任务之前重新渲染。&lt;/p&gt;
+
+&lt;h4 id=&quot;nodejs-event-loop&quot;&gt;NodeJs Event Loop&lt;/h4&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;初始化 Event Loop&lt;/li&gt;
+    &lt;li&gt;执行您的主代码。这里同样，遇到异步处理，就会分配给对应的队列。直到主代码执行完毕。&lt;/li&gt;
+    &lt;li&gt;执行主代码中出现的所有微任务：先执行完所有nextTick()，然后在执行其它所有微任务。&lt;/li&gt;
+    &lt;li&gt;开始 Event Loop&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;NodeJs 的 Event Loop 分为六个阶段：timers、pending callbacks、idle\prepare、poll、check、close callbacks。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;┌───────────────────────────┐&lt;/p&gt;
+
+  &lt;p&gt;┌─│———–timers———-│&lt;/p&gt;
+
+  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
+
+  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
+
+  &lt;p&gt;│  │—- pending callbacks—–│&lt;/p&gt;
+
+  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
+
+  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
+
+  &lt;p&gt;│  │——-idle, prepare——-│&lt;/p&gt;
+
+  &lt;p&gt;│  └─────────────┬─────────────┘      ┌───────────────┐&lt;/p&gt;
+
+  &lt;p&gt;│  ┌─────────────┴─────────────┐      │   incoming:   │&lt;/p&gt;
+
+  &lt;p&gt;│  │———–poll————│&amp;lt;─────┤  connections, │&lt;/p&gt;
+
+  &lt;p&gt;│  └─────────────┬─────────────┘      │   data, etc.  │&lt;/p&gt;
+
+  &lt;p&gt;│  ┌─────────────┴─────────────┐      └───────────────┘&lt;/p&gt;
+
+  &lt;p&gt;│  │———–check———–│&lt;/p&gt;
+
+  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
+
+  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
+
+  &lt;p&gt;└──┤——close callbacks——│&lt;/p&gt;
+
+  &lt;p&gt;└───────────────────────────┘&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;timers: 这个阶段执行setTimeout()和setInterval()设定的回调。&lt;/li&gt;
+  &lt;li&gt;pending callbacks: 上一轮循环中有少数的 I/O callback 会被延迟到这一轮的这一阶段执行。&lt;/li&gt;
+  &lt;li&gt;idle, prepare: 仅内部使用。&lt;/li&gt;
+  &lt;li&gt;poll: 执行 I/O callback，在适当的条件下会阻塞在这个阶段&lt;/li&gt;
+  &lt;li&gt;check: 执行setImmediate()设定的回调。&lt;/li&gt;
+  &lt;li&gt;close callbacks: 执行比如socket.on(‘close’, …)的回调。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;示例分析&quot;&gt;示例分析&lt;/h2&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在上面的代码中，node环境下的输出顺序为&lt;code class=&quot;highlighter-rouge&quot;&gt;7\6\8\2\4\9\11\3\10\5\12&lt;/code&gt;,在浏览器中的输出顺序为&lt;code class=&quot;highlighter-rouge&quot;&gt;7\8\2\4\5\9\11\12&lt;/code&gt;,在浏览器中去除了&lt;code class=&quot;highlighter-rouge&quot;&gt;Process.nextTick()&lt;/code&gt;这个方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/20191025/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;参考文献&quot;&gt;参考文献&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000011198232&quot;&gt;&lt;em&gt;0. JavaScript 异步、栈、事件循环、任务队列&lt;/em&gt;&lt;/a&gt;
+&lt;a href=&quot;https://juejin.im/post/5b498d245188251b193d4059&quot;&gt;&lt;em&gt;1. JS事件循环机制（event loop）之宏任务/微任务&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 23 Oct 2019 21:54:57 +0800</pubDate>
+        <link>http://localhost:4000/2019/10/23/js-mac-mic-task/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/10/23/js-mac-mic-task/</guid>
+        
+        <category>JavaScript</category>
+        
+        
+      </item>
     
       <item>
         <title>一段表情包爬虫demo</title>

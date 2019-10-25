@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>js原型链及对象的继承 - Z1hgq | Z1hgq Blog</title>
+    <title>JS 事件循环--宏任务与微任务 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/02/26/js-prototype-chain-and-extend/">
+    <link rel="canonical" href="http://localhost:4000/2019/10/23/js-mac-mic-task/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -173,12 +173,12 @@
                         <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
                         
                     </div>
-                    <h1>js原型链及对象的继承</h1>
+                    <h1>JS 事件循环--宏任务与微任务</h1>
                     
                     
-                    <h2 class="subheading">原型链图解及对象的几种继承方式</h2>
+                    <h2 class="subheading">Event Loop</h2>
                     
-                    <span class="meta">Posted by Z1hgq on February 26, 2019</span>
+                    <span class="meta">Posted by Z1hgq on October 23, 2019</span>
                 </div>
             </div>
         </div>
@@ -204,117 +204,168 @@
 </blockquote>
 
 <hr />
+<h2 id="event-loop">Event Loop</h2>
 
-<h2 id="原型链">原型链</h2>
+<p>JavaScript是一门单线程的脚本语言，在一行代码执行的过程中，必然不会存在同时执行的另一行代码，就像使用<code class="highlighter-rouge">alert()</code>以后进行疯狂<code class="highlighter-rouge">console.log</code>，如果没有关闭弹框，控制台是不会显示出一条log信息的。</p>
 
-<p>JavaScript对象的原型（prototype）：</p>
+<p>js的主线程只负责维护任务队列，并通过事件循环机制（Event Loop）按照顺序将需要执行的任务放进栈中。</p>
+
+<p><img src="/img/20191025/2.png" alt="" /></p>
 
 <ul>
-  <li>每一个构造函数都拥有一个prototype属性，这个属性指向一个对象，也就是原型对象。当使用这个构造函数创建实例的时候，prototype属性指向的原型对象就成为实例的原型对象。</li>
-  <li>原型对象默认拥有一个constructor属性，指向指向它的那个构造函数（也就是说构造函数和原型对象是互相指向的关系）。</li>
-  <li>每个对象都拥有一个隐藏的属性<code class="highlighter-rouge">[[prototype]]</code>，指向它的原型对象，这个属性可以通过
-<code class="highlighter-rouge">Object.getPrototypeOf(obj)</code> 或 <code class="highlighter-rouge">obj.__proto__</code> 来访问。</li>
-  <li>实际上，构造函数的prototype属性与它创建的实例对象的<code class="highlighter-rouge">[[prototype]]</code>属性指向的是同一个对象，即 对象<code class="highlighter-rouge">.__proto__ === 函数.prototype</code>。</li>
-  <li>原型对象就是用来存放实例中共有的那部分属性或方法的对象。</li>
-  <li>在JavaScript中，所有的对象都是由它的原型对象继承而来，反之，所有的对象都可以作为原型对象存在。</li>
-  <li>访问对象的属性时，JavaScript会首先在对象自身的属性内查找，若没有找到，则会跳转到该对象的原型对象中查找，直到找到Object对象上去。</li>
-  <li>Object对象的原型对象指向的是NULL，即<code class="highlighter-rouge">Object.__proto__ == NULL</code>。</li>
+  <li>同步和异步任务分别进入不同的执行”场所”，同步的进入主线程，异步的进入Event Table并注册函数</li>
+  <li>当指定的事情完成时，Event Table会将这个函数移入Event Queue。</li>
+  <li>主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行。</li>
+  <li>上述过程会不断重复，也就是常说的Event Loop(事件循环)。</li>
 </ul>
 
-<p>如图：
-<img src="/img/20191021/1.png" alt="prototype chain" title="prototype chain" /></p>
+<h2 id="宏任务与微任务">宏任务与微任务</h2>
 
-<h2 id="继承">继承</h2>
+<p>在Js中，有两类任务队列：宏任务队列（macro tasks）和微任务队列（micro tasks）。宏任务队列可以有多个，微任务队列只有一个。</p>
 
-<h4 id="0构造函数实现继承">0.构造函数实现继承</h4>
+<blockquote>
+  <p>宏任务：script（全局任务）, setTimeout, setInterval, setImmediate, I/O, UI rendering.</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent1</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="nx">Parent1</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
-<span class="kd">function</span> <span class="nx">Child1</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Parent1</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span><span class="c1">//apply,将父构造函数this指向子构造函数的实例上，导致父构造函数的所有属性在子构造函数中也有</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nx">age</span><span class="p">;</span>
-<span class="p">}</span>
+  <p>微任务：process.nextTick, Promise, Object.observer, MutationObserver.</p>
+</blockquote>
+
+<p><img src="/img/20191025/3.png" alt="" /></p>
+
+<h4 id="浏览器event-loop">浏览器Event Loop</h4>
+
+<blockquote>
+  <ol>
+    <li>取一个宏任务来执行。执行完毕后，下一步。</li>
+    <li>取一个微任务来执行，执行完毕后，再取一个微任务来执行。直到微任务队列为空，执行下一步。</li>
+    <li>更新UI渲染</li>
+  </ol>
+</blockquote>
+
+<p>每执行下一次宏任务之前重新渲染。</p>
+
+<h4 id="nodejs-event-loop">NodeJs Event Loop</h4>
+
+<blockquote>
+  <ol>
+    <li>初始化 Event Loop</li>
+    <li>执行您的主代码。这里同样，遇到异步处理，就会分配给对应的队列。直到主代码执行完毕。</li>
+    <li>执行主代码中出现的所有微任务：先执行完所有nextTick()，然后在执行其它所有微任务。</li>
+    <li>开始 Event Loop</li>
+  </ol>
+</blockquote>
+
+<p>NodeJs 的 Event Loop 分为六个阶段：timers、pending callbacks、idle\prepare、poll、check、close callbacks。</p>
+
+<blockquote>
+  <p>┌───────────────────────────┐</p>
+
+  <p>┌─│———–timers———-│</p>
+
+  <p>│  └─────────────┬─────────────┘</p>
+
+  <p>│  ┌─────────────┴─────────────┐</p>
+
+  <p>│  │—- pending callbacks—–│</p>
+
+  <p>│  └─────────────┬─────────────┘</p>
+
+  <p>│  ┌─────────────┴─────────────┐</p>
+
+  <p>│  │——-idle, prepare——-│</p>
+
+  <p>│  └─────────────┬─────────────┘      ┌───────────────┐</p>
+
+  <p>│  ┌─────────────┴─────────────┐      │   incoming:   │</p>
+
+  <p>│  │———–poll————│&lt;─────┤  connections, │</p>
+
+  <p>│  └─────────────┬─────────────┘      │   data, etc.  │</p>
+
+  <p>│  ┌─────────────┴─────────────┐      └───────────────┘</p>
+
+  <p>│  │———–check———–│</p>
+
+  <p>│  └─────────────┬─────────────┘</p>
+
+  <p>│  ┌─────────────┴─────────────┐</p>
+
+  <p>└──┤——close callbacks——│</p>
+
+  <p>└───────────────────────────┘</p>
+</blockquote>
+
+<ul>
+  <li>timers: 这个阶段执行setTimeout()和setInterval()设定的回调。</li>
+  <li>pending callbacks: 上一轮循环中有少数的 I/O callback 会被延迟到这一轮的这一阶段执行。</li>
+  <li>idle, prepare: 仅内部使用。</li>
+  <li>poll: 执行 I/O callback，在适当的条件下会阻塞在这个阶段</li>
+  <li>check: 执行setImmediate()设定的回调。</li>
+  <li>close callbacks: 执行比如socket.on(‘close’, …)的回调。</li>
+</ul>
+
+<h2 id="示例分析">示例分析</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">2</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">3</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">})</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">4</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">5</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">})</span>
+<span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">6</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">})</span>
+<span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">7</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">resolve</span><span class="p">();</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">8</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">9</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">10</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">})</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">11</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">12</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">})</span>
+
 </code></pre></div></div>
 
-<p>这种继承方式不能继承父类原型链上的属性方法，因此这种继承方式是不完整的，即<code class="highlighter-rouge">Child1</code>中没有<code class="highlighter-rouge">say</code>方法。</p>
+<p>在上面的代码中，node环境下的输出顺序为<code class="highlighter-rouge">7\6\8\2\4\9\11\3\10\5\12</code>,在浏览器中的输出顺序为<code class="highlighter-rouge">7\8\2\4\5\9\11\12</code>,在浏览器中去除了<code class="highlighter-rouge">Process.nextTick()</code>这个方法。</p>
 
-<h4 id="1原型链实现继承">1.原型链实现继承</h4>
+<h2 id="总结">总结</h2>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child2</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//重点</span>
-
-<span class="k">new</span> <span class="nx">Child2</span><span class="p">().</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//true</span>
-</code></pre></div></div>
-
-<p>缺点:当一个实例对象去修改来自原型对象上的属性时，另一个实例对象这个属性也会跟着改变，因为它们都是引用的同一个原型对象的属性。</p>
-
-<h4 id="2组合方式常用">2.组合方式(常用)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent3</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child3</span><span class="p">(){</span>
-  <span class="nx">Parent3</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child3</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent3</span><span class="p">();</span>
-</code></pre></div></div>
-
-<p>缺点：父级构造函数执行了两次。</p>
-
-<h4 id="3组合继承的优化1">3.组合继承的优化1</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent4</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child4</span><span class="p">(){</span>
-  <span class="nx">Parent4</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child4</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">Parent4</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p>问题所在：<code class="highlighter-rouge">Child4实例对象.__proto__.constructor === Parent4</code> 而不是Child4，所以不能正确找到构造函数。</p>
-
-<h4 id="4组合继承的优化2完美写法">4.组合继承的优化2(完美写法)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent5</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child5</span><span class="p">(){</span>
-  <span class="nx">Parent5</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Parent5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span><span class="c1">//隔离</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child5</span>
-</code></pre></div></div>
+<p><img src="/img/20191025/1.png" alt="" /></p>
 
 <h2 id="参考文献">参考文献</h2>
 
-<p><a href="https://juejin.im/post/5a94c0de5188257a8929d837"><em>0. 三分钟看完JavaScript原型与原型链</em></a></p>
+<p><a href="https://segmentfault.com/a/1190000011198232"><em>0. JavaScript 异步、栈、事件循环、任务队列</em></a>
+<a href="https://juejin.im/post/5b498d245188251b193d4059"><em>1. JS事件循环机制（event loop）之宏任务/微任务</em></a></p>
+
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
-                        Next<br>
-                        <span>BoyerMoore算法的JavaScript实现</span>
+                    <li class="previous">
+                        <a href="/2019/10/15/emoji-spider/" data-toggle="tooltip" data-placement="top" title="一段表情包爬虫demo">
+                        Previous<br>
+                        <span>一段表情包爬虫demo</span>
                         </a>
                     </li>
+                    
                     
                 </ul>
 
