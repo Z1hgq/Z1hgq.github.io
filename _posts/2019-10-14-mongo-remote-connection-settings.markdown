@@ -8,7 +8,7 @@ header-img: "img/contact-bg.jpg"
 catalog: true
 tags:
     - mongodb
-    - linux
+    - Linux
 ---
 
 > “自然界没有凤凤雨雨，大地就不会有春华秋实”

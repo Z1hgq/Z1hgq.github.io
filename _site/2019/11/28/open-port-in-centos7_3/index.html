@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>mongo远程连接设置 - Z1hgq | Z1hgq Blog</title>
+    <title>centos 7.3 开放端口并对外开放 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/10/15/mongo-remote-connection-settings/">
+    <link rel="canonical" href="http://localhost:4000/2019/11/28/open-port-in-centos7_3/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/contact-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/img/home-bg-o.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/contact-bg.jpg')
+        background-image: url('/img/home-bg-o.jpg')
     }
 
     
@@ -170,17 +170,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#mongodb" title="mongodb">mongodb</a>
-                        
                         <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
                         
                     </div>
-                    <h1>mongo远程连接设置</h1>
+                    <h1>centos 7.3 开放端口并对外开放</h1>
                     
                     
-                    <h2 class="subheading">mongo远程连接设置</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by Z1hgq on October 15, 2019</span>
+                    <span class="meta">Posted by Z1hgq on November 28, 2019</span>
                 </div>
             </div>
         </div>
@@ -202,89 +200,32 @@
                 
 
 				<blockquote>
-  <p>“自然界没有凤凤雨雨，大地就不会有春华秋实”</p>
+  <p>“用吾人数十年必死之生命，立国家一万年不死之根基，其价值之重可知。 –孙中山”</p>
 </blockquote>
 
 <hr />
-<h2 id="服务器设置">服务器设置</h2>
-<h4 id="0-创建配置文件etcmongodconf">0. 创建配置文件<code class="highlighter-rouge">/etc/mongod.conf</code></h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bind_ip = 0.0.0.0        #允许访问本机mongo服务的ip
-port = 27017             #mongo服务监听的端口
-auth=false               #是否开启用户验证，false：不必使用用户名和密码就可以连接
-dbpath=/data/db          #mongo的本地数据文件地址
-logpath=/log/mongodb.log #mongo日志记录文件地址
-logappend=true
-fork=true                #后台启动配置
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 查看已打开的端口  # netstat -anp
+2. 查看想开的端口是否已开 # firewall-cmd --query-port=666/tcp
+   若此提示 FirewallD is not running 
+   表示为不可知的防火墙 需要查看状态并开启防火墙
+
+3. 查看防火墙状态  # systemctl status firewalld 
+   running 状态即防火墙已经开启
+   dead 状态即防火墙未开启
+4. 开启防火墙，# systemctl start firewalld  没有任何提示即开启成功
+5. 开启防火墙 # service firewalld start  
+   关闭防火墙 # systemctl stop firewalld
+   centos7.3 上述方式可能无法开启，可以先#systemctl unmask firewalld.service 然后 # systemctl start firewalld.service
+
+6. 查看想开的端口是否已开 # firewall-cmd --query-port=666/tcp    提示no表示未开
+7. 开永久端口号 firewall-cmd --add-port=666/tcp --permanent   提示    success 表示成功
+8. 重新载入配置  # firewall-cmd --reload    比如添加规则之后，需要执行此命令
+9. 再次查看想开的端口是否已开  # firewall-cmd --query-port=666/tcp  提示yes表示成功
+10. 若移除端口 # firewall-cmd --permanent --remove-port=666/tcp
+
+11. 修改iptables  有些版本需要安装iptables-services # yum install iptables-services 然后修改进目录 /etc/sysconfig/iptables   修改内容
 </code></pre></div></div>
-<h4 id="1-重启mongo服务">1. 重启mongo服务</h4>
-<p><code class="highlighter-rouge">ps -ef|grep mongo</code>查看mongod服务的<strong>pid</strong>，如：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root     19978     1  0 15:31 ?        00:00:09 mongod -f /etc/mongod.conf
-root     20076 18938  0 16:05 pts/2    00:00:00 vi /etc/mongod.conf
-root     20120 18938  0 16:21 pts/2    00:00:00 grep --color=auto mongo
-</code></pre></div></div>
-
-<p>这里使用<code class="highlighter-rouge">kill</code>命令把进程结束掉，pid是第二列。</p>
-
-<p>使用配置文件启动mongo服务<code class="highlighter-rouge">mongod -f /etc/mongod.conf </code>，这样mongo就在后台运行了。</p>
-
-<h4 id="2添加用户">2.添加用户</h4>
-
-<p>使用<code class="highlighter-rouge">mongo</code>命令进入mongo的控制命令行</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//添加管理员用户（role:root表示最高权限）
-use admin
-
-db.createUser({
-    user:"admin",
-    pwd:"admin",
-    roles:[{
-        role:"root",
-        db:"admin"
-    }]
-})
-
-db.auth("admin", "admin")
-</code></pre></div></div>
-
-<h4 id="3设置防火墙允许访问端口">3.设置防火墙允许访问端口</h4>
-
-<p>添加端口访问权限<code class="highlighter-rouge">iptables -A INPUT -p tcp --dport 27017 -j ACCEPT</code></p>
-
-<p>CentOS重启防火墙<code class="highlighter-rouge">firewall-cmd --reload</code></p>
-
-<p>如果是云服务器，在服务器的安全组配置中，将端口添加进规则即可，如下图：</p>
-
-<p><img src="/img/20191014/1.png" alt="1" title="1" />
-<img src="/img/20191014/2.png" alt="2" title="2" />
-<img src="/img/20191014/3.png" alt="3" title="3" />
-<img src="/img/20191014/4.png" alt="4" title="4" />
-<img src="/img/20191014/5.png" alt="5" title="5" /></p>
-
-<hr />
-
-<h2 id="外部连接设置">外部连接设置</h2>
-
-<p>连接地址为<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port</code>，如果授权验证<code class="highlighter-rouge">auth</code>设置的false，则地址为<code class="highlighter-rouge">mongodb://host:port</code>。配置mongodb地址时，如果不设置连接方式默认是<code class="highlighter-rouge">MONGODB-CR</code>，如果安装的时候设置的是<code class="highlighter-rouge">SCRAM-SHA-1</code>，连接地址为：<code class="highlighter-rouge">mongodb://&lt;username&gt;:&lt;password&gt;@host:port/&lt;dbname&gt;?authSource=admin&amp;authMechanism=SCRAM-SHA-1</code></p>
-
-<p>推荐一个mongo可视化工具：<a href="https://github.com/mrvautin/adminMongo">adminMongo</a></p>
-
-<hr />
-<h2 id="参考文献">参考文献</h2>
-
-<p><a href="https://blog.csdn.net/roler_/article/details/38820247"><em>0. Mongodb后台daemon方式启动</em></a></p>
-
-<p><a href="https://blog.csdn.net/zZ_life/article/details/78664794"><em>1. MongoDB 3.4.2 添加用户、设置权限</em></a></p>
-
-<p><a href="https://blog.csdn.net/AggressionStorm/article/details/79956231"><em>2. mongoDB的远程连接配置</em></a></p>
-
-<p><a href="https://blog.csdn.net/u011846257/article/details/54707864"><em>3. Centos防火墙设置与端口开放的方法</em></a></p>
-
-<p><a href="https://github.com/mrvautin/adminMongo"><em>4. adminMongo</em></a></p>
-
-<p><a href="https://blog.csdn.net/qq_29143909/article/details/81909991"><em>5. mongodb连接认证失败</em></a></p>
-
-<hr />
 
 
 
@@ -293,19 +234,12 @@ db.auth("admin", "admin")
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
+                        <a href="/2019/10/23/js-mac-mic-task/" data-toggle="tooltip" data-placement="top" title="JS 事件循环--宏任务与微任务">
                         Previous<br>
-                        <span>BoyerMoore算法的JavaScript实现</span>
+                        <span>JS 事件循环--宏任务与微任务</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/10/15/emoji-spider/" data-toggle="tooltip" data-placement="top" title="一段表情包爬虫demo">
-                        Next<br>
-                        <span>一段表情包爬虫demo</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -316,20 +250,6 @@ db.auth("admin", "admin")
             </div>  
 
     <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
         
 
     <!-- Sidebar Container -->
@@ -577,64 +497,6 @@ db.auth("admin", "admin")
 
 
 <!-- Side Catalog -->
-
-<script type="text/javascript">
-    function generateCatalog (selector) {
-
-        // interop with multilangual 
-        if ('' == 'true') {
-            _containerSelector = 'div.post-container.active'
-        } else {
-            _containerSelector = 'div.post-container'
-        }
-
-        // init
-        var P = $(_containerSelector),a,n,t,l,i,c;
-        a = P.find('h1,h2,h3,h4,h5,h6');
-
-        // clean
-        $(selector).html('')
-
-        // appending
-        a.each(function () {
-            n = $(this).prop('tagName').toLowerCase();
-            i = "#"+$(this).prop('id');
-            t = $(this).text();
-            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
-            l = $('<li class="'+n+'_nav"></li>').append(c);
-            $(selector).append(l);
-        });
-        return true;
-    }
-
-    generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function(e){
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
-    /*
-     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
-     * Fork by Hux to support padding
-     */
-    async("/js/jquery.nav.js", function () {
-        $('.catalog-body').onePageNav({
-            currentClass: "active",
-            changeHash: !1,
-            easing: "swing",
-            filter: "",
-            scrollSpeed: 700,
-            scrollOffset: 0,
-            scrollThreshold: .2,
-            begin: null,
-            end: null,
-            scrollChange: null,
-            padding: 80
-        });
-    });
-</script>
 
 
 
