@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关于前端与设计、摄影 | Z1hgq, Web & Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
+    <meta name="theme-color" content="#000000">
+    
+    <title>js利用文件头判断文件类型 - Z1hgq | Z1hgq Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2019/12/11/js-verify-file-authenticity/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <!-- <link rel="stylesheet" href="/css/syntax.css"> -->
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    
+    <!-- diy code hightlighter -->
+    <link rel="stylesheet" href="/css/pygments.css">
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+    
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Z1hgq</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">ABOUT</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-alitrip.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-alitrip.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        
+                    </div>
+                    <h1>js利用文件头判断文件类型</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by Z1hgq on December 11, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>“推荐一本小说–《间客》”</p>
+</blockquote>
+
+<hr />
+<h2 id="校验函数">校验函数</h2>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// 校验上传文件真实类型</span>
+    <span class="c1">// file 是blob对象</span>
+    <span class="c1">// typeArray是校验的文件类型的文件头数组</span>
+    <span class="nx">getFileMimeType</span><span class="p">:</span> <span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">typeArray</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileReader</span><span class="p">();</span>
+        <span class="nx">reader</span><span class="p">.</span><span class="nx">readAsArrayBuffer</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">reader</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="kd">let</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">Buffer</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">result</span><span class="p">)];</span>
+                    <span class="c1">// 仅要文件的前四位就够了</span>
+                    <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+                    <span class="nx">buffer</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">num</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">arr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                        <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">num</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="dl">'</span><span class="s1">0</span><span class="dl">'</span><span class="p">);</span>
+                    <span class="p">});</span>
+                    <span class="nx">resolve</span><span class="p">(</span><span class="nx">typeArray</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">()));</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// 读取文件头出错 默认不是合法文件类型</span>
+                    <span class="nx">reject</span><span class="p">();</span>
+                <span class="p">}</span>
+            <span class="p">};</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+<hr />
+<h2 id="常见文件格式文件头部分文件头或许有偏差">常见文件格式文件头(部分文件头或许有偏差)</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="cm">/** JPEG  (jpg)*/</span>
+    <span class="no">JPEG</span><span class="o">(</span><span class="s">"JPG"</span><span class="o">,</span> <span class="s">"FFD8FF"</span><span class="o">),</span>
+ 
+    <span class="cm">/** PNG */</span>
+    <span class="no">PNG</span><span class="o">(</span><span class="s">"PNG"</span><span class="o">,</span> <span class="s">"89504E47"</span><span class="o">),</span>
+ 
+    <span class="cm">/** GIF */</span>
+    <span class="no">GIF</span><span class="o">(</span><span class="s">"GIF"</span><span class="o">,</span> <span class="s">"47494638"</span><span class="o">),</span>
+  
+    <span class="cm">/** TIFF (tif)  */</span>
+    <span class="no">TIFF</span><span class="o">(</span><span class="s">"TIF"</span><span class="o">,</span> <span class="s">"49492A00"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Windows bitmap (bmp) */</span>
+    <span class="no">BMP</span><span class="o">(</span><span class="s">"BMP"</span><span class="o">,</span><span class="s">"424D"</span><span class="o">),</span>
+    
+    <span class="no">BMP_16</span><span class="o">(</span><span class="s">"BMP"</span><span class="o">,</span><span class="s">"424D228C010000000000"</span><span class="o">),</span> <span class="c1">//16色位图(bmp) </span>
+    
+    <span class="no">BMP_24</span><span class="o">(</span><span class="s">"BMP"</span><span class="o">,</span><span class="s">"424D8240090000000000"</span><span class="o">),</span> <span class="c1">//24位位图(bmp)  </span>
+    
+    <span class="no">BMP_256</span><span class="o">(</span><span class="s">"BMP"</span><span class="o">,</span><span class="s">"424D8E1B030000000000"</span><span class="o">),</span> <span class="c1">//256色位图(bmp)     </span>
+ 
+    <span class="cm">/** CAD  (dwg) */</span>
+    <span class="no">DWG</span><span class="o">(</span><span class="s">"DWG"</span><span class="o">,</span> <span class="s">"41433130"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Adobe photoshop  (psd)*/</span>
+    <span class="no">PSD</span><span class="o">(</span><span class="s">"PSD"</span><span class="o">,</span> <span class="s">"38425053"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Rich Text Format  (rtf)*/</span>
+    <span class="no">RTF</span><span class="o">(</span><span class="s">"RTF"</span><span class="o">,</span> <span class="s">"7B5C727466"</span><span class="o">),</span>
+ 
+    <span class="cm">/** XML */</span>
+    <span class="no">XML</span><span class="o">(</span><span class="s">"XML"</span><span class="o">,</span> <span class="s">"3C3F786D6C"</span><span class="o">),</span>
+ 
+    <span class="cm">/** HTML (html)*/</span>
+    <span class="no">HTML</span><span class="o">(</span><span class="s">"HTML"</span><span class="o">,</span> <span class="s">"68746D6C3E"</span><span class="o">),</span>
+    
+    <span class="cm">/** Email [thorough only] (eml)*/</span>
+    <span class="no">EML</span><span class="o">(</span><span class="s">"EML"</span><span class="o">,</span> <span class="s">"44656C69766572792D646174653A"</span><span class="o">),</span>  
+    
+    <span class="cm">/** Outlook Express (dbx) */</span>
+    <span class="no">DBX</span><span class="o">(</span><span class="s">"DBX"</span><span class="o">,</span> <span class="s">"CFAD12FEC5FD746F "</span><span class="o">),</span>
+ 
+    <span class="cm">/** Outlook (pst)*/</span>
+    <span class="no">PST</span><span class="o">(</span><span class="s">""</span><span class="o">,</span> <span class="s">"2142444E"</span><span class="o">),</span>
+ 
+    <span class="cm">/** doc;xls;dot;ppt;xla;ppa;pps;pot;msi;sdw;db */</span>
+    <span class="no">OLE2</span><span class="o">(</span><span class="s">"OLE2"</span><span class="o">,</span> <span class="s">"0xD0CF11E0A1B11AE1"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Microsoft Word/Excel 注意：word 和 excel的文件头一样 */</span>
+    <span class="no">XLS</span><span class="o">(</span><span class="s">"XLS"</span><span class="o">,</span> <span class="s">"D0CF11E0"</span><span class="o">),</span>
+    
+    <span class="cm">/** Microsoft Word/Excel 注意：word 和 excel的文件头一样 */</span>
+    <span class="no">DOC</span><span class="o">(</span><span class="s">"DOC"</span><span class="o">,</span> <span class="s">"D0CF11E0"</span><span class="o">),</span>
+    
+    <span class="cm">/** Microsoft Word/Excel 2007以上版本文件 注意：word 和 excel的文件头一样 */</span>
+    <span class="no">DOCX</span><span class="o">(</span><span class="s">"DOCX"</span><span class="o">,</span> <span class="s">"504B0304"</span><span class="o">),</span>  
+ 
+    <span class="cm">/** Microsoft Word/Excel 2007以上版本文件 注意：word 和 excel的文件头一样 504B030414000600080000002100*/</span>
+    <span class="no">XLSX</span><span class="o">(</span><span class="s">"XLSX"</span><span class="o">,</span> <span class="s">"504B0304"</span><span class="o">),</span> 
+ 
+    <span class="cm">/** Microsoft Access (mdb)*/</span>
+    <span class="no">MDB</span><span class="o">(</span><span class="s">"MDB"</span><span class="o">,</span> <span class="s">"5374616E64617264204A"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Word Perfect (wpd)*/</span>
+    <span class="no">WPB</span><span class="o">(</span><span class="s">"WPB"</span><span class="o">,</span> <span class="s">"FF575043"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Postscript */</span>
+    <span class="no">EPS</span><span class="o">(</span><span class="s">"EPS"</span><span class="o">,</span> <span class="s">"252150532D41646F6265"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Postscript */</span>
+    <span class="no">PS</span><span class="o">(</span><span class="s">"PS"</span><span class="o">,</span> <span class="s">"252150532D41646F6265"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Adobe Acrobat (pdf)  */</span>
+    <span class="no">PDF</span><span class="o">(</span><span class="s">"PDF"</span><span class="o">,</span> <span class="s">"255044462D312E"</span><span class="o">),</span>
+    
+    <span class="cm">/** Quicken (qdf) */</span>
+    <span class="no">QDF</span><span class="o">(</span><span class="s">"qdf"</span><span class="o">,</span> <span class="s">"AC9EBD8F"</span><span class="o">),</span>
+    
+    <span class="cm">/** QuickBooks Backup (qdb) */</span>
+    <span class="no">QDB</span><span class="o">(</span><span class="s">"qbb"</span><span class="o">,</span> <span class="s">"458600000600"</span><span class="o">),</span>
+    
+    <span class="cm">/** Windows Password  (pwl)*/</span>
+    <span class="no">PWL</span><span class="o">(</span><span class="s">"PWL"</span><span class="o">,</span> <span class="s">"E3828596"</span><span class="o">),</span>
+ 
+    <span class="cm">/** ZIP Archive */</span>
+    <span class="no">ZIP</span><span class="o">(</span><span class="s">""</span><span class="o">,</span> <span class="s">"504B0304"</span><span class="o">),</span>
+ 
+    <span class="cm">/** ARAR Archive */</span>
+    <span class="no">RAR</span><span class="o">(</span><span class="s">""</span><span class="o">,</span> <span class="s">"52617221"</span><span class="o">),</span>
+ 
+    <span class="cm">/** WAVE (wav) */</span>
+    <span class="no">WAV</span><span class="o">(</span><span class="s">"WAV"</span><span class="o">,</span> <span class="s">"57415645"</span><span class="o">),</span>
+ 
+    <span class="cm">/** AVI */</span>
+    <span class="no">AVI</span><span class="o">(</span><span class="s">"AVI"</span><span class="o">,</span> <span class="s">"41564920"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Real Audio (ram)*/</span>
+    <span class="no">RAM</span><span class="o">(</span><span class="s">"RAM"</span><span class="o">,</span> <span class="s">"2E7261FD"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Real Media (rm) rmvb/rm相同  */</span>
+    <span class="no">RM</span><span class="o">(</span><span class="s">"RM"</span><span class="o">,</span> <span class="s">"2E524D46"</span><span class="o">),</span>
+    
+    <span class="cm">/** Real Media (rm) rmvb/rm相同  */</span>
+    <span class="no">RMVB</span><span class="o">(</span><span class="s">"RMVB"</span><span class="o">,</span> <span class="s">"2E524D46000000120001"</span><span class="o">),</span>  
+    
+    <span class="cm">/** MPEG (mpg)  */</span>
+    <span class="no">MPG</span><span class="o">(</span><span class="s">"MPG"</span><span class="o">,</span> <span class="s">"000001BA"</span><span class="o">),</span>
+    
+    <span class="cm">/** Quicktime  (mov)*/</span>
+    <span class="no">MOV</span><span class="o">(</span><span class="s">"MOV"</span><span class="o">,</span> <span class="s">"6D6F6F76"</span><span class="o">),</span>
+ 
+    <span class="cm">/** Windows Media (asf) */</span>
+    <span class="no">ASF</span><span class="o">(</span><span class="s">"ASF"</span><span class="o">,</span> <span class="s">"3026B2758E66CF11"</span><span class="o">),</span>
+ 
+    <span class="cm">/** ARJ Archive */</span>
+    <span class="no">ARJ</span><span class="o">(</span><span class="s">"ARJ"</span><span class="o">,</span> <span class="s">"60EA"</span><span class="o">),</span>
+ 
+    <span class="cm">/** MIDI (mid) */</span>
+    <span class="no">MID</span><span class="o">(</span><span class="s">"MID"</span><span class="o">,</span> <span class="s">"4D546864"</span><span class="o">),</span>
+    
+    <span class="cm">/** MP4 */</span>  
+    <span class="no">MP4</span><span class="o">(</span><span class="s">"MP4"</span><span class="o">,</span> <span class="s">"00000020667479706D70"</span><span class="o">),</span> 
+    
+    <span class="cm">/** MP3 */</span>  
+    <span class="no">MP3</span><span class="o">(</span><span class="s">"MP3"</span><span class="o">,</span> <span class="s">"49443303000000002176"</span><span class="o">),</span>  
+    
+    <span class="cm">/** FLV */</span>  
+    <span class="no">FLV</span><span class="o">(</span><span class="s">"FLV"</span><span class="o">,</span> <span class="s">"464C5601050000000900"</span><span class="o">),</span> 
+    
+    <span class="cm">/** 1F8B0800000000000000 */</span>
+    <span class="no">GZ</span><span class="o">(</span><span class="s">"GZ"</span><span class="o">,</span> <span class="s">"1F8B08"</span><span class="o">),</span>
+    
+    <span class="cm">/** CSS */</span> 
+    <span class="no">CSS</span><span class="o">(</span><span class="s">"CSS"</span><span class="o">,</span> <span class="s">"48544D4C207B0D0A0942"</span><span class="o">),</span>
+    
+    <span class="cm">/**  JS */</span>  
+    <span class="no">JS</span><span class="o">(</span><span class="s">"JS"</span><span class="o">,</span> <span class="s">"696B2E71623D696B2E71"</span><span class="o">),</span> 
+     
+    <span class="cm">/**  Visio */</span>  
+    <span class="no">VSD</span><span class="o">(</span><span class="s">"VSD"</span><span class="o">,</span> <span class="s">"d0cf11e0a1b11ae10000"</span><span class="o">),</span>
+    
+    <span class="cm">/** WPS文字wps、表格et、演示dps都是一样的 */</span>  
+    <span class="no">WPS</span><span class="o">(</span><span class="s">"WPS"</span><span class="o">,</span> <span class="s">"d0cf11e0a1b11ae10000"</span><span class="o">),</span>
+    
+    <span class="cm">/** torrent */</span>  
+    <span class="no">TORRENT</span><span class="o">(</span><span class="s">"TORRENT"</span><span class="o">,</span> <span class="s">"6431303A637265617465"</span><span class="o">),</span> 
+    
+    <span class="cm">/** JSP Archive */</span>  
+    <span class="no">JSP</span><span class="o">(</span><span class="s">"JSP"</span><span class="o">,</span> <span class="s">"3C2540207061676520"</span><span class="o">),</span>  
+    
+    <span class="cm">/** JAVA Archive */</span>  
+    <span class="no">JAVA</span><span class="o">(</span><span class="s">"JAVA"</span><span class="o">,</span> <span class="s">"7061636B61676520"</span><span class="o">),</span> 
+    
+    <span class="cm">/** CLASS Archive */</span>  
+    <span class="no">CLASS</span><span class="o">(</span><span class="s">"CLASS"</span><span class="o">,</span> <span class="s">"CAFEBABE0000002E00"</span><span class="o">),</span> 
+    
+    <span class="cm">/** JAR Archive */</span>  
+    <span class="no">JAR</span><span class="o">(</span><span class="s">"JAR"</span><span class="o">,</span> <span class="s">"504B03040A000000"</span><span class="o">),</span> 
+    
+    <span class="cm">/** MF Archive */</span>  
+    <span class="no">MF</span><span class="o">(</span><span class="s">"MF"</span><span class="o">,</span> <span class="s">"4D616E69666573742D56"</span><span class="o">),</span>
+ 
+    <span class="cm">/** EXE Archive */</span>  
+    <span class="no">EXE</span><span class="o">(</span><span class="s">"EXE"</span><span class="o">,</span> <span class="s">"4D5A9000030000000400"</span><span class="o">),</span> 
+ 
+    <span class="cm">/** ELF Executable */</span>  
+    <span class="no">ELF</span><span class="o">(</span><span class="s">"ELF"</span><span class="o">,</span> <span class="s">"7F454C4601010100"</span><span class="o">),</span> 
+ 
+    <span class="cm">/** Lotus 123 v1 */</span>  
+    <span class="no">WK1</span><span class="o">(</span><span class="s">"WK1"</span><span class="o">,</span> <span class="s">"2000604060"</span><span class="o">),</span>
+    
+    <span class="cm">/** Lotus 123 v3 */</span>  
+    <span class="no">WK3</span><span class="o">(</span><span class="s">"WK3"</span><span class="o">,</span> <span class="s">"00001A0000100400"</span><span class="o">),</span>
+    
+    <span class="cm">/** Lotus 123 v5 */</span>  
+    <span class="no">WK4</span><span class="o">(</span><span class="s">"WK4"</span><span class="o">,</span> <span class="s">"00001A0002100400"</span><span class="o">),</span> 
+ 
+    <span class="cm">/** Lotus WordPro v9 */</span>  
+    <span class="no">LWP</span><span class="o">(</span><span class="s">"LWP"</span><span class="o">,</span> <span class="s">"576F726450726F"</span><span class="o">),</span> 
+    
+    <span class="cm">/** Sage(sly.or.srt.or.slt;sly;srt;slt) */</span>  
+    <span class="no">SLY</span><span class="o">(</span><span class="s">"SLY"</span><span class="o">,</span> <span class="s">"53520100"</span><span class="o">),</span> 
+</code></pre></div></div>
+
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/11/28/open-port-in-centos7_3/" data-toggle="tooltip" data-placement="top" title="centos 7.3 开放端口并对外开放">
+                        Previous<br>
+                        <span>centos 7.3 开放端口并对外开放</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#JavaScript" title="JavaScript" rel="4">
+                                    JavaScript
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#Linux" title="Linux" rel="2">
+                                    Linux
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://minghuanliu.com/">Ericonaldo(Minghuan Liu)</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/喝酒的猫">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a target="_blank" href="http://weibo.com/努力努力白努力z">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Z1hgq 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+
+    <!-- <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet"> -->
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
