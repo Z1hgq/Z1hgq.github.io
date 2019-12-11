@@ -176,7 +176,7 @@
                     <h1>js利用文件头判断文件类型</h1>
                     
                     
-                    <h2 class="subheading"></h2>
+                    <h2 class="subheading">校验文件真实类型</h2>
                     
                     <span class="meta">Posted by Z1hgq on December 11, 2019</span>
                 </div>
@@ -220,7 +220,12 @@
                     <span class="nx">buffer</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">num</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">arr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
                         <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">num</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="dl">'</span><span class="s1">0</span><span class="dl">'</span><span class="p">);</span>
                     <span class="p">});</span>
-                    <span class="nx">resolve</span><span class="p">(</span><span class="nx">typeArray</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">()));</span>
+                    <span class="kd">let</span> <span class="nx">lowerCaseTypeArray</span> <span class="o">=</span> <span class="p">[];</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">item</span> <span class="k">of</span> <span class="nx">typeArray</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">item</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+                        <span class="nx">lowerCaseTypeArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="nx">resolve</span><span class="p">(</span><span class="nx">lowerCaseTypeArray</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">)));</span>
                 <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
                     <span class="c1">// 读取文件头出错 默认不是合法文件类型</span>
                     <span class="nx">reject</span><span class="p">();</span>
@@ -228,6 +233,29 @@
             <span class="p">};</span>
         <span class="p">});</span>
     <span class="p">}</span>
+</code></pre></div></div>
+<hr />
+<h2 id="antd-beforeupload阻止上传">antd beforeUpload阻止上传</h2>
+
+<p>使用upload上传图片，如果beforeUpload直接返回false，仍然会执行onChange，图片会继续上传。
+这里是采用在beforeUpload函数中返回一个promise来解决的，这样如果返回false就不会再继续上传了。
+官网说明:返回一个 Promise 对象，Promise 对象 reject 时则停止上传，resolve 时开始上传</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">beforeUpload</span> <span class="o">=</span> <span class="nx">file</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">isXlsx</span> <span class="o">=</span> <span class="sr">/.xlsx|.xls$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">isExcel</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">commonFun</span><span class="p">.</span><span class="nx">getFileMimeType</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="p">[</span><span class="dl">"</span><span class="s2">504b0304</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">d0cf11e0</span><span class="dl">"</span><span class="p">]);</span>
+        <span class="kd">const</span> <span class="nx">overSize</span> <span class="o">=</span> <span class="nx">file</span><span class="p">.</span><span class="nx">size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">;</span>  
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isXlsx</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">isExcel</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">message</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">i18next</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="dl">'</span><span class="s1">请上传.xlsx或.xls文件</span><span class="dl">'</span><span class="p">));</span>
+            <span class="k">return</span> <span class="nx">reject</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">overSize</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">message</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">i18next</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="dl">'</span><span class="s1">文件大小不能超过10M</span><span class="dl">'</span><span class="p">));</span>
+            <span class="k">return</span> <span class="nx">reject</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">resolve</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">};</span>
 </code></pre></div></div>
 <hr />
 <h2 id="常见文件格式文件头部分文件头或许有偏差">常见文件格式文件头(部分文件头或许有偏差)</h2>

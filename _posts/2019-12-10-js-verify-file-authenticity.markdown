@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "js利用文件头判断文件类型"
-subtitle:   ""
+subtitle:   "校验文件真实类型"
 date:       2019-12-10 18:40:25
 author:     "Z1hgq"
 header-img: "img/post-bg-alitrip.jpg"
@@ -30,7 +30,12 @@ tags:
                     buffer.forEach((num, i, arr) => {
                         arr[i] = num.toString(16).padStart(2, '0');
                     });
-                    resolve(typeArray.includes(buffer.join('').toLowerCase()));
+                    let lowerCaseTypeArray = [];
+                    for (let item of typeArray) {
+                        item = item.toLowerCase();
+                        lowerCaseTypeArray.push(item);
+                    }
+                    resolve(lowerCaseTypeArray.includes(buffer.join('')));
                 } catch (e) {
                     // 读取文件头出错 默认不是合法文件类型
                     reject();
@@ -38,6 +43,30 @@ tags:
             };
         });
     }
+```
+---
+## antd beforeUpload阻止上传
+
+使用upload上传图片，如果beforeUpload直接返回false，仍然会执行onChange，图片会继续上传。
+这里是采用在beforeUpload函数中返回一个promise来解决的，这样如果返回false就不会再继续上传了。
+官网说明:返回一个 Promise 对象，Promise 对象 reject 时则停止上传，resolve 时开始上传
+```js
+beforeUpload = file => {
+    return new Promise(async (resolve, reject) => {
+        let isXlsx = /.xlsx|.xls$/.test(file.name);
+        this.isExcel = await commonFun.getFileMimeType(file, ["504b0304", "d0cf11e0"]);
+        const overSize = file.size / 1024 / 1024 > 10;  
+        if (!isXlsx || !this.isExcel) {
+            message.warn(i18next.t('请上传.xlsx或.xls文件'));
+            return reject(false);
+        }
+        if (overSize) {
+            message.warn(i18next.t('文件大小不能超过10M'));
+            return reject(false);
+        }
+        return resolve(true);
+    });
+};
 ```
 ---
 ## 常见文件格式文件头(部分文件头或许有偏差)
