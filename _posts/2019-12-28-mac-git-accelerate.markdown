@@ -28,5 +28,10 @@ tags:
 git config --global https.proxy http://127.0.0.1:1087
 git config --global https.proxy https://127.0.0.1:1087
 ```
+取消代理，因为在代理下push代码可能会失败，`Failed to connect to 127.0.0.1 port 1087: Connection refused`
+```shell
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
 
 亲测速度clone可达1M/s

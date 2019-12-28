@@ -5,8 +5,8 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 28 Dec 2019 17:57:13 +0800</pubDate>
-    <lastBuildDate>Sat, 28 Dec 2019 17:57:13 +0800</lastBuildDate>
+    <pubDate>Sat, 28 Dec 2019 18:03:01 +0800</pubDate>
+    <lastBuildDate>Sat, 28 Dec 2019 18:03:01 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -29,6 +29,10 @@
 
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; https.proxy http://127.0.0.1:1087
 git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; https.proxy https://127.0.0.1:1087
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;取消代理，因为在代理下push代码可能会失败，&lt;code class=&quot;highlighter-rouge&quot;&gt;Failed to connect to 127.0.0.1 port 1087: Connection refused&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--unset&lt;/span&gt; http.proxy
+git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--unset&lt;/span&gt; https.proxy
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;亲测速度clone可达1M/s&lt;/p&gt;

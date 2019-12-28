@@ -218,6 +218,10 @@
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> https.proxy http://127.0.0.1:1087
 git config <span class="nt">--global</span> https.proxy https://127.0.0.1:1087
 </code></pre></div></div>
+<p>取消代理，因为在代理下push代码可能会失败，<code class="highlighter-rouge">Failed to connect to 127.0.0.1 port 1087: Connection refused</code></p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> <span class="nt">--unset</span> http.proxy
+git config <span class="nt">--global</span> <span class="nt">--unset</span> https.proxy
+</code></pre></div></div>
 
 <p>亲测速度clone可达1M/s</p>
 
