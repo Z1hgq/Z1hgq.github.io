@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>js原型链及对象的继承 - Z1hgq | Z1hgq Blog</title>
+    <title>Mac OS git操作加速设置 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/02/26/js-prototype-chain-and-extend/">
+    <link rel="canonical" href="http://localhost:4000/2019/12/29/mac-git-accelerate/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-js-version.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-js-version.jpg')
+        background-image: url('/img/post-bg-rwd.jpg')
     }
 
     
@@ -170,15 +170,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        <a class="tag" href="/tags/#git" title="git">git</a>
                         
                     </div>
-                    <h1>js原型链及对象的继承</h1>
+                    <h1>Mac OS git操作加速设置</h1>
                     
                     
-                    <h2 class="subheading">原型链图解及对象的几种继承方式</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by Z1hgq on February 26, 2019</span>
+                    <span class="meta">Posted by Z1hgq on December 29, 2019</span>
                 </div>
             </div>
         </div>
@@ -200,121 +200,39 @@
                 
 
 				<blockquote>
-  <p>“”</p>
+  <p>“修养的花儿在寂静中开过去了，成功的果子便要在光明里结实 ——冰心”</p>
 </blockquote>
 
 <hr />
+<h3 id="vpn搭建">vpn搭建</h3>
 
-<h2 id="原型链">原型链</h2>
+<p>推荐<a href="https://ssrclouddingyuelianjie029319ajdnsjdf.com/" title="ssrcloud">ssrcloud</a>，目前比较稳定，且性价比高</p>
 
-<p>JavaScript对象的原型（prototype）：</p>
+<h3 id="查看代理的端口">查看代理的端口</h3>
 
-<ul>
-  <li>每一个构造函数都拥有一个prototype属性，这个属性指向一个对象，也就是原型对象。当使用这个构造函数创建实例的时候，prototype属性指向的原型对象就成为实例的原型对象。</li>
-  <li>原型对象默认拥有一个constructor属性，指向指向它的那个构造函数（也就是说构造函数和原型对象是互相指向的关系）。</li>
-  <li>每个对象都拥有一个隐藏的属性<code class="highlighter-rouge">[[prototype]]</code>，指向它的原型对象，这个属性可以通过
-<code class="highlighter-rouge">Object.getPrototypeOf(obj)</code> 或 <code class="highlighter-rouge">obj.__proto__</code> 来访问。</li>
-  <li>实际上，构造函数的prototype属性与它创建的实例对象的<code class="highlighter-rouge">[[prototype]]</code>属性指向的是同一个对象，即 对象<code class="highlighter-rouge">.__proto__ === 函数.prototype</code>。</li>
-  <li>原型对象就是用来存放实例中共有的那部分属性或方法的对象。</li>
-  <li>在JavaScript中，所有的对象都是由它的原型对象继承而来，反之，所有的对象都可以作为原型对象存在。</li>
-  <li>访问对象的属性时，JavaScript会首先在对象自身的属性内查找，若没有找到，则会跳转到该对象的原型对象中查找，直到找到Object对象上去。</li>
-  <li>Object对象的原型对象指向的是NULL，即<code class="highlighter-rouge">Object.__proto__ == NULL</code>。</li>
-</ul>
+<p>点击小飞机,http代理设置,如图
+<img src="/img/20191228/port.png" alt="port" /></p>
 
-<p>如图：
-<img src="/img/20191021/1.png" alt="prototype chain" title="prototype chain" /></p>
+<h3 id="git代理设置">git代理设置</h3>
 
-<h2 id="继承">继承</h2>
-
-<h4 id="0构造函数实现继承">0.构造函数实现继承</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent1</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="nx">Parent1</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
-<span class="kd">function</span> <span class="nx">Child1</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Parent1</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span><span class="c1">//apply,将父构造函数this指向子构造函数的实例上，导致父构造函数的所有属性在子构造函数中也有</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nx">age</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> https.proxy http://127.0.0.1:1087
+git config <span class="nt">--global</span> https.proxy https://127.0.0.1:1087
 </code></pre></div></div>
 
-<p>这种继承方式不能继承父类原型链上的属性方法，因此这种继承方式是不完整的，即<code class="highlighter-rouge">Child1</code>中没有<code class="highlighter-rouge">say</code>方法。</p>
-
-<h4 id="1原型链实现继承">1.原型链实现继承</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child2</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//重点</span>
-
-<span class="k">new</span> <span class="nx">Child2</span><span class="p">().</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//true</span>
-</code></pre></div></div>
-
-<p>缺点:当一个实例对象去修改来自原型对象上的属性时，另一个实例对象这个属性也会跟着改变，因为它们都是引用的同一个原型对象的属性。</p>
-
-<h4 id="2组合方式常用">2.组合方式(常用)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent3</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child3</span><span class="p">(){</span>
-  <span class="nx">Parent3</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child3</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent3</span><span class="p">();</span>
-</code></pre></div></div>
-
-<p>缺点：父级构造函数执行了两次。</p>
-
-<h4 id="3组合继承的优化1">3.组合继承的优化1</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent4</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child4</span><span class="p">(){</span>
-  <span class="nx">Parent4</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child4</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">Parent4</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p>问题所在：<code class="highlighter-rouge">Child4实例对象.__proto__.constructor === Parent4</code> 而不是Child4，所以不能正确找到构造函数。</p>
-
-<h4 id="4组合继承的优化2完美写法">4.组合继承的优化2(完美写法)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent5</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child5</span><span class="p">(){</span>
-  <span class="nx">Parent5</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Parent5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span><span class="c1">//隔离</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child5</span>
-</code></pre></div></div>
-
-<h2 id="参考文献">参考文献</h2>
-
-<p><a href="https://juejin.im/post/5a94c0de5188257a8929d837"><em>0. 三分钟看完JavaScript原型与原型链</em></a></p>
+<p>亲测速度clone可达1M/s</p>
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
-                        Next<br>
-                        <span>BoyerMoore算法的JavaScript实现</span>
+                    <li class="previous">
+                        <a href="/2019/12/11/js-verify-file-authenticity/" data-toggle="tooltip" data-placement="top" title="js利用文件头判断文件类型">
+                        Previous<br>
+                        <span>js利用文件头判断文件类型</span>
                         </a>
                     </li>
+                    
                     
                 </ul>
 
@@ -325,20 +243,6 @@
             </div>  
 
     <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
         
 
     <!-- Sidebar Container -->
@@ -588,64 +492,6 @@
 
 
 <!-- Side Catalog -->
-
-<script type="text/javascript">
-    function generateCatalog (selector) {
-
-        // interop with multilangual 
-        if ('' == 'true') {
-            _containerSelector = 'div.post-container.active'
-        } else {
-            _containerSelector = 'div.post-container'
-        }
-
-        // init
-        var P = $(_containerSelector),a,n,t,l,i,c;
-        a = P.find('h1,h2,h3,h4,h5,h6');
-
-        // clean
-        $(selector).html('')
-
-        // appending
-        a.each(function () {
-            n = $(this).prop('tagName').toLowerCase();
-            i = "#"+$(this).prop('id');
-            t = $(this).text();
-            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
-            l = $('<li class="'+n+'_nav"></li>').append(c);
-            $(selector).append(l);
-        });
-        return true;
-    }
-
-    generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function(e){
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
-    /*
-     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
-     * Fork by Hux to support padding
-     */
-    async("/js/jquery.nav.js", function () {
-        $('.catalog-body').onePageNav({
-            currentClass: "active",
-            changeHash: !1,
-            easing: "swing",
-            filter: "",
-            scrollSpeed: 700,
-            scrollOffset: 0,
-            scrollThreshold: .2,
-            begin: null,
-            end: null,
-            scrollChange: null,
-            padding: 80
-        });
-    });
-</script>
 
 
 

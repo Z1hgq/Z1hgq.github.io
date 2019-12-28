@@ -204,7 +204,7 @@
 </blockquote>
 
 <hr />
-<h2 id="校验函数">校验函数</h2>
+<h3 id="校验函数">校验函数</h3>
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// 校验上传文件真实类型</span>
     <span class="c1">// file 是blob对象</span>
     <span class="c1">// typeArray是校验的文件类型的文件头数组</span>
@@ -225,7 +225,7 @@
                         <span class="nx">item</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
                         <span class="nx">lowerCaseTypeArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
                     <span class="p">}</span>
-                    <span class="nx">resolve</span><span class="p">(</span><span class="nx">lowerCaseTypeArray</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">)));</span>
+                    <span class="nx">resolve</span><span class="p">(</span><span class="nx">lowerCaseTypeArray</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">));</span>
                 <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
                     <span class="c1">// 读取文件头出错 默认不是合法文件类型</span>
                     <span class="nx">reject</span><span class="p">();</span>
@@ -235,7 +235,7 @@
     <span class="p">}</span>
 </code></pre></div></div>
 <hr />
-<h2 id="antd-beforeupload阻止上传">antd beforeUpload阻止上传</h2>
+<h3 id="antd-beforeupload阻止上传">antd beforeUpload阻止上传</h3>
 
 <p>使用upload上传图片，如果beforeUpload直接返回false，仍然会执行onChange，图片会继续上传。
 这里是采用在beforeUpload函数中返回一个promise来解决的，这样如果返回false就不会再继续上传了。
@@ -258,7 +258,10 @@
 <span class="p">};</span>
 </code></pre></div></div>
 <hr />
-<h2 id="常见文件格式文件头部分文件头或许有偏差">常见文件格式文件头(部分文件头或许有偏差)</h2>
+<h3 id="常见文件格式文件头">常见文件格式文件头</h3>
+
+<p>部分文件头或许有偏差,并且我在项目中遇见过两张不同的原生jpg图片，取4位文件头，一个是ffd8ff，另一个是ffd8ffe1，因此在图片检验的时候可适当调整取的文件头的位数和加一些特殊的校验。</p>
+
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="cm">/** JPEG  (jpg)*/</span>
     <span class="no">JPEG</span><span class="o">(</span><span class="s">"JPG"</span><span class="o">,</span> <span class="s">"FFD8FF"</span><span class="o">),</span>
  
@@ -457,6 +460,13 @@
                     </li>
                     
                     
+                    <li class="next">
+                        <a href="/2019/12/29/mac-git-accelerate/" data-toggle="tooltip" data-placement="top" title="Mac OS git操作加速设置">
+                        Next<br>
+                        <span>Mac OS git操作加速设置</span>
+                        </a>
+                    </li>
+                    
                 </ul>
 
 
@@ -509,6 +519,8 @@
                 				<a href="/tags/#Linux" title="Linux" rel="2">
                                     Linux
                                 </a>
+                            
+        				
                             
         				
                             

@@ -13,7 +13,7 @@ tags:
 > “推荐一本小说--《间客》”
 
 ---
-## 校验函数
+### 校验函数
 ```js
     // 校验上传文件真实类型
     // file 是blob对象
@@ -35,7 +35,7 @@ tags:
                         item = item.toLowerCase();
                         lowerCaseTypeArray.push(item);
                     }
-                    resolve(lowerCaseTypeArray.includes(buffer.join('')));
+                    resolve(lowerCaseTypeArray.includes(buffer.join('').toLowerCase));
                 } catch (e) {
                     // 读取文件头出错 默认不是合法文件类型
                     reject();
@@ -45,7 +45,7 @@ tags:
     }
 ```
 ---
-## antd beforeUpload阻止上传
+### antd beforeUpload阻止上传
 
 使用upload上传图片，如果beforeUpload直接返回false，仍然会执行onChange，图片会继续上传。
 这里是采用在beforeUpload函数中返回一个promise来解决的，这样如果返回false就不会再继续上传了。
@@ -69,7 +69,10 @@ beforeUpload = file => {
 };
 ```
 ---
-## 常见文件格式文件头(部分文件头或许有偏差)
+### 常见文件格式文件头
+
+部分文件头或许有偏差,并且我在项目中遇见过两张不同的原生jpg图片，取4位文件头，一个是ffd8ff，另一个是ffd8ffe1，因此在图片检验的时候可适当调整取的文件头的位数和加一些特殊的校验。
+
 ```java
     /** JPEG  (jpg)*/
     JPEG("JPG", "FFD8FF"),

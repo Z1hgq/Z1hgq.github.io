@@ -5,9 +5,42 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 11 Dec 2019 18:23:59 +0800</pubDate>
-    <lastBuildDate>Wed, 11 Dec 2019 18:23:59 +0800</lastBuildDate>
+    <pubDate>Sat, 28 Dec 2019 17:57:13 +0800</pubDate>
+    <lastBuildDate>Sat, 28 Dec 2019 17:57:13 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Mac OS git操作加速设置</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;“修养的花儿在寂静中开过去了，成功的果子便要在光明里结实 ——冰心”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+&lt;h3 id=&quot;vpn搭建&quot;&gt;vpn搭建&lt;/h3&gt;
+
+&lt;p&gt;推荐&lt;a href=&quot;https://ssrclouddingyuelianjie029319ajdnsjdf.com/&quot; title=&quot;ssrcloud&quot;&gt;ssrcloud&lt;/a&gt;，目前比较稳定，且性价比高&lt;/p&gt;
+
+&lt;h3 id=&quot;查看代理的端口&quot;&gt;查看代理的端口&lt;/h3&gt;
+
+&lt;p&gt;点击小飞机,http代理设置,如图
+&lt;img src=&quot;/img/20191228/port.png&quot; alt=&quot;port&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;git代理设置&quot;&gt;git代理设置&lt;/h3&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; https.proxy http://127.0.0.1:1087
+git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; https.proxy https://127.0.0.1:1087
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;亲测速度clone可达1M/s&lt;/p&gt;
+</description>
+        <pubDate>Sun, 29 Dec 2019 01:49:33 +0800</pubDate>
+        <link>http://localhost:4000/2019/12/29/mac-git-accelerate/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/12/29/mac-git-accelerate/</guid>
+        
+        <category>git</category>
+        
+        
+      </item>
     
       <item>
         <title>js利用文件头判断文件类型</title>
@@ -16,7 +49,7 @@
 &lt;/blockquote&gt;
 
 &lt;hr /&gt;
-&lt;h2 id=&quot;校验函数&quot;&gt;校验函数&lt;/h2&gt;
+&lt;h3 id=&quot;校验函数&quot;&gt;校验函数&lt;/h3&gt;
 &lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c1&quot;&gt;// 校验上传文件真实类型&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// file 是blob对象&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// typeArray是校验的文件类型的文件头数组&lt;/span&gt;
@@ -37,7 +70,7 @@
                         &lt;span class=&quot;nx&quot;&gt;item&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toLowerCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
                         &lt;span class=&quot;nx&quot;&gt;lowerCaseTypeArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
                     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-                    &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;lowerCaseTypeArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;includes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
+                    &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;lowerCaseTypeArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;includes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toLowerCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
                 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;c1&quot;&gt;// 读取文件头出错 默认不是合法文件类型&lt;/span&gt;
                     &lt;span class=&quot;nx&quot;&gt;reject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
@@ -47,7 +80,7 @@
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;hr /&gt;
-&lt;h2 id=&quot;antd-beforeupload阻止上传&quot;&gt;antd beforeUpload阻止上传&lt;/h2&gt;
+&lt;h3 id=&quot;antd-beforeupload阻止上传&quot;&gt;antd beforeUpload阻止上传&lt;/h3&gt;
 
 &lt;p&gt;使用upload上传图片，如果beforeUpload直接返回false，仍然会执行onChange，图片会继续上传。
 这里是采用在beforeUpload函数中返回一个promise来解决的，这样如果返回false就不会再继续上传了。
@@ -70,7 +103,10 @@
 &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;hr /&gt;
-&lt;h2 id=&quot;常见文件格式文件头部分文件头或许有偏差&quot;&gt;常见文件格式文件头(部分文件头或许有偏差)&lt;/h2&gt;
+&lt;h3 id=&quot;常见文件格式文件头&quot;&gt;常见文件格式文件头&lt;/h3&gt;
+
+&lt;p&gt;部分文件头或许有偏差,并且我在项目中遇见过两张不同的原生jpg图片，取4位文件头，一个是ffd8ff，另一个是ffd8ffe1，因此在图片检验的时候可适当调整取的文件头的位数和加一些特殊的校验。&lt;/p&gt;
+
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;cm&quot;&gt;/** JPEG  (jpg)*/&lt;/span&gt;
     &lt;span class=&quot;no&quot;&gt;JPEG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;JPG&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;FFD8FF&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
  
