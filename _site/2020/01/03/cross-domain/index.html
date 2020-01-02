@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关于前端与设计、摄影 | Z1hgq, Web & Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
+    <meta name="theme-color" content="#000000">
+    
+    <title>前端跨域 - Z1hgq | Z1hgq Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2020/01/03/cross-domain/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <!-- <link rel="stylesheet" href="/css/syntax.css"> -->
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    
+    <!-- diy code hightlighter -->
+    <link rel="stylesheet" href="/css/pygments.css">
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+    
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Z1hgq</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">ABOUT</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-rwd.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        
+                        <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                        
+                        <a class="tag" href="/tags/#跨域" title="跨域">跨域</a>
+                        
+                    </div>
+                    <h1>前端跨域</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by Z1hgq on January 3, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>“我们这个世界，从不会给一个伤心的落伍者颁发奖牌”</p>
+</blockquote>
+
+<hr />
+
+<h3 id="同源策略">同源策略</h3>
+
+<h4 id="同源的定义">同源的定义</h4>
+
+<p>如果两个页面的协议，端口（如果有指定）和主机都相同，则两个页面具有相同的源。
+源由下面三个部分组成</p>
+<ol>
+  <li>协议</li>
+  <li>端口</li>
+  <li>主机</li>
+</ol>
+
+<p>下表给出了相对http://store.company.com/dir/page.html同源检测的示例:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>URL</th>
+      <th>结果</th>
+      <th>原因</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>http://store.company.com/dir2/other.html</td>
+      <td>成功</td>
+      <td>只有路径不同</td>
+    </tr>
+    <tr>
+      <td>http://store.company.com/dir/inner/another.html</td>
+      <td>成功</td>
+      <td>只有路径不同</td>
+    </tr>
+    <tr>
+      <td>https://store.company.com/secure.html</td>
+      <td>失败</td>
+      <td>不同协议 ( https和http )</td>
+    </tr>
+    <tr>
+      <td>http://store.company.com:81/dir/etc.html</td>
+      <td>失败</td>
+      <td>不同端口 ( http:// 80是默认的)</td>
+    </tr>
+    <tr>
+      <td>http://news.company.com/dir/other.html</td>
+      <td>失败</td>
+      <td>不同域名 ( news和store )</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="同源策略的意义">同源策略的意义</h4>
+
+<p><strong>同源策略</strong>限制了从同一个源加载的文档或脚本如何与来自另一个源的资源进行交互。这是一个用于隔离在恶意文件的重要安全机制</p>
+
+<p>假设没有同源策略，那么我在A网站下的cookie就可以被任何一个网站拿到；那么这个网站的所有者，就可以使用我的cookie(也就是我的身份)在A网站下进行操作。
+同源策略可以算是 web 前端安全的基石，如果缺少同源策略，浏览器也就没有了安全性可言。</p>
+
+<p>我们平时使用xhr访问不同域名的数据时，浏览器就会报跨域错误，我们看不到响应数据
+此时其实请求是已经到了服务器并且成功响应，只是因为浏览器因为同源策略将此次响应拦截了而已。</p>
+
+<h4 id="限制范围">限制范围</h4>
+
+<p>通常来说同源策略的限制范围有如下几个：</p>
+
+<ol>
+  <li>无法共享和操作 cookie, localStorage, indexDB</li>
+  <li>无法操作彼此的 dom 元素</li>
+  <li>无法发送 ajax 请求</li>
+  <li>无法通过 flash 发送 http 请求</li>
+  <li>其他</li>
+</ol>
+
+<p>但是同源策略是允许嵌入外部资源的。比如：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span><span class="p">.</span> <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;标签嵌入js脚本资</span><span class="err">源
+</span><span class="mi">2</span><span class="p">.</span> <span class="o">&lt;</span><span class="nx">img</span> <span class="o">/&gt;</span><span class="err">标签嵌入图片资源</span>
+<span class="mi">3</span><span class="p">.</span> <span class="o">&lt;</span><span class="nx">video</span><span class="o">&gt;&lt;</span><span class="sr">/video&gt;和&lt;audio&gt;&lt;/</span><span class="nx">audio</span><span class="o">&gt;</span><span class="err">标签嵌入多媒体资源</span>
+<span class="mi">4</span><span class="p">.</span> <span class="o">&lt;</span><span class="nx">link</span> <span class="o">/&gt;</span><span class="err">标签嵌入</span><span class="nx">css</span><span class="err">或者其他类似资源</span>
+<span class="mi">5</span><span class="p">.</span> <span class="o">&lt;</span><span class="nx">object</span><span class="o">&gt;</span><span class="p">,</span><span class="err"> </span><span class="o">&lt;</span><span class="nx">embed</span><span class="o">&gt;</span><span class="err"> 和 </span><span class="o">&lt;</span><span class="nx">applet</span><span class="o">&gt;</span>
+<span class="mi">6</span><span class="p">.</span> <span class="p">@</span><span class="nd">font</span><span class="o">-</span><span class="nx">face</span><span class="err"> 引入的字体资源</span>
+<span class="mi">7</span><span class="p">.</span> <span class="nx">Iframe</span><span class="err">嵌入网页</span>
+</code></pre></div></div>
+<p>这些请求都会发送get请求，然后响应资源，我们也能在浏览器中看到它们，但是本站js脚本因为同源策略并不能读取这些资源。
+这里放一个我个人的理解，同源策略的限制主要是限制在js脚本中操作不同域资源时，比如使用xhr请求一个图片资源、在canvas中使用不同域图片、操作iframe中不同域的dom等等。</p>
+
+<hr />
+
+<h3 id="跨域">跨域</h3>
+
+<p>有同源策略的限制就有跨域，因为我们不可能只在一个域交互，下面介绍几种现在比较常用的几种跨域方式：</p>
+<ul>
+  <li>Jsonp</li>
+  <li>Cors</li>
+  <li>代理</li>
+  <li>Websocket</li>
+</ul>
+
+<p>其他跨域方式这里就不做介绍，因为不算很常用，需要了解可以在网上查资料</p>
+
+<hr />
+
+<h3 id="jsonp">JSONP</h3>
+
+<p>Jsonp主要是通过script标签在加载资源时不受同源策略的限制且js脚本在加载完成后会自动执行的原理来实现的，这个需要服务器返回 callback(数据);的形式，如果window上也有一个callback的函数，这样脚本加载回来就会执行callback函数，我们就能拿到数据了。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 实现</span>
+<span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nb">global</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="dl">"</span><span class="s2">head</span><span class="dl">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+
+    <span class="kd">function</span> <span class="nx">jsonp</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">options</span> <span class="o">||</span> <span class="o">!</span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+        <span class="kd">var</span> <span class="nx">scriptNode</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">script</span><span class="dl">"</span><span class="p">),</span>
+            <span class="nx">data</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">data</span> <span class="o">||</span> <span class="p">{},</span>
+            <span class="nx">url</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+            <span class="nx">callback</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">callback</span><span class="p">,</span>
+            <span class="nx">fnName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">jsonp</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">id</span><span class="o">++</span><span class="p">;</span>
+
+        <span class="c1">// 添加回调函数</span>
+        <span class="nx">data</span><span class="p">[</span><span class="dl">"</span><span class="s2">callback</span><span class="dl">"</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fnName</span><span class="p">;</span>
+
+        <span class="c1">// 拼接url</span>
+        <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">=</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">key</span><span class="p">]));</span>
+        <span class="p">}</span>
+        <span class="nx">url</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="dl">"</span><span class="s2">?</span><span class="dl">"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">?</span> <span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">&amp;</span><span class="dl">"</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">?</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">url</span> <span class="o">+=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">&amp;</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">scriptNode</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">url</span><span class="p">;</span>
+
+        <span class="c1">// 传递的是一个匿名的回调函数，要执行的话，暴露为一个全局方法</span>
+        <span class="nb">global</span><span class="p">[</span><span class="nx">fnName</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">ret</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">callback</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">ret</span><span class="p">);</span>
+            <span class="nx">container</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">scriptNode</span><span class="p">);</span>
+            <span class="k">delete</span> <span class="nb">global</span><span class="p">[</span><span class="nx">fnName</span><span class="p">];</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 出错处理</span>
+        <span class="nx">scriptNode</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="nx">callback</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">({</span><span class="na">error</span><span class="p">:</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">});</span>
+            <span class="nx">container</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">scriptNode</span><span class="p">);</span>
+            <span class="nb">global</span><span class="p">[</span><span class="nx">fnName</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="k">delete</span> <span class="nb">global</span><span class="p">[</span><span class="nx">fnName</span><span class="p">];</span>
+        <span class="p">}</span>
+
+        <span class="nx">scriptNode</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">text/javascript</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">scriptNode</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nb">global</span><span class="p">.</span><span class="nx">jsonp</span> <span class="o">=</span> <span class="nx">jsonp</span><span class="p">;</span>
+
+<span class="p">})(</span><span class="k">this</span><span class="p">);</span>
+
+<span class="c1">// 使用示例</span>
+<span class="nx">jsonp</span><span class="p">({</span>
+    <span class="na">url</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">www.example.com</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">data</span> <span class="p">:</span> <span class="p">{</span><span class="na">id</span> <span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="na">callback</span> <span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">ret</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ret</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// 服务器端</span>
+<span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">http</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">urllib</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">url</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">port</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="dl">'</span><span class="s1">data</span><span class="dl">'</span><span class="p">:</span><span class="dl">'</span><span class="s1">world</span><span class="dl">'</span><span class="p">};</span>
+
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="nx">urllib</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">callback</span><span class="p">){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="c1">//jsonp</span>
+        <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">callback</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">(</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">)</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="p">}</span>
+    
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">,</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">jsonp server is on</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>jsonp的缺点是只能支持get请求，其他请求不行，且需要服务器支持，成本较高。</p>
+
+<hr />
+
+<h3 id="cors">CORS</h3>
+
+<p><code class="highlighter-rouge">CORS</code>（<code class="highlighter-rouge">Cross-Origin Resource Sharing</code>，跨源资源共享）定义了在必须访问跨源资源时，浏览器与服务器应该如何沟通。<code class="highlighter-rouge">CORS</code>背后的基本思想，就是使用自定义的<code class="highlighter-rouge">HTTP</code>头部让浏览器与服务器进行沟通，从而决定请求或响应是应该成功，还是应该失败。</p>
+
+<p><code class="highlighter-rouge">CORS</code>需要浏览器和服务器同时支持。目前，所有浏览器都支持该功能，IE浏览器不能低于IE10
+。
+整个<code class="highlighter-rouge">CORS</code>通信过程，都是浏览器自动完成，不需要用户参与。对于开发者来说，<code class="highlighter-rouge">CORS</code>通信与同源的<code class="highlighter-rouge">AJAX</code>通信没有差别，代码完全一样。浏览器一旦发现<code class="highlighter-rouge">AJAX</code>请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。
+因此，实现<code class="highlighter-rouge">CORS</code>通信的关键是服务器。只要服务器实现了<code class="highlighter-rouge">CORS</code>接口，就可以跨源通信。</p>
+
+<p>浏览器将CORS请求分成两类：简单请求（simple request）和非简单请求（not-so-simple request）。
+只要同时满足以下两大条件，就属于简单请求。</p>
+
+<blockquote>
+  <ol>
+    <li>请求方法是以下三种方法之一：
+      <ul>
+        <li>HEAD</li>
+        <li>GET</li>
+        <li>POST</li>
+      </ul>
+    </li>
+    <li>HTTP的头信息不超出以下几种字段：
+      <ul>
+        <li>Accept</li>
+        <li>Accept-Language</li>
+        <li>Content-Language</li>
+        <li>Last-Event-ID</li>
+        <li>Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/&gt; - form-data、text/plain</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<p>凡是不同时满足上面两个条件，就属于复杂请求。且浏览器对这两种请求的处理，是不一样的。</p>
+
+<h4 id="简单请求">简单请求</h4>
+
+<p>对于简单请求，浏览器直接发出CORS请求，在头信息之中，增加一个Origin字段标识当时请求的是来自哪个源。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /cors HTTP/1.1
+Origin: http://api.bob.com
+Host: api.alice.com
+Accept-Language: en-US
+Connection: keep-alive
+User-Agent: Mozilla/5.0...
+</code></pre></div></div>
+<p>服务器接收到请求后判断该源是否在许可范围内，如果在就会在响应头中增加如下几个字段:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access-Control-Allow-Origin: http://api.bob.com
+Access-Control-Allow-Credentials: true
+Access-Control-Expose-Headers: FooBar
+Content-Type: text/html; charset=utf-8
+</code></pre></div></div>
+<p>浏览器判断要Access-Control-Allow-Origin这个字段不存在或者不与当前源对应，就会抛出跨域错误，而且响应状态码还可能是200。否则就响应成功。</p>
+
+<p>Access-Control-Allow-Credentials这个字段主要是表示是否允许给服务器发送Cookie，要生效的话需要将xhr的withCredentials字段设置为ture。</p>
+
+<h4 id="复杂请求">复杂请求</h4>
+
+<p>对于复杂请求，浏览器在发出真正请求前会首先执行一次options请求，来判断服务器是否此次跨域，流程和上面的简单请求一样，不过多了一个允许跨域的方法判断。</p>
+
+<p>在options请求通过时，以后的每个真正的请求就跟简单请求一样的流程了。如果不通过一样会抛出错误，被xhr捕获到。</p>
+
+<p>Cors比jsonp更强大，只需要服务器配合，且能支持多种请求，开发者在使用时完全和平时一样，浏览器会自动处理这些流程。在jsonp慢慢被淘汰的情况下，cors是以后跨域的一种好的方式。</p>
+
+<hr />
+
+<h3 id="代理">代理</h3>
+
+<p>在其他方式都不能使用的情况下我们还可以使用反向代理的方式来实现跨域</p>
+
+<p>反向代理就是当服务器收到一个请求时，如果服务器没有此资源，就去其他服务器将资源获取过来(包括cookie和其他头信息)，然后在原封不动的返回给客户端。</p>
+
+<p>我们使用反向代理就可以做到请求同一个源的接口，拿到不同源的数据了。</p>
+
+<p>反向代理的方式有很多，服务器都可以做，最简单的是使用<code class="highlighter-rouge">nginx</code>，配置一下转发策略即可， <code class="highlighter-rouge">nginx</code>的用法可以去查看相关文档，这里不做介绍</p>
+
+<p>我们还可以使用前端最熟悉的nodejs来做反向代理转发，这里介绍一个相关中间件，<code class="highlighter-rouge">express-http-proxy</code>和<code class="highlighter-rouge">koa-proxy</code>，他们的原理一样是通过提供的转发策略来做资源的转发。</p>
+
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/12/29/mac-git-accelerate/" data-toggle="tooltip" data-placement="top" title="Mac OS git操作加速设置">
+                        Previous<br>
+                        <span>Mac OS git操作加速设置</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#JavaScript" title="JavaScript" rel="5">
+                                    JavaScript
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#Linux" title="Linux" rel="2">
+                                    Linux
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://minghuanliu.com/">Ericonaldo(Minghuan Liu)</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/喝酒的猫">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a target="_blank" href="http://weibo.com/努力努力白努力z">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Z1hgq 2020
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+
+    <!-- <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet"> -->
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
