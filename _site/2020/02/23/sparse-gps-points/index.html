@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>js原型链及对象的继承 - Z1hgq | Z1hgq Blog</title>
+    <title>GPS轨迹抽稀：Douglas-Peuker算法 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/02/26/js-prototype-chain-and-extend/">
+    <link rel="canonical" href="http://localhost:4000/2020/02/23/sparse-gps-points/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-js-version.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-js-version.jpg')
+        background-image: url('/img/post-bg-rwd.jpg')
     }
 
     
@@ -172,13 +172,15 @@
                         
                         <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
                         
+                        <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                        
                     </div>
-                    <h1>js原型链及对象的继承</h1>
+                    <h1>GPS轨迹抽稀：Douglas-Peuker算法</h1>
                     
                     
-                    <h2 class="subheading">原型链图解及对象的几种继承方式</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by Z1hgq on February 26, 2019</span>
+                    <span class="meta">Posted by Z1hgq on February 23, 2020</span>
                 </div>
             </div>
         </div>
@@ -200,121 +202,131 @@
                 
 
 				<blockquote>
-  <p>“”</p>
+  <p>“其实，人间路是一条向死而生的路，每个人的生命都是走向死亡的一个过程。在这条路上我们无法回头，也终会走到终点。没有永远，只有永别。这一路上你的所作所为，你所经历的事务，见过的风景同伴，便是你这一行的意义所在。我们都是彼此路上的意义。”</p>
 </blockquote>
 
 <hr />
+<h3 id="背景">背景</h3>
 
-<h2 id="原型链">原型链</h2>
+<p>在对行车轨迹在地图上进行展示时，往往需要绘制大量的坐标点，但是设备取点的间隔往往是固定的，传统的做法是将所有的点绘制出来，极大地消耗了浏览器的性能。然而在一条轨迹上，两点便可以确定一条直线，因此在行驶路径比较直的区域，很多坐标点都是可以舍弃的，同时，当对地图进行缩小，使可视区域变大时，坐标点也不必绘制地十分精确，往往取一些关键点就能绘制出行驶轨迹。<code class="highlighter-rouge">Douglas-Peuker</code>正是一个对坐标关键点进行抽取的算法。</p>
 
-<p>JavaScript对象的原型（prototype）：</p>
+<hr />
+<h3 id="算法原理">算法原理</h3>
 
-<ul>
-  <li>每一个构造函数都拥有一个prototype属性，这个属性指向一个对象，也就是原型对象。当使用这个构造函数创建实例的时候，prototype属性指向的原型对象就成为实例的原型对象。</li>
-  <li>原型对象默认拥有一个constructor属性，指向指向它的那个构造函数（也就是说构造函数和原型对象是互相指向的关系）。</li>
-  <li>每个对象都拥有一个隐藏的属性<code class="highlighter-rouge">[[prototype]]</code>，指向它的原型对象，这个属性可以通过
-<code class="highlighter-rouge">Object.getPrototypeOf(obj)</code> 或 <code class="highlighter-rouge">obj.__proto__</code> 来访问。</li>
-  <li>实际上，构造函数的prototype属性与它创建的实例对象的<code class="highlighter-rouge">[[prototype]]</code>属性指向的是同一个对象，即 对象<code class="highlighter-rouge">.__proto__ === 函数.prototype</code>。</li>
-  <li>原型对象就是用来存放实例中共有的那部分属性或方法的对象。</li>
-  <li>在JavaScript中，所有的对象都是由它的原型对象继承而来，反之，所有的对象都可以作为原型对象存在。</li>
-  <li>访问对象的属性时，JavaScript会首先在对象自身的属性内查找，若没有找到，则会跳转到该对象的原型对象中查找，直到找到Object对象上去。</li>
-  <li>Object对象的原型对象指向的是NULL，即<code class="highlighter-rouge">Object.__proto__ == NULL</code>。</li>
-</ul>
+<p><strong>1.</strong>  将轨迹的首尾点连成一条线，计算曲线上每一个点到直线的距离，找出最大距离<code class="highlighter-rouge">dmax</code>，看距离是否小于给定的阈值<code class="highlighter-rouge">max</code>（及轨迹精确度）。
+   <img src="/img/20200223/01.png" alt="01" />
+<strong>2.</strong>  a.若<code class="highlighter-rouge">dmax &lt; max</code>，则舍弃这条曲线上的所有中间点，将曲线首尾点连成的直线作为这段曲线的近似，这条线段便处理完毕。</p>
 
-<p>如图：
-<img src="/img/20191021/1.png" alt="prototype chain" title="prototype chain" /></p>
+<p>b.若<code class="highlighter-rouge">dmax &gt;= max</code>，则以<code class="highlighter-rouge">dmax</code>所在点作为分割点，将原来的曲线分为两段，分出来的两条曲线继续直线步骤1、2，直到所有的<code class="highlighter-rouge">dmax &lt; max</code>。
+   <img src="/img/20200223/02.png" alt="02" />
+   <img src="/img/20200223/03.png" alt="03" />
+   <img src="/img/20200223/04.png" alt="04" />
+   <img src="/img/20200223/05.png" alt="05" />
+   <img src="/img/20200223/06.png" alt="06" /></p>
 
-<h2 id="继承">继承</h2>
+<p>显然，算法的抽稀精读是和阈值相关的，阈值越大，舍弃的点越多，提取的关键点越少。若绘制的轨迹较长，可在对地图进行缩放时动态调整阈值。</p>
 
-<h4 id="0构造函数实现继承">0.构造函数实现继承</h4>
+<hr />
+<h3 id="代码实现">代码实现</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent1</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * gps轨迹抽稀算法
+ * @author: Z1hgq
+ */</span>
+<span class="cm">/**
+ * 点到直线的距离，直线方程为 ax + by + c = 0
+ * @param {Number} a 直线参数a
+ * @param {Number} b 直线参数b
+ * @param {Number} c 直线参数c
+ * @param {Object} xy 点坐标例如{ lat: 2, lng: 2 }
+ * @return {Number}
+ */</span>
+<span class="kd">function</span> <span class="nx">getDistanceFromPointToLine</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">xy</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">xy</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">xy</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">((</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">*</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">c</span><span class="p">)</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">*</span> <span class="nx">b</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 根据两个点求直线方程 ax+by+c=0
+ * @param {Object} xy1 点1,例如{ lat: 1, lng: 1 }
+ * @param {Object} xy2 点2,例如{ lat: 2, lng: 2 }
+ * @return {Array} [a,b,c] 直线方程的三个参数
+ */</span>
+<span class="kd">function</span> <span class="nx">getLineByPoint</span><span class="p">(</span><span class="nx">xy1</span><span class="p">,</span> <span class="nx">xy2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">x1</span> <span class="o">=</span> <span class="nx">xy1</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span> <span class="c1">// 第一个点的经度</span>
+    <span class="kd">const</span> <span class="nx">y1</span> <span class="o">=</span> <span class="nx">xy1</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span> <span class="c1">// 第一个点的纬度</span>
+    <span class="kd">const</span> <span class="nx">x2</span> <span class="o">=</span> <span class="nx">xy2</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span> <span class="c1">// 第二个点的经度</span>
+    <span class="kd">const</span> <span class="nx">y2</span> <span class="o">=</span> <span class="nx">xy2</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span> <span class="c1">// 第二个点的纬度</span>
+
+    <span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">y2</span> <span class="o">-</span> <span class="nx">y1</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">x1</span> <span class="o">-</span> <span class="nx">x2</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">(</span><span class="nx">y1</span> <span class="o">-</span> <span class="nx">y2</span><span class="p">)</span> <span class="o">*</span> <span class="nx">x1</span> <span class="o">-</span> <span class="nx">y1</span> <span class="o">*</span> <span class="p">(</span><span class="nx">x1</span> <span class="o">-</span> <span class="nx">x2</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="cm">/**
+ * 稀疏点
+ * @param {Array} points 参数为[{lat: 1, lng: 2},{lat: 3, lng: 4}]点集
+ * @param {Number} max 阈值,越大稀疏效果越好但是细节越差
+ * @return {Array} 稀疏后的点集[{lat: 1, lng: 2},{lat: 3, lng: 4}]，保持和输入点集的顺序一致
+ */</span>
+<span class="kd">function</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">,</span> <span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">points</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">xy1</span> <span class="o">=</span> <span class="nx">points</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 取第一个点</span>
+    <span class="kd">const</span> <span class="nx">xy2</span> <span class="o">=</span> <span class="nx">points</span><span class="p">[</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="c1">// 取最后一个点</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">]</span> <span class="o">=</span> <span class="nx">getLineByPoint</span><span class="p">(</span><span class="nx">xy1</span><span class="p">,</span> <span class="nx">xy2</span><span class="p">);</span> <span class="c1">// 获取直线方程的a,b,c值</span>
+
+    <span class="kd">let</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// 最后稀疏以后的点集</span>
+    <span class="kd">let</span> <span class="nx">dmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 记录点到直线的最大距离</span>
+    <span class="kd">let</span> <span class="nx">split</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 分割位置</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">getDistanceFromPointToLine</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">points</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="nx">dmax</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">split</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+            <span class="nx">dmax</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">dmax</span> <span class="o">&gt;</span> <span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 如果存在点到首位点连成直线的距离大于max的,即需要再次划分</span>
+        <span class="c1">// 按split分成左边一份，递归</span>
+        <span class="kd">const</span> <span class="nx">child1</span> <span class="o">=</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">split</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nx">max</span><span class="p">);</span>
+        <span class="c1">// 按split分成右边一份，递归</span>
+        <span class="kd">const</span> <span class="nx">child2</span> <span class="o">=</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">split</span><span class="p">),</span> <span class="nx">max</span><span class="p">);</span>
+        <span class="c1">// 因为child1的最后一个点和child2的第一个点,肯定是同一个（即为分割点）,合并的时候,需要注意一下</span>
+        <span class="nx">ret</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">child1</span><span class="p">,</span> <span class="nx">child2</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// 如果不存在点到直线的距离大于阈值的,那么就直接是首尾点了</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nx">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">points</span><span class="p">[</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]];</span>
     <span class="p">}</span>
 <span class="p">}</span>
-<span class="nx">Parent1</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
-<span class="kd">function</span> <span class="nx">Child1</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Parent1</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span><span class="c1">//apply,将父构造函数this指向子构造函数的实例上，导致父构造函数的所有属性在子构造函数中也有</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nx">age</span><span class="p">;</span>
-<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">sparsePoints</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>这种继承方式不能继承父类原型链上的属性方法，因此这种继承方式是不完整的，即<code class="highlighter-rouge">Child1</code>中没有<code class="highlighter-rouge">say</code>方法。</p>
+<hr />
+<h3 id="效果展示">效果展示</h3>
 
-<h4 id="1原型链实现继承">1.原型链实现继承</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child2</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child2</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child2</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//重点</span>
-
-<span class="k">new</span> <span class="nx">Child2</span><span class="p">().</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="k">new</span> <span class="nx">Parent2</span><span class="p">();</span><span class="c1">//true</span>
-</code></pre></div></div>
-
-<p>缺点:当一个实例对象去修改来自原型对象上的属性时，另一个实例对象这个属性也会跟着改变，因为它们都是引用的同一个原型对象的属性。</p>
-
-<h4 id="2组合方式常用">2.组合方式(常用)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent3</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child3</span><span class="p">(){</span>
-  <span class="nx">Parent3</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child3</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child3</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent3</span><span class="p">();</span>
-</code></pre></div></div>
-
-<p>缺点：父级构造函数执行了两次。</p>
-
-<h4 id="3组合继承的优化1">3.组合继承的优化1</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent4</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child4</span><span class="p">(){</span>
-  <span class="nx">Parent4</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child4</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child4</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">Parent4</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p>问题所在：<code class="highlighter-rouge">Child4实例对象.__proto__.constructor === Parent4</code> 而不是Child4，所以不能正确找到构造函数。</p>
-
-<h4 id="4组合继承的优化2完美写法">4.组合继承的优化2(完美写法)</h4>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent5</span><span class="p">(){</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Parent5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">function</span> <span class="nx">Child5</span><span class="p">(){</span>
-  <span class="nx">Parent5</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Child5</span><span class="dl">'</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Parent5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span><span class="c1">//隔离</span>
-<span class="nx">Child5</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child5</span>
-</code></pre></div></div>
-
-<h2 id="参考文献">参考文献</h2>
-
-<p><a href="https://juejin.im/post/5a94c0de5188257a8929d837"><em>0. 三分钟看完JavaScript原型与原型链</em></a></p>
+<p>数据点类型为类似<code class="highlighter-rouge">30.664147,104.067232</code>，抽稀阈值为<code class="highlighter-rouge">0.000005</code>，第一张图为原始gps数据，共265个点，第二张图为抽稀之后的数据，共108个点。
+<img src="/img/20200223/08.png" alt="08" />
+<img src="/img/20200223/07.png" alt="07" /></p>
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2019/09/30/Boyer-Moore-JavaScript/" data-toggle="tooltip" data-placement="top" title="BoyerMoore算法的JavaScript实现">
-                        Next<br>
-                        <span>BoyerMoore算法的JavaScript实现</span>
+                    <li class="previous">
+                        <a href="/2020/01/03/cross-domain/" data-toggle="tooltip" data-placement="top" title="前端跨域">
+                        Previous<br>
+                        <span>前端跨域</span>
                         </a>
                     </li>
+                    
                     
                 </ul>
 
