@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>JS 事件循环--宏任务与微任务 - Z1hgq | Z1hgq Blog</title>
+    <title>常用算法--分治(Divide And Conquer) - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/10/23/js-mac-mic-task/">
+    <link rel="canonical" href="http://localhost:4000/2020/04/30/divide-and-conquer/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-js-version.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-js-version.jpg')
+        background-image: url('/img/post-bg-rwd.jpg')
     }
 
     
@@ -172,13 +172,17 @@
                         
                         <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
                         
+                        <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                        
+                        <a class="tag" href="/tags/#分治" title="分治">分治</a>
+                        
                     </div>
-                    <h1>JS 事件循环--宏任务与微任务</h1>
+                    <h1>常用算法--分治(Divide And Conquer)</h1>
                     
                     
-                    <h2 class="subheading">Event Loop</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by Z1hgq on October 23, 2019</span>
+                    <span class="meta">Posted by Z1hgq on April 30, 2020</span>
                 </div>
             </div>
         </div>
@@ -204,154 +208,52 @@
 </blockquote>
 
 <hr />
-<h2 id="event-loop">Event Loop</h2>
+<h3 id="算法原理">算法原理</h3>
 
-<p>JavaScript是一门单线程的脚本语言，在一行代码执行的过程中，必然不会存在同时执行的另一行代码，就像使用<code class="highlighter-rouge">alert()</code>以后进行疯狂<code class="highlighter-rouge">console.log</code>，如果没有关闭弹框，控制台是不会显示出一条log信息的。</p>
+<p>分治，也就是分而治之，它的一般步骤如下：</p>
 
-<p>js的主线程只负责维护任务队列，并通过事件循环机制（Event Loop）按照顺序将需要执行的任务放进栈中。</p>
+<p>1、对于规模为N的问题，当N足够小时可以直接解决，否则执行下面的步骤。<br />
+2、将问题分解为M个规模较小的子问题，这些子问题相互独立，并且形式与原问题相同。<br />
+3、递归解决子问题。<br />
+4、将子问题的解合并，得到最终问题的解。<br /></p>
 
-<p><img src="/img/20191025/2.png" alt="" /></p>
+<p><img src="/img/20200430/1.png" alt="01" /></p>
 
-<ul>
-  <li>同步和异步任务分别进入不同的执行”场所”，同步的进入主线程，异步的进入Event Table并注册函数</li>
-  <li>当指定的事情完成时，Event Table会将这个函数移入Event Queue。</li>
-  <li>主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行。</li>
-  <li>上述过程会不断重复，也就是常说的Event Loop(事件循环)。</li>
-</ul>
+<hr />
+<h3 id="常用分治算法">常用分治算法</h3>
 
-<h2 id="宏任务与微任务">宏任务与微任务</h2>
+<h4 id="二分搜索">二分搜索</h4>
 
-<p>在Js中，有两类任务队列：宏任务队列（macro tasks）和微任务队列（micro tasks）。宏任务队列可以有多个，微任务队列只有一个。</p>
-
-<blockquote>
-  <p>宏任务：script（全局任务）, setTimeout, setInterval, setImmediate, I/O, UI rendering.</p>
-
-  <p>微任务：process.nextTick, Promise, Object.observer, MutationObserver.</p>
-</blockquote>
-
-<p><img src="/img/20191025/3.png" alt="" /></p>
-
-<h4 id="浏览器event-loop">浏览器Event Loop</h4>
-
-<blockquote>
-  <ol>
-    <li>取一个宏任务来执行。执行完毕后，下一步。</li>
-    <li>取一个微任务来执行，执行完毕后，再取一个微任务来执行。直到微任务队列为空，执行下一步。</li>
-    <li>更新UI渲染</li>
-  </ol>
-</blockquote>
-
-<p>每执行下一次宏任务之前重新渲染。</p>
-
-<h4 id="nodejs-event-loop">NodeJs Event Loop</h4>
-
-<blockquote>
-  <ol>
-    <li>初始化 Event Loop</li>
-    <li>执行您的主代码。这里同样，遇到异步处理，就会分配给对应的队列。直到主代码执行完毕。</li>
-    <li>执行主代码中出现的所有微任务：先执行完所有nextTick()，然后在执行其它所有微任务。</li>
-    <li>开始 Event Loop</li>
-  </ol>
-</blockquote>
-
-<p>NodeJs 的 Event Loop 分为六个阶段：timers、pending callbacks、idle\prepare、poll、check、close callbacks。</p>
-
-<blockquote>
-  <p>┌───────────────────────────┐</p>
-
-  <p>┌─│———–timers———-│</p>
-
-  <p>│  └─────────────┬─────────────┘</p>
-
-  <p>│  ┌─────────────┴─────────────┐</p>
-
-  <p>│  │—- pending callbacks—–│</p>
-
-  <p>│  └─────────────┬─────────────┘</p>
-
-  <p>│  ┌─────────────┴─────────────┐</p>
-
-  <p>│  │——-idle, prepare——-│</p>
-
-  <p>│  └─────────────┬─────────────┘      ┌───────────────┐</p>
-
-  <p>│  ┌─────────────┴─────────────┐      │   incoming:   │</p>
-
-  <p>│  │———–poll————│&lt;─────┤  connections, │</p>
-
-  <p>│  └─────────────┬─────────────┘      │   data, etc.  │</p>
-
-  <p>│  ┌─────────────┴─────────────┐      └───────────────┘</p>
-
-  <p>│  │———–check———–│</p>
-
-  <p>│  └─────────────┬─────────────┘</p>
-
-  <p>│  ┌─────────────┴─────────────┐</p>
-
-  <p>└──┤——close callbacks——│</p>
-
-  <p>└───────────────────────────┘</p>
-</blockquote>
-
-<ul>
-  <li>timers: 这个阶段执行setTimeout()和setInterval()设定的回调。</li>
-  <li>pending callbacks: 上一轮循环中有少数的 I/O callback 会被延迟到这一轮的这一阶段执行。</li>
-  <li>idle, prepare: 仅内部使用。</li>
-  <li>poll: 执行 I/O callback，在适当的条件下会阻塞在这个阶段</li>
-  <li>check: 执行setImmediate()设定的回调。</li>
-  <li>close callbacks: 执行比如socket.on(‘close’, …)的回调。</li>
-</ul>
-
-<h2 id="示例分析">示例分析</h2>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">2</span><span class="dl">'</span><span class="p">);</span>
-    <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">3</span><span class="dl">'</span><span class="p">);</span>
-    <span class="p">})</span>
-    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">4</span><span class="dl">'</span><span class="p">);</span>
-        <span class="nx">resolve</span><span class="p">();</span>
-    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">5</span><span class="dl">'</span><span class="p">)</span>
-    <span class="p">})</span>
-<span class="p">})</span>
-<span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">6</span><span class="dl">'</span><span class="p">);</span>
-<span class="p">})</span>
-<span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">7</span><span class="dl">'</span><span class="p">);</span>
-    <span class="nx">resolve</span><span class="p">();</span>
-<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">8</span><span class="dl">'</span><span class="p">)</span>
-<span class="p">})</span>
-
-<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">9</span><span class="dl">'</span><span class="p">);</span>
-    <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">10</span><span class="dl">'</span><span class="p">);</span>
-    <span class="p">})</span>
-    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">11</span><span class="dl">'</span><span class="p">);</span>
-        <span class="nx">resolve</span><span class="p">();</span>
-    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">12</span><span class="dl">'</span><span class="p">)</span>
-    <span class="p">})</span>
-<span class="p">})</span>
-
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 非递归</span>
+<span class="kd">function</span> <span class="nx">BinarySearch</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">low</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">high</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="nx">low</span> <span class="o">&lt;</span> <span class="nx">high</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">mid</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">((</span><span class="nx">low</span> <span class="o">+</span> <span class="nx">high</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">mid</span><span class="p">])</span> <span class="p">{</span>
+      <span class="nx">low</span> <span class="o">=</span> <span class="nx">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">mid</span><span class="p">])</span> <span class="p">{</span>
+      <span class="nx">high</span> <span class="o">=</span> <span class="nx">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">mid</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// 递归</span>
+<span class="kd">function</span> <span class="nx">RecursiveBinarySearch</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">low</span><span class="p">,</span> <span class="nx">high</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">mid</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">((</span><span class="nx">low</span> <span class="o">+</span> <span class="nx">high</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nx">low</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="nx">mid</span><span class="p">]</span> <span class="o">==</span> <span class="nx">key</span><span class="p">)</span> <span class="k">return</span> <span class="nx">mid</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">low</span> <span class="o">&gt;=</span> <span class="nx">high</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">mid</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">RecursiveBinarySearch</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">high</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">mid</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">RecursiveBinarySearch</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">low</span><span class="p">,</span> <span class="nx">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div></div>
-
-<p>在上面的代码中，node环境下的输出顺序为<code class="highlighter-rouge">7\6\8\2\4\9\11\3\10\5\12</code>,在浏览器中的输出顺序为<code class="highlighter-rouge">7\8\2\4\5\9\11\12</code>,在浏览器中去除了<code class="highlighter-rouge">Process.nextTick()</code>这个方法。</p>
-
-<h2 id="总结">总结</h2>
-
-<p><img src="/img/20191025/1.png" alt="" /></p>
-
-<h2 id="参考文献">参考文献</h2>
-
-<p><a href="https://segmentfault.com/a/1190000011198232"><em>0. JavaScript 异步、栈、事件循环、任务队列</em></a>
-<a href="https://juejin.im/post/5b498d245188251b193d4059"><em>1. JS事件循环机制（event loop）之宏任务/微任务</em></a></p>
 
 
 
@@ -360,19 +262,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/10/15/emoji-spider/" data-toggle="tooltip" data-placement="top" title="一段表情包爬虫demo">
+                        <a href="/2020/02/23/sparse-gps-points/" data-toggle="tooltip" data-placement="top" title="GPS轨迹抽稀：Douglas-Peuker算法">
                         Previous<br>
-                        <span>一段表情包爬虫demo</span>
+                        <span>GPS轨迹抽稀：Douglas-Peuker算法</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/11/28/open-port-in-centos7_3/" data-toggle="tooltip" data-placement="top" title="centos 7.3 开放端口并对外开放">
-                        Next<br>
-                        <span>centos 7.3 开放端口并对外开放</span>
-                        </a>
-                    </li>
                     
                 </ul>
 

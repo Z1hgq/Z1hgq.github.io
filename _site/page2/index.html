@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>ABOUT - Z1hgq | Z1hgq Blog</title>
+    <title>Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/about/">
+    <link rel="canonical" href="http://localhost:4000/page2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -150,14 +150,14 @@
 
 
     <!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/about-bg.jpg')">
+<header class="intro-header" style="background-image: url('/img/bg-whale.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
                 <div class="site-heading">
-                    <h1>ABOUT</h1>
+                    <h1>Z1hgq</h1>
                     <!--<hr class="small">-->
-                    <span class="subheading"></span>
+                    <span class="subheading">清风拂山岗，明月照大江</span>
                 </div>
             </div>
         </div>
@@ -178,32 +178,50 @@
                 col-xs-12
                 postlist-container
             ">
-    			<!-- Language Selector -->
-<select class="sel-lang" onchange= "onLanChange(this.options[this.options.selectedIndex].value)">
-    <option value="0" selected> 中文 Chinese </option>
-    <option value="1"> 英文 English </option>
-</select>
+    			
+<div class="post-preview">
+    <a href="/2019/02/26/js-prototype-chain-and-extend/">
+        <h2 class="post-title">
+            js原型链及对象的继承
+        </h2>
+        
+        <h3 class="post-subtitle">
+            原型链图解及对象的几种继承方式
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  “”
 
-<!-- Chinese Version -->
-<div class="zh post-container">
-    
-    <blockquote>
-  <p>读书使人心眼明亮</p>
-  <h3 id="2015920196--swjtu-sist">2015.9~2019.6  <a href="https://www.swjtu.edu.cn/">SWJTU</a> <a href="http://sist.swjtu.edu.cn/index.do?action=index">SIST</a></h3>
-  <h3 id="20196now--streamax-front-end">2019.6~Now  <a href="http://www.streamax.com/">Streamax</a> front-end</h3>
-</blockquote>
 
+
+
+原型链
+
+JavaScript对象的原型（prototype）：
+
+
+  每一个构造函数都拥有一个prototype属性，这个属性指向一个对象，也就是原型对象。当使用这个构造函数创建实例的时候，prototype属性指向的原型对象就成为实例的原型对象。
+  原型对象默认拥有一个constructor属性，指向指向它的那个构造函数（也就是说构造函数和原型对象是互相指向的关系...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Z1hgq on February 26, 2019
+    </p>
 </div>
+<hr>
 
-<!-- English Version -->
-<div class="en post-container">
+
+<!-- Pager -->
+
+<ul class="pager">
     
-    <h3 id="2015920196--swjtu-sist">2015.9~2019.6  <a href="https://www.swjtu.edu.cn/">SWJTU</a> <a href="http://sist.swjtu.edu.cn/index.do?action=index">SIST</a></h3>
-<h3 id="20196now--streamax-front-end">2019.6~Now  <a href="http://www.streamax.com/">Streamax</a> front-end</h3>
-
-</div>
-
-
+    <li class="previous">
+        <a href="/">&larr; Newer Posts</a>
+    </li>
+    
+    
+</ul>
 
 
     		</div>
@@ -485,55 +503,6 @@
 
 
 <!-- Multi-Lingual -->
-
-<!-- Handle Language Change -->
-<script type="text/javascript">
-    // get nodes
-    var $zh = document.querySelector(".zh");
-    var $en = document.querySelector(".en");
-    var $select = document.querySelector("select");
-
-    // bind hashchange event
-    // Changes at v1.7.2: change the language flag from hash-basing to in-memory basing
-    // due to its confliction with catalog anchors.
-    // window.addEventListener('hashchange', _render);
-
-    // handle render
-    function _render(_hash){
-        var _hash = _hash || window.location.hash;
-        // en
-        if(_hash == "#en"){
-            $select.selectedIndex = 1;
-            $en.style.display = "block";
-            $en.classList.add("active");
-            $zh.style.display = "none";
-            $zh.classList.remove("active");
-        // zh by default
-        }else{
-            // not trigger onChange, otherwise cause a loop call.
-            $select.selectedIndex = 0;
-            $zh.style.display = "block";
-            $zh.classList.add("active");
-            $en.style.display = "none";
-            $en.classList.remove("active");
-        }
-        // interop with catalog 
-        if ("") generateCatalog(".catalog-body");
-    }
-
-    // handle select change
-    function onLanChange(index){
-        if(index == 0){
-            _hash = "#zh"
-        }else{
-            _hash = "#en"
-        }
-        _render(_hash)
-    }
-
-    // init
-    _render();
-</script>
 
 
 
