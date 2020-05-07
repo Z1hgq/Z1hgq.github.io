@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关于前端与设计、摄影 | Z1hgq, Web & Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
+    <meta name="theme-color" content="#000000">
+    
+    <title>React单元测试方案 - Z1hgq | Z1hgq Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2020/05/07/react-unit-test/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <!-- <link rel="stylesheet" href="/css/syntax.css"> -->
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    
+    <!-- diy code hightlighter -->
+    <link rel="stylesheet" href="/css/pygments.css">
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+    
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Z1hgq</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">ABOUT</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-rwd.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#React" title="React">React</a>
+                        
+                        <a class="tag" href="/tags/#测试" title="测试">测试</a>
+                        
+                        <a class="tag" href="/tags/#单元测试" title="单元测试">单元测试</a>
+                        
+                        <a class="tag" href="/tags/#React Hooks" title="React Hooks">React Hooks</a>
+                        
+                    </div>
+                    <h1>React单元测试方案</h1>
+                    
+                    
+                    <h2 class="subheading">React unit test</h2>
+                    
+                    <span class="meta">Posted by Z1hgq on May 7, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>“”</p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-前言">1. 前言</h2>
+
+<h3 id="11-什么是软件测试">1.1 什么是软件测试</h3>
+
+<ol>
+  <li>用来确认一个程序的品质或性能是否符合开发之前所提出的一些要求。</li>
+  <li>软件测试就是在软件投入运行前，对软件需求分析、设计规格说明和编码的最终复审，是软件质量保证的关键步骤。</li>
+  <li>软件测试是为了发现错误而执行程序的过程。</li>
+</ol>
+
+<h3 id="12-软件测试的目的">1.2 软件测试的目的</h3>
+
+<ol>
+  <li>测试可以确保得到预期的结果</li>
+  <li>作为现有代码行为的描述</li>
+  <li>促使开发者写可测试的代码，一般可测试的代码可读性也会高一点</li>
+  <li>如果依赖的组件有修改，受影响的组件能在测试中发现错误</li>
+</ol>
+
+<h3 id="13-测试的类型">1.3 测试的类型</h3>
+
+<p><img src="/img/20200507/test-type.png" alt="test-type" /></p>
+
+<p>​		<strong>单元测试</strong> 指的是以原件的单元为单位，对软件进行测试。单元可以是一个函数，也可以是一个模块或一个组件，基本特征就是只要输入不变，必定返回同样的输出。一个软件越容易些单元测试，就表明它的模块化结构越好，给模块之间的耦合越弱。React的组件化和函数式编程，天生适合进行单元测试。</p>
+
+<h3 id="14-开发模式">1.4 开发模式</h3>
+
+<ul>
+  <li><a href="https://baike.baidu.com/item/TDD/9064369">TDD</a>：测试驱动开发(Testing Driven Development)，强调的是一种开发方式，以测试来驱动整个项目，即先根据接口完成测试编写，然后在完成功能是要不断通过测试，最终目的是通过所有测试。</li>
+  <li><a href="https://baike.baidu.com/item/%E8%A1%8C%E4%B8%BA%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91?fromtitle=BDD&amp;fromid=10735732">BDD</a>：行为驱动测试(Behavior Driven Development)，强调的是写测试的风格，即测试要写的像自然语言，让项目的各个成员甚至产品都能看懂测试，甚至编写测试。</li>
+</ul>
+
+<p>​		TDD和BDD有各自的使用场景，BDD一般偏向于系统功能和业务逻辑的自动化测试设计；而TDD在快速开发并测试功能模块的过程中则更加高效，以快速完成开发为目的。</p>
+
+<hr />
+
+<h2 id="2-技术选型jest--enzyme">2. 技术选型：Jest + Enzyme</h2>
+
+<h3 id="21-jest">2.1 Jest</h3>
+
+<p>​		Jest是Facebook开源的一个前端测试框架，主要用于React和React Native的单元测试，已被集成在create-react-app中。Jest特点：</p>
+
+<ol>
+  <li>易用性：基于Jasmine，提供断言库，支持多种测试风格。</li>
+  <li>适应性：Jest是模块化、可扩展和可配置的。</li>
+  <li>沙箱和快照：Jest内置了JSDOM，能够模拟浏览器环境，并且并行执行。</li>
+  <li>快照测试：Jest能够对React组件树进行序列化，生成对应的字符串快照，通过比较字符串提供高性能的UI检测。</li>
+  <li>Mock系统：Jest实现了一个强大的Mock系统，支持自动和手动mock。</li>
+  <li>支持异步代码测试：支持Promise和async/await。</li>
+  <li>自动生成静态分析结果：内置Istanbul，测试代码覆盖率，并生成对应的报告。</li>
+</ol>
+
+<h3 id="22-enzyme">2.2 Enzyme</h3>
+
+<p>​		Enzyme是Airbnb开源的React测试工具库库，它功能过对官方的测试工具库ReactTestUtils的二次封装，提供了一套简洁强大的 API，并内置Cheerio。</p>
+
+<p>​		Enzyme实现了jQuery风格的方式进行DOM 处理，开发体验十分友好。在开源社区有超高人气，同时也获得了React 官方的推荐。</p>
+
+<hr />
+
+<h2 id="3-测试环境搭建">3. 测试环境搭建</h2>
+
+<p>​		安装<code class="highlighter-rouge">jest</code>、<code class="highlighter-rouge">enzyme</code>，项目根目录新建文件<code class="highlighter-rouge">jest.config.js</code>进行jest测试规则的配置，更多配置规则请参考<a href="https://jestjs.io/docs/en/configuration">jest官网详细配置规则</a>。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// 单元测试环境根目录</span>
+    <span class="na">rootDir</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">),</span>
+    <span class="c1">// 指定需要进行单元测试的文件匹配规则</span>
+    <span class="na">testMatch</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">&lt;rootDir&gt;/test/**/__test__/*.js</span><span class="dl">"</span><span class="p">],</span>
+    <span class="c1">// 用正则来匹配不用测试的文件</span>
+    <span class="na">testPathIgnorePatterns</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">/node/modules</span><span class="dl">"</span><span class="p">],</span>
+    <span class="na">testURL</span><span class="p">:</span> <span class="dl">"</span><span class="s2">http://localhost/</span><span class="dl">"</span><span class="p">,</span>
+    <span class="c1">// 是否生成测试覆盖报告，如果开启，会增加测试的时间</span>
+    <span class="na">collectCoverage</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="c1">// 生成的测试报告路径</span>
+    <span class="na">coverageDirectory</span><span class="p">:</span> <span class="dl">"</span><span class="s2">./coverage</span><span class="dl">"</span><span class="p">,</span>
+    <span class="c1">// 代表支持加载的文件名</span>
+    <span class="na">moduleFileExtensions</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">js</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">jsx</span><span class="dl">"</span><span class="p">],</span>
+    <span class="c1">// 代表需要被Mock的资源名称</span>
+    <span class="na">moduleNameMapper</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="se">\\</span><span class="s2">.(css|less)$</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">identity-obj-proxy</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">transform</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">^.+</span><span class="se">\\</span><span class="s2">.js$</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">babel-jest</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="se">\\</span><span class="s2">.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$</span><span class="dl">"</span><span class="p">:</span>
+			<span class="dl">"</span><span class="s2">&lt;rootDir&gt;/fileTransformer.js</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">transformIgnorePatterns</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">&lt;rootDir&gt;/node_modules/(?!(lodash-es|other-es-lib))</span><span class="dl">"</span><span class="p">]</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>​		写好jest配置文件之后，需要在package.json中定义test命令，在<code class="highlighter-rouge">scripts</code>中新增<code class="highlighter-rouge">"test": "jest --config ./jest.config.js"</code>	随即便可在当前项目下命令行使用<code class="highlighter-rouge">npm run test</code>执行测试代码。</p>
+
+<p>​		值得注意的是需要安装包<code class="highlighter-rouge">identity-obj-proxy</code>对样式文件进行模拟，安装包<code class="highlighter-rouge">babel-jest</code>处理我们书写的测试代码中的ES6+语法。transform中的静态文件处理函数如下：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// fileTransformer.js</span>
+<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">process</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">config</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="dl">"</span><span class="s2">module.exports = </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">basename</span><span class="p">(</span><span class="nx">filename</span><span class="p">))</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">;</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>​		如果React的版本是15或者16，需要安装对应的<code class="highlighter-rouge">enzyme-adapter-react-15</code>和<code class="highlighter-rouge">enzyme-adapter-react-16</code>并在测试代码中配置。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Enzyme</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">enzyme</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Adapter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">enzyme-adapter-react-16</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">Enzyme</span><span class="p">.</span><span class="nx">configure</span><span class="p">({</span> <span class="na">adapter</span><span class="p">:</span> <span class="k">new</span> <span class="nx">Adapter</span><span class="p">()</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>​		同时我们需要在根目录新建<code class="highlighter-rouge">.babelrc</code>对babel进行配置，此过程中需要安装<code class="highlighter-rouge">@babel/plugin-proposal-class-properties</code>、<code class="highlighter-rouge">@babel/cli</code>、<code class="highlighter-rouge">@babel/core</code>、<code class="highlighter-rouge">@babel/plugin-transform-runtime</code>、<code class="highlighter-rouge">@babel/preset-env</code>、<code class="highlighter-rouge">@babel/preset-react</code></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"presets"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"@babel/preset-env"</span><span class="p">,</span><span class="w"> </span><span class="s2">"@babel/preset-react"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"plugins"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"@babel/plugin-transform-runtime"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"@babel/plugin-proposal-class-properties"</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="4-jest">4. Jest</h2>
+
+<h3 id="41-globals-api">4.1 <a href="https://jestjs.io/docs/en/api.html">globals api</a></h3>
+
+<ul>
+  <li>describe(name, fn)：描述块，讲一组功能相关的测试用例组合在一起。</li>
+  <li>it(name, fn, timeout)：别名test，用来放测试用例。</li>
+  <li>afterAll(fn, timeout)：所有测试用例跑完以后执行的方法。</li>
+  <li>beforeAll(fn, timeout)：所有测试用例执行之前执行的方法。</li>
+  <li>afterEach(fn)：在每个测试用例执行完后执行的方法。</li>
+  <li>beforeEach(fn)：在每个测试用例执行之前需要执行的方法。</li>
+</ul>
+
+<p>​		全局和describe都可以有上面四个周期函数，describe的after函数优先级要高于全局的after函数，describe的before函数优先级要低于全局的before函数。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">beforeAll</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">global before all</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">afterAll</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">global after all</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">beforeEach</span><span class="p">(()</span> <span class="o">=&gt;</span><span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">global before each</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">afterEach</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">global after each</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">test1</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">beforeAll</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">test1 before all</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+  <span class="nx">afterAll</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">test1 after all</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+  <span class="nx">beforeEach</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">test1 before each</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+  <span class="nx">afterEach</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">test1 after each</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">test sum</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">test mutil</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
+  <span class="p">});</span>
+  
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p><img src="/img/20200507/globals-api.png" alt="globals-api" style="zoom:60%;" /></p>
+
+<h3 id="42-config">4.2 <a href="https://facebook.github.io/jest/docs/en/configuration.html">config</a></h3>
+
+<p>​		Jest拥有丰富的配置项，可以写在package.json里增加增加jest字段来进行配置，或者通过命令行–config来指定配置文件。</p>
+
+<h3 id="43-jest对象">4.3 <a href="https://jestjs.io/docs/en/jest-object.html">jest对象</a></h3>
+
+<ul>
+  <li>jest.fn(implementation)：返回一个全新没有使用过的mock function，这个function在被调用的时候会记录很多和函数调用有关的信息</li>
+  <li>jest.mock(moduleName, factory, options)：用来mock一些模块或者文件</li>
+  <li>jest.spyOn(object, methodName)：返回一个mock function，和jest.fn相似，但是能够追踪object[methodName]的调用信息，类似Sinon</li>
+</ul>
+
+<h3 id="44-mock-functions">4.4 <a href="https://facebook.github.io/jest/docs/en/mock-functions.html">Mock Functions</a></h3>
+
+<p>使用mock函数可以轻松的模拟代码之间的依赖，可以通过fn或spyOn来mock某个具体的函数；通过mock来模拟某个模块。具体的API可以看<a href="https://facebook.github.io/jest/docs/en/mock-function-api.html">mock-function-api</a>。</p>
+
+<h3 id="45-快照">4.5 <a href="https://facebook.github.io/jest/docs/en/snapshot-testing.html">快照</a></h3>
+
+<p>​		快照会生成一个组件的UI结构，并用字符串的形式存放在__snapshots__文件里，通过比较两个字符串来判断UI是否改变，因为是字符串比较，所以性能很高。</p>
+
+<p>​		要使用快照功能，需要引入<code class="highlighter-rouge">react-test-renderer</code>库，使用其中的renderer方法，jest在执行的时候如果发现toMatchSnapshot方法，会在同级目录下生成一个__snapshots文件夹用来存放快照文件，以后每次测试的时候都会和第一次生成的快照进行比较。可以使用<code class="highlighter-rouge">jest --updateSnapshot</code>来更新快照文件。</p>
+
+<h3 id="45-异步测试">4.5 <a href="https://facebook.github.io/jest/docs/en/asynchronous.html">异步测试</a></h3>
+
+<p>​		Jest支持对异步的测试，支持Promise和Async/Await两种方式的异步测试。</p>
+
+<h3 id="46-常见断言">4.6 <a href="https://facebook.github.io/jest/docs/zh-Hans/expect.html">常见断言</a></h3>
+
+<ol>
+  <li>expect(value)：要测试一个值进行断言的时候，要使用expect对值进行包裹</li>
+  <li>toBe(value)：使用Object.is来进行比较，如果进行浮点数的比较，要使用toBeCloseTo</li>
+  <li>not：用来取反</li>
+  <li>toEqual(value)：用于对象的深比较</li>
+  <li>toMatch(regexpOrString)：用来检查字符串是否匹配，可以是正则表达式或者字符串</li>
+  <li>toContain(item)：用来判断item是否在一个数组中，也可以用于字符串的判断</li>
+  <li>toBeNull(value)：只匹配null</li>
+  <li>toBeUndefined(value)：只匹配undefined</li>
+  <li>toBeDefined(value)：与toBeUndefined相反</li>
+  <li>toBeTruthy(value)：匹配任何使if语句为真的值</li>
+  <li>toBeFalsy(value)：匹配任何使if语句为假的值</li>
+  <li>toBeGreaterThan(number)： 大于</li>
+  <li>toBeGreaterThanOrEqual(number)：大于等于</li>
+  <li>toBeLessThan(number)：小于</li>
+  <li>toBeLessThanOrEqual(number)：小于等于</li>
+  <li>toBeInstanceOf(class)：判断是不是class的实例</li>
+  <li>anything(value)：匹配除了null和undefined以外的所有值</li>
+  <li>resolves：用来取出promise为fulfilled时包裹的值，支持链式调用</li>
+  <li>rejects：用来取出promise为rejected时包裹的值，支持链式调用</li>
+  <li>toHaveBeenCalled()：用来判断mock function是否被调用过</li>
+  <li>toHaveBeenCalledTimes(number)：用来判断mock function被调用的次数</li>
+  <li>assertions(number)：验证在一个测试用例中有number个断言被调用</li>
+  <li>extend(matchers)：自定义一些断言</li>
+</ol>
+
+<hr />
+
+<h2 id="5-enzyme">5. Enzyme</h2>
+
+<h3 id="51-三种渲染方法">5.1 三种渲染方法</h3>
+
+<ol>
+  <li><code class="highlighter-rouge">shallow</code>：浅渲染，是对官方的Shallow Renderer的封装。将组件渲染成虚拟DOM对象，只会渲染第一层，子组件将不会被渲染出来，使得效率非常高。不需要DOM环境， 并可以使用jQuery的方式访问组件的信息</li>
+  <li><code class="highlighter-rouge">render</code>：静态渲染，它将React组件渲染成静态的HTML字符串，然后使用Cheerio这个库解析这段字符串，并返回一个Cheerio的实例对象，可以用来分析组件的html结构</li>
+  <li><code class="highlighter-rouge">mount</code>：完全渲染，它将组件渲染加载成一个真实的DOM节点，用来测试DOM API的交互和组件的生命周期。用到了jsdom来模拟浏览器环境</li>
+</ol>
+
+<p>​		三种方法中，shallow和mount因为返回的是DOM对象，可以用simulate进行交互模拟，而render方法不可以。一般shallow方法就可以满足需求，如果需要对子组件进行判断，需要使用render，如果需要测试组件的生命周期，需要使用mount方法。</p>
+
+<h3 id="52-常用方法">5.2 常用方法</h3>
+
+<ol>
+  <li>simulate(event, mock)：模拟事件，用来触发事件，event为事件名称，mock为一个event object</li>
+  <li>instance()：返回组件的实例</li>
+  <li>find(selector)：根据选择器查找节点，selector可以是CSS中的选择器，或者是组件的构造函数，组件的display name等</li>
+  <li>at(index)：返回一个渲染过的对象</li>
+  <li>get(index)：返回一个react node，要测试它，需要重新渲染</li>
+  <li>contains(nodeOrNodes)：当前对象是否包含参数重点 node，参数类型为react对象或对象数组</li>
+  <li>text()：返回当前组件的文本内容</li>
+  <li>html()： 返回当前组件的HTML代码形式</li>
+  <li>props()：返回根组件的所有属性</li>
+  <li>prop(key)：返回根组件的指定属性</li>
+  <li>state()：返回根组件的状态</li>
+  <li>setState(nextState)：设置根组件的状态</li>
+  <li>setProps(nextProps)：设置根组件的属性</li>
+</ol>
+
+<hr />
+
+<h2 id="6-编写测试代码">6. 编写测试代码</h2>
+
+<h3 id="61-使用-snapshot-进行-ui-测试">6.1 使用 snapshot 进行 UI 测试</h3>
+
+<ul>
+  <li>
+    <h4 id="组件代码用于6162">组件代码(用于6.1、6.2)</h4>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+  
+<span class="k">import</span> <span class="dl">"</span><span class="s2">./index.less</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">Button</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">className</span><span class="p">,</span> <span class="nx">onClick</span><span class="p">,</span> <span class="nx">children</span><span class="p">,</span> <span class="nx">size</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">style</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span>
+            <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">style</span><span class="p">}</span>
+            <span class="nx">className</span><span class="o">=</span><span class="p">{</span><span class="s2">`custom-button </span><span class="p">${</span><span class="nx">size</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">className</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">}</span>
+            <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onClick</span><span class="p">}</span>
+        <span class="o">&gt;</span>
+            <span class="p">{</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">?</span> <span class="nx">children</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">)</span> <span class="p">:</span> <span class="nx">children</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">};</span>
+  
+<span class="nx">Button</span><span class="p">.</span><span class="nx">defaultProps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">className</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+    <span class="na">size</span><span class="p">:</span> <span class="dl">"</span><span class="s2">middle</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">onClick</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{},</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+    <span class="na">style</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">};</span>
+  
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Button</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <h4 id="测试">测试</h4>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">renders correctly</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">tree</span> <span class="o">=</span> <span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Button</span> <span class="o">/&gt;</span><span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">tree</span><span class="p">).</span><span class="nx">toMatchSnapshot</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>​		当使用toMatchSnapshot的时候，会生成一份组件DOM的快照，以后每次运行测试用例的时候，都会生成一份组件快照和第一次生成的快照进行对比，如果对组件的结构进行修改，那么生成的快照就会对比失败。可以通过更新快照重新进行UI测试。</p>
+
+<h3 id="62-对组件节点进行测试">6.2 对组件节点进行测试</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">should has span</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">Button</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">span</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">icon</span><span class="dl">"</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p">{</span><span class="dl">"</span><span class="s2">按钮</span><span class="dl">"</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/span</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/Button</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">span</span><span class="dl">"</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">should onClick be called</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">onClick</span> <span class="o">=</span> <span class="nx">jest</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onClick</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="se">)</span><span class="err">;
+</span>    <span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">.custom-button</span><span class="dl">"</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">onClick</span><span class="p">).</span><span class="nx">toBeCalled</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">should button text match the list</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">Button</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">span</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">icon</span><span class="dl">"</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p">{</span><span class="dl">"</span><span class="s2">按钮</span><span class="dl">"</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/span</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/Button</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+    <span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">span</span><span class="dl">"</span><span class="p">).</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">node</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">text</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">([</span><span class="dl">""</span><span class="p">,</span> <span class="dl">"</span><span class="s2">按钮</span><span class="dl">"</span><span class="p">][</span><span class="nx">index</span><span class="p">]);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>​		判断组件是否有span这个元素，使用shallow方法进行组件的渲染，我们传入了两个span分别表示组件的图标和文字，所以预期应该有两个span元素。</p>
+
+<p>​		因为在组件内部onClick事件是绑定在最外层容器的，这个容器有一个固定的样式名称<code class="highlighter-rouge">.custom-button</code>，所以我们根据这个样式名称去选中节点，使用<code class="highlighter-rouge">simulate</code>模拟一个点击事件，最后判断传入的事件是否被调用即可。</p>
+
+<p>​		判断组件的内容实用mount方法对组件进行渲染，然后使用forEach方法判断得到的内容是否和传入的值相等。</p>
+
+<h3 id="63-测试组件内部函数和state">6.3 测试组件内部函数和state</h3>
+
+<ul>
+  <li>
+    <h4 id="类组件">类组件</h4>
+
+    <ul>
+      <li>
+        <h5 id="类组件代码">类组件代码</h5>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+    
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Test</span> <span class="kd">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+	<span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+	    <span class="na">count</span><span class="p">:</span> <span class="mi">0</span>
+	<span class="p">};</span>
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{}</span>
+	<span class="nx">inc</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	    <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span>
+	        <span class="na">count</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span>
+	    <span class="p">});</span>
+	<span class="p">};</span>
+	<span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+	    <span class="kd">const</span> <span class="p">{</span> <span class="nx">count</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">;</span>
+	    <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">count</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div&gt;</span><span class="err">;
+</span>	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <h5 id="测试-1">测试</h5>
+
+        <p>我们通过instance可以拿到组件内部的方法或者状态</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">calls component inc</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Test</span> <span class="o">/&gt;</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">spyFunction</span> <span class="o">=</span> <span class="nx">jest</span><span class="p">.</span><span class="nx">spyOn</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">instance</span><span class="p">(),</span> <span class="dl">"</span><span class="s2">inc</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">wrapper</span><span class="p">.</span><span class="nx">instance</span><span class="p">().</span><span class="nx">inc</span><span class="p">();</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">spyFunction</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+    <span class="c1">// 查看state的变化</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">instance</span><span class="p">().</span><span class="nx">state</span><span class="p">.</span><span class="nx">count</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="c1">// 查看页面的变化</span>
+  	<span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">div</span><span class="dl">"</span><span class="p">).</span><span class="nx">text</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">spyFunction</span><span class="p">.</span><span class="nx">mockRestore</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+
+    <p>​		使用instance函数来取得组件的实例，并用spyOn方法来mock实例上的内部方法，然后用这个实例去调用那个内部方法，就可以用替身来判断这个内部函数是否被调用。如果内部方法是用箭头函数来定义的时候，需要对实例进行mock；如果内部方法是通过正常的方式或者bind的方式定义的，那么需要对组件的prototype进行mock。其实对生命周期或者内部函数的测试，可以通过一些state的改变进行判断，因为这些函数的调用一般都会对组件的state进行一些操作。</p>
+  </li>
+  <li>
+    <h4 id="hooks组件">hooks组件</h4>
+
+    <ul>
+      <li>
+        <h5 id="hooks组件代码">hooks组件代码</h5>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+    
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Login</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="nx">propsEmail</span><span class="p">,</span> <span class="na">password</span><span class="p">:</span> <span class="nx">propsPassword</span><span class="p">,</span> <span class="nx">dispatch</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">isLoginDisabled</span><span class="p">,</span> <span class="nx">setIsLoginDisabled</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">email</span><span class="p">,</span> <span class="nx">setEmail</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">propsEmail</span> <span class="o">||</span> <span class="dl">''</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">password</span><span class="p">,</span> <span class="nx">setPassword</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">propsPassword</span> <span class="o">||</span> <span class="dl">''</span><span class="p">);</span>
+    
+  <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">validateForm</span><span class="p">();</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">]);</span>
+    
+  <span class="kd">const</span> <span class="nx">validateEmail</span> <span class="o">=</span> <span class="nx">text</span> <span class="o">=&gt;</span> <span class="sr">/@/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+    
+  <span class="kd">const</span> <span class="nx">validateForm</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setIsLoginDisabled</span><span class="p">(</span><span class="nx">password</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">8</span> <span class="o">||</span> <span class="o">!</span><span class="nx">validateEmail</span><span class="p">(</span><span class="nx">email</span><span class="p">));</span>
+  <span class="p">};</span>
+    
+  <span class="kd">const</span> <span class="nx">handleEmailBlur</span> <span class="o">=</span> <span class="nx">evt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">emailValue</span> <span class="o">=</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+    <span class="nx">setEmail</span><span class="p">(</span><span class="nx">emailValue</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="kd">const</span> <span class="nx">handlePasswordChange</span> <span class="o">=</span> <span class="nx">evt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">passwordValue</span> <span class="o">=</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+    <span class="nx">setPassword</span><span class="p">(</span><span class="nx">passwordValue</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="kd">const</span> <span class="nx">handleSubmit</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">submit(email, password)</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">setIsLoginDisabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">form</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+        <span class="nx">placeholder</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">mx-auto my-2</span><span class="dl">"</span>
+        <span class="nx">onBlur</span><span class="o">=</span><span class="p">{</span><span class="nx">handleEmailBlur</span><span class="p">}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">password</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">my-2</span><span class="dl">"</span>
+        <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">handlePasswordChange</span><span class="p">}</span>
+        <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">password</span><span class="p">}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">button</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">btn btn-primary</span><span class="dl">"</span>
+        <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}</span>
+        <span class="nx">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">isLoginDisabled</span><span class="p">}</span>
+        <span class="nx">value</span><span class="o">=</span><span class="dl">"</span><span class="s2">Submit</span><span class="dl">"</span>
+      <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="sr">/form</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <h5 id="测试state的更新">测试state的更新</h5>
+
+        <p>​		对于类组件我们知道了可以使用instance().state来获取组件的state，从而知晓其更新情况。但是对于hooks组件来说，state在函数内部不能导出，无法直接测试。为了测试 state 是否有更新，我们可以 <a href="https://airbnb.io/enzyme/docs/api/ShallowWrapper/simulate.html">simulate</a> 事件或者调用组件的属性方法，来检测 state 是否有更新并正确的渲染组件。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span><span class="p">);</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should set the password value on change event with trim</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="password"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">target</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">somenewpassword  </span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="password"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">value</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span>
+      <span class="dl">'</span><span class="s1">somenewpassword</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">);</span>
+<span class="p">});</span>
+    
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should call the dispatch function and disable the submit button on button click</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="button"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span>
+      <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="button"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">disabled</span><span class="dl">'</span><span class="p">),</span>
+    <span class="p">).</span><span class="nx">toBeTruthy</span><span class="p">();</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">initialProps</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">).</span><span class="nx">toHaveBeenCalledTimes</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+
+        <p>替代 <a href="https://airbnb.io/enzyme/docs/api/ShallowWrapper/simulate.html"><strong>simulate</strong></a> 的另外一方法是：可以通过调用挂载在 prop 上的方法，并传递必要的参数。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="password"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">onChange</span><span class="dl">'</span><span class="p">)({</span>
+    <span class="na">target</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">somenewpassword</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+
+        <p>这种方法常常用于测试自定义组件上面的方法，例如：</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Dropdown</span> <span class="nx">onDropdownClose</span><span class="o">=</span><span class="p">{</span><span class="nx">onDropdownClose</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span></code></pre></div>        </div>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">Dropdown</span><span class="dl">"</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">"</span><span class="s2">onDropdownClose</span><span class="dl">"</span><span class="p">)(</span><span class="cm">/* params */</span><span class="p">)</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <h5 id="测试那些不更新-state-的方法">测试那些不更新 state 的方法</h5>
+
+        <p>​		那些不需要维护 state 的方法可以重构从组件内部抽离放在单独文件中，单独测试这些功能函数，而不是在组件内部测试它们。如果，这个方法对组件非常特别，并不能提取到外面，我们也可以把它们跟组件放在同个一个文件中，但是，不要放在组件内部。为了使函数标准化，我们可以把它们抽象单一的方法。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">LoginMethods</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">isEmailValid</span> <span class="o">=</span> <span class="nx">text</span> <span class="o">=&gt;</span> <span class="sr">/@/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">isPasswordValid</span> <span class="o">=</span> <span class="nx">password</span> <span class="o">=&gt;</span> <span class="nx">password</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">areFormFieldsValid</span> <span class="o">=</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nx">isEmailValid</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">isPasswordValid</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">isEmailValid</span><span class="p">,</span>
+    <span class="nx">isPasswordValid</span><span class="p">,</span>
+    <span class="nx">areFormFieldsValid</span><span class="p">,</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+    
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Login</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* useState declarations unchanged */</span>
+    
+  <span class="nx">React</span><span class="p">.</span><span class="nx">useLayoutEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setIsLoginDisabled</span><span class="p">(</span><span class="o">!</span><span class="nx">LoginMethods</span><span class="p">().</span><span class="nx">areFormFieldsValid</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">));</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">]);</span>
+      
+<span class="p">};</span>
+</code></pre></div>        </div>
+
+        <p>这时，测试它们就非常的直接了。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">LoginMethods()</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">isEmailValid should return false if email is invalid</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">LoginMethods</span><span class="p">().</span><span class="nx">isEmailValid</span><span class="p">(</span><span class="dl">'</span><span class="s1">notvalidemail</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toBeFalsy</span><span class="p">();</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">LoginMethods</span><span class="p">().</span><span class="nx">isEmailValid</span><span class="p">(</span><span class="dl">'</span><span class="s1">notvalidemail.aswell</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toBeFalsy</span><span class="p">();</span>
+  <span class="p">});</span>
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">isEmailValid should return false if email is valid</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">LoginMethods</span><span class="p">().</span><span class="nx">isEmailValid</span><span class="p">(</span><span class="dl">'</span><span class="s1">validemail@gmail.com</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toBeTruthy</span><span class="p">();</span>
+  <span class="p">});</span>
+  <span class="cm">/* Similar for isPasswordValid and areFormFieldsValid */</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <h5 id="测试不可控组件">测试不可控组件</h5>
+
+        <p>​		如何测试<a href="https://reactjs.org/docs/uncontrolled-components.html">不可控组件呢</a>？由于，email input 是不可控的，它的 state 并不会受组件内部控制。如果，给组件设置一个 value 属性，我将会得到一个错误提示：<strong>onChange</strong> 是必须的，否则，组件将会变成一个只读的可控组件，并不能输入任何值。因此，为了在不设置 <strong>value</strong> 的情况下测试组件，我们将会把 email 的 state 赋值给 data-value 属性。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">input</span>
+	<span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+  <span class="nx">placeholder</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+  <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">mx-auto my-2</span><span class="dl">"</span>
+  <span class="nx">onBlur</span><span class="o">=</span><span class="p">{</span><span class="nx">handleEmailBlur</span><span class="p">}</span>
+  <span class="nx">data</span><span class="o">-</span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">email</span><span class="p">}</span>
+<span class="sr">/</span><span class="err">&gt;
+</span></code></pre></div>        </div>
+
+        <p>​		把 value 赋值给 <strong><em>data-value</em></strong> 后，我们就可以像可控组件一样通过模拟事件来测试，然后，检查一下 <strong><em>data-value</em></strong> 是否正确。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should set the email data value prop</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="email"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">'</span><span class="s1">blur</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">target</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">email@gmail.com</span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="email"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">data-value</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span>
+      <span class="dl">'</span><span class="s1">email@gmail.com</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <h5 id="重构无状态组件和自定义-hook">重构无状态组件和自定义 Hook</h5>
+
+        <p>​		为了减少不可控组件的相关问题，有一个实现上的建议，就是把 state 和生命周期相关的 hooks 抽离真实的组件，然后把它们作为<a href="https://reactjs.org/docs/hooks-custom.html">自定义 hook</a>来测试。</p>
+
+        <p>​		把 hook 抽离到一个单独方法中，并返回一个对象，然后，通过自定义 hook 把对象注入到函数组件中。通过这种实现后，函数组件被拆分成了一个自定义 hook 和一个无状态组件。通过注入自定义组件让无状态组件变得有状态。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+    
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">LoginMethods</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="cm">/* Same as before */</span> <span class="p">};</span>
+    
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">useLoginElements</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="nx">propsEmail</span><span class="p">,</span> <span class="na">password</span><span class="p">:</span> <span class="nx">propsPassword</span><span class="p">,</span> <span class="nx">dispatch</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">isLoginDisabled</span><span class="p">,</span> <span class="nx">setIsLoginDisabled</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">email</span><span class="p">,</span> <span class="nx">setEmail</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">propsEmail</span> <span class="o">||</span> <span class="dl">''</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">password</span><span class="p">,</span> <span class="nx">setPassword</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">propsPassword</span> <span class="o">||</span> <span class="dl">''</span><span class="p">);</span>
+    
+  <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setIsLoginDisabled</span><span class="p">(</span><span class="o">!</span><span class="nx">LoginMethods</span><span class="p">().</span><span class="nx">areFormFieldsValid</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">));</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">]);</span>
+    
+  <span class="kd">const</span> <span class="nx">handleEmailBlur</span> <span class="o">=</span> <span class="nx">evt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">emailValue</span> <span class="o">=</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+    <span class="nx">setEmail</span><span class="p">(</span><span class="nx">emailValue</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="kd">const</span> <span class="nx">handlePasswordChange</span> <span class="o">=</span> <span class="nx">evt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">passwordValue</span> <span class="o">=</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+    <span class="nx">setPassword</span><span class="p">(</span><span class="nx">passwordValue</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="kd">const</span> <span class="nx">handleSubmit</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">submit(email, password)</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">setIsLoginDisabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+  <span class="p">};</span>
+    
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">emailField</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">onBlur</span><span class="p">:</span> <span class="nx">handleEmailBlur</span><span class="p">,</span>
+      <span class="na">value</span><span class="p">:</span> <span class="nx">email</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="na">passwordField</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">onChange</span><span class="p">:</span> <span class="nx">handlePasswordChange</span><span class="p">,</span>
+      <span class="na">value</span><span class="p">:</span> <span class="nx">password</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="na">submitBtn</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">onClick</span><span class="p">:</span> <span class="nx">handleSubmit</span><span class="p">,</span>
+      <span class="na">disabled</span><span class="p">:</span> <span class="nx">isLoginDisabled</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+    
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Login</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">emailField</span><span class="p">,</span> <span class="nx">passwordField</span><span class="p">,</span> <span class="nx">submitBtn</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useLoginElements</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+    
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">form</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+        <span class="nx">placeholder</span><span class="o">=</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">mx-auto my-2</span><span class="dl">"</span>
+        <span class="nx">onBlur</span><span class="o">=</span><span class="p">{</span><span class="nx">emailField</span><span class="p">.</span><span class="nx">onBlur</span><span class="p">}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">password</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">my-2</span><span class="dl">"</span>
+        <span class="p">{...</span><span class="nx">passwordField</span><span class="p">}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">button</span><span class="dl">"</span>
+        <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">btn btn-primary</span><span class="dl">"</span>
+        <span class="nx">value</span><span class="o">=</span><span class="dl">"</span><span class="s2">Submit</span><span class="dl">"</span>
+        <span class="p">{...</span><span class="nx">submitBtn</span><span class="p">}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/form</span><span class="err">&gt;
+</span><span class="p">);</span>
+</code></pre></div>        </div>
+
+        <p>​		这将会解决不可控组件的问题，我们甚至可以通过自定义 hook 中的 <strong>value</strong> 属性（在 <strong>emailField</strong> 元素中）导出 email state，然后，在组件中，我们可以放弃那些不需要的属性，就像上面的示例一样只用那些必要的属性。上面的示例中我们只用到了来自 <strong><em>emailField</em></strong> 的 <strong><em>onBlur</em></strong> 方法。现在，我们可以把所有方法作为属性暴露出来，然后测试它们，其实，我们并不一定真正的用到它们。</p>
+      </li>
+      <li>
+        <h5 id="测试自定义-hook">测试自定义 hook</h5>
+
+        <p>​		现在，为了测试自定义 hook，我们把它引入到一个函数组件中，如果，我们不这么做，hook 将无法测试，这是因为 hooks 设计之初就只能在函数组件中使用。然后，我们期望自定义 hook 可以在函数组件中正常工作。</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">useLoginElements</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">Elements</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">props</span> <span class="o">=</span> <span class="nx">useLoginElements</span><span class="p">({});</span>
+    <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span> <span class="p">{...</span><span class="nx">props</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="err">;
+</span>  <span class="p">};</span> <span class="c1">// since hooks can only be used inside a function component we wrap it inside one</span>
+  <span class="kd">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Elements</span> <span class="o">/&gt;</span><span class="p">);</span>
+    
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should have proper props for email field</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">emailField</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">({</span>
+      <span class="na">value</span><span class="p">:</span> <span class="dl">''</span><span class="p">,</span>
+      <span class="na">onBlur</span><span class="p">:</span> <span class="nx">expect</span><span class="p">.</span><span class="nx">any</span><span class="p">(</span><span class="nb">Function</span><span class="p">),</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+    
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should set value on email onBlur event</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">emailField</span><span class="dl">'</span><span class="p">).</span><span class="nx">onBlur</span><span class="p">({</span>
+      <span class="na">target</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">newemail@gmail.com</span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">emailField</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">'</span><span class="s1">newemail@gmail.com</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+    
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should have proper props for password field</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="cm">/* Check onChange and value props */</span> <span class="p">});</span>
+  <span class="cm">/* check other functional behavior of the component */</span>
+<span class="p">});</span>
+    
+<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;Login/&gt;</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span><span class="p">);</span>
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should match the snapshot</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">html</span><span class="p">()).</span><span class="nx">toMatchSnapshot</span><span class="p">();</span>
+  <span class="p">});</span>
+ <span class="cm">/* Test for other ui aspects of the page and not the functional behavior of the component */</span>
+<span class="p">});</span>
+</code></pre></div>        </div>
+
+        <p>​		最后，在 Login 组件中，我们只需测试 UI，并不要关心其中的方法和行为。这样，我们就可以把 App 的行为和 UI 分开。</p>
+      </li>
+      <li>
+        <p>总结</p>
+
+        <p>​		对于hooks组件，与state无关的函数抽离到组件外部进行测试，与state相关的函数通过事件去触发，然后测试dom上的结果与期望是否相同。</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="64-测试生命周期">6.4 测试生命周期</h3>
+
+<ul>
+  <li>
+    <h4 id="类组件-1">类组件</h4>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">calls componentDidMount</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">componentDidMountSpy</span> <span class="o">=</span> <span class="nx">jest</span><span class="p">.</span><span class="nx">spyOn</span><span class="p">(</span><span class="nx">TodoList</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="dl">'</span><span class="s1">componentDidMount</span><span class="dl">'</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">shallow</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Test</span> <span class="o">/&gt;</span><span class="p">);</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">componentDidMountSpy</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+  <span class="nx">componentDidMountSpy</span><span class="p">.</span><span class="nx">mockRestore</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+
+    <p>​		使用spyOn来mock 组件的componentDidMount，替身函数要在组件渲染之前，所有替身函数要定义在setup执行之前，并且在判断以后要对替身函数restore，不然这个替身函数会一直存在，且被mock的那个函数无法被再次mock。</p>
+  </li>
+  <li>
+    <h4 id="hooks组件-1">hooks组件</h4>
+
+    <p>​		在使用 shallow 渲染组件时，<strong>useEffect</strong> 这种生命周期相关 hooks 还不支持 （这些 hooks 不会被调用），因此，我们需要用 mount 代替。就像 useState 一样，我们可以模式事件或者作为属性方法来执行，然后检测 props 是否有更新来验证 hooks 是否正确。</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;Login /&gt; test effect hooks</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span><span class="p">);</span>
+  
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should have the login disabled by default</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span>
+      <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="button"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">disabled</span><span class="dl">'</span><span class="p">),</span>
+    <span class="p">).</span><span class="nx">toBeTruthy</span><span class="p">();</span>
+  <span class="p">});</span>
+  
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should have the login enabled with valid values</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="password"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">target</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">validpassword</span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="button"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">disabled</span><span class="dl">'</span><span class="p">)).</span><span class="nx">toBeFalsy</span><span class="p">();</span>
+  <span class="p">});</span>
+  
+  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should have the login disabled with invalid values</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="email"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="dl">'</span><span class="s1">blur</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="cm">/* */</span> <span class="p">});</span>
+    <span class="nx">expect</span><span class="p">(</span>
+      <span class="nx">container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type="button"]</span><span class="dl">'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="dl">'</span><span class="s1">disabled</span><span class="dl">'</span><span class="p">),</span>
+    <span class="p">).</span><span class="nx">toBeTruthy</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+
+    <p>有关 Enzyme 支持的生命周期 hooks 详情可以看<a href="https://github.com/airbnb/enzyme/issues/2011">这里</a>。</p>
+  </li>
+</ul>
+
+<h3 id="65-测试promise">6.5 测试Promise</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用'.resolves'来测试promise成功时返回的值</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">works with resolves</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+   <span class="c1">// expect.assertions(1);</span>
+   <span class="nx">expect</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">5</span><span class="p">)).</span><span class="nx">resolves</span><span class="p">.</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">'</span><span class="s1">haha</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">});</span>
+
+<span class="c1">// 使用'.rejects'来测试promise失败时返回的值</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">works with rejects</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">expect</span><span class="p">.</span><span class="nx">assertions</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">3</span><span class="p">)).</span><span class="nx">rejects</span><span class="p">.</span><span class="nx">toEqual</span><span class="p">({</span>
+    <span class="na">error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User with 3 not found.</span><span class="dl">'</span><span class="p">,</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// 使用promise的返回值来进行测试</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">test resolve with promise</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">expect</span><span class="p">.</span><span class="nx">assertions</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">'</span><span class="s1">hehe</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">test error with promise</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">expect</span><span class="p">.</span><span class="nx">assertions</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="k">catch</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">e</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">({</span>
+      <span class="na">error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User with 2 not found.</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>​		当对Promise进行测试时，一定要在断言之前加一个return，不然没有等到Promise的返回，测试函数就会结束。可以使用.promises/.rejects对返回的值进行获取，或者使用then/catch方法进行判断。</p>
+
+<h3 id="66-测试asyncawait">6.6 测试async/await</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用async/await来测试resolve</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">works resolve with async/await</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">expect</span><span class="p">.</span><span class="nx">assertions</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">'</span><span class="s1">hehe</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// 使用async/await来测试reject</span>
+<span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">works reject with async/await</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">expect</span><span class="p">.</span><span class="nx">assertions</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="nx">user</span><span class="p">.</span><span class="nx">getUserName</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">e</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">({</span>
+      <span class="na">error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User with 1 not found.</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>​		使用async不用进行return返回，但是要使用try/catch来对异常进行捕获。</p>
+
+<h3 id="67-测试redux">6.7 测试redux</h3>
+
+<ul>
+  <li>
+    <h4 id="modal代码">modal代码</h4>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">namespace</span><span class="p">:</span> <span class="dl">"</span><span class="s2">example</span><span class="dl">"</span><span class="p">,</span>
+    
+  <span class="na">state</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">value</span><span class="p">:</span> <span class="dl">""</span>
+  <span class="p">},</span>
+  
+  <span class="na">effects</span><span class="p">:</span> <span class="p">{</span>
+    <span class="o">*</span> <span class="nx">fetch</span><span class="p">({</span> <span class="nx">payload</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">call</span><span class="p">,</span> <span class="nx">put</span> <span class="p">})</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">payload</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="k">yield</span> <span class="nx">put</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">save</span><span class="dl">"</span><span class="p">,</span> <span class="na">payload</span><span class="p">:</span> <span class="nx">data</span> <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  
+  <span class="na">reducers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nx">save</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">{</span> <span class="p">...</span><span class="nx">state</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="nx">action</span><span class="p">.</span><span class="nx">payload</span> <span class="p">};</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <h4 id="测试-2">测试</h4>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">expect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">expect</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">effects</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">dva/saga</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">example</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../../src/models/example</span><span class="dl">"</span><span class="p">;</span>
+  
+<span class="nx">describe</span><span class="p">(</span><span class="dl">"</span><span class="s2">example Model</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">loads</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">example</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+  <span class="p">});</span>
+  <span class="nx">describe</span><span class="p">(</span><span class="dl">"</span><span class="s2">state</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">case: value</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">example</span><span class="p">.</span><span class="nx">state</span><span class="p">;</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">value</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+  
+  <span class="nx">describe</span><span class="p">(</span><span class="dl">"</span><span class="s2">reducers</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">case: save should work</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">reducers</span> <span class="o">=</span> <span class="nx">example</span><span class="p">.</span><span class="nx">reducers</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">reducer</span> <span class="o">=</span> <span class="nx">reducers</span><span class="p">.</span><span class="nx">save</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">""</span>
+      <span class="p">};</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">reducer</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="p">{</span> <span class="na">payload</span><span class="p">:</span> <span class="dl">"</span><span class="s2">message</span><span class="dl">"</span> <span class="p">})).</span><span class="nx">toEqual</span><span class="p">({</span>
+        <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">message</span><span class="dl">"</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+  
+  <span class="nx">describe</span><span class="p">(</span><span class="dl">"</span><span class="s2">effects</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">fetch should work</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="p">{</span> <span class="nx">call</span><span class="p">,</span> <span class="nx">put</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">effects</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">sagas</span> <span class="o">=</span> <span class="nx">example</span><span class="p">.</span><span class="nx">effects</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">saga</span> <span class="o">=</span> <span class="nx">sagas</span><span class="p">.</span><span class="nx">fetch</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">generator</span> <span class="o">=</span> <span class="nx">saga</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">example/fetch</span><span class="dl">"</span><span class="p">,</span> <span class="na">payload</span><span class="p">:</span> <span class="mi">111</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">call</span><span class="p">,</span> <span class="nx">put</span> <span class="p">});</span>
+      <span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">generator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">next</span><span class="p">.</span><span class="nx">value</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">put</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">save</span><span class="dl">"</span><span class="p">,</span> <span class="na">payload</span><span class="p">:</span> <span class="mi">222</span> <span class="p">}));</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="7-测试覆盖率">7. 测试覆盖率</h2>
+
+<p>​		代码覆盖率是一个测试指标，用来描述测试用例的代码是否都被执行。统计代码覆盖率一般要借助代码覆盖工具，Jest集成了Istanbul这个代码覆盖工具。</p>
+
+<h3 id="71-四个测量维度">7.1 四个测量维度</h3>
+
+<ol>
+  <li>行覆盖率(line coverage)：是否测试用例的每一行都执行了</li>
+  <li>函数覆盖率(function coverage)：师傅测试用例的每一个函数都调用了</li>
+  <li>分支覆盖率(branch coverage)：是否测试用例的每个if代码块都执行了</li>
+  <li>语句覆盖率(statement coverage)：是否测试用例的每个语句都执行了</li>
+</ol>
+
+<p>在四个维度中，如果代码书写的很规范，行覆盖率和语句覆盖率应该是一样的。会触发分支覆盖率的情况有很多种，主要有以下几种：</p>
+
+<ul>
+  <li>||，&amp;&amp;，？，！</li>
+  <li>if语句</li>
+  <li>switch语句</li>
+</ul>
+
+<h3 id="72-设置阈值">7.2 设置阈值</h3>
+
+<p>​		在Jest中，可以通过coverageThreshold这个配置项来设置不同测试维度的覆盖率阈值。global是全局配置，默认所有的测试用例都要满足这个配置才能通过测试。还支持通配符模式或者路径配置，如果存在这些配置，那么匹配到的文件的覆盖率将从全局覆盖率的计算中去除，独立使用各自设置的阈值。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="p">...</span>
+  <span class="dl">"</span><span class="s2">jest</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">coverageThreshold</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">"</span><span class="s2">global</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">branches</span><span class="dl">"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">functions</span><span class="dl">"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">lines</span><span class="dl">"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">statements</span><span class="dl">"</span><span class="p">:</span> <span class="mi">50</span>
+      <span class="p">},</span>
+      <span class="dl">"</span><span class="s2">./src/components/</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">branches</span><span class="dl">"</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">statements</span><span class="dl">"</span><span class="p">:</span> <span class="mi">40</span>
+      <span class="p">},</span>
+      <span class="dl">"</span><span class="s2">./src/reducers/**/*.js</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">statements</span><span class="dl">"</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="dl">"</span><span class="s2">./src/api/very-important-module.js</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">branches</span><span class="dl">"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">functions</span><span class="dl">"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">lines</span><span class="dl">"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">statements</span><span class="dl">"</span><span class="p">:</span> <span class="mi">100</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="8-集成到脚手架">8. 集成到脚手架</h2>
+
+<p>​		在项目中引用单元测试后，希望每次修改需要测试的文件时，能在提交代码前自动跑一边测试用例，保证代码的正确性和健壮性。</p>
+
+<p>​		在项目中可以使用husky，用来触发git的<a href="https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子">hooks</a>，做一些代码提交前的校验。在项目中安装<a href="https://github.com/typicode/husky">husky</a>以后，会在 .git/hooks 中写入 pre-commit 等脚本激活<a href="https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子">钩子</a>，在 Git 进行相关操作时触发。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">husky</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">hooks</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">pre-commit</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">npm run test</span><span class="dl">"</span>
+  <span class="p">}</span>
+<span class="p">},</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="9-参考文档">9. 参考文档</h2>
+
+<ul>
+  <li><a href="https://jestjs.io/">Jest</a></li>
+  <li><a href="https://github.com/enzymejs/enzyme">Enzyme</a></li>
+  <li>
+    <p><a href="https://juejin.im/post/5b6c39bde51d45195c079d62#heading-35">使用Jest进行React单元测试</a></p>
+  </li>
+  <li><a href="https://juejin.im/post/5e933cbc6fb9a03c74137865#heading-5">【译】用 Enzyme 测试使用 Hooks 的 React 函数组件</a></li>
+  <li><a href="https://github.com/dvajs/dva-example-user-dashboard/pull/15/commits/df7b5fed8fe9a778b9f802a6a9944192cc1a80bb">Redux测试</a></li>
+  <li><a href="https://juejin.im/post/59019ac8b123db260cc6ae91">基于 Jest + Enzyme 的 React 单元测试</a></li>
+  <li><a href="https://note.youdao.com/ynoteshare1/index.html?id=0166677f1ea6f968bbe5086c70ecced9&amp;type=note">单元测试记录之Jest &amp; Enzyme.md</a></li>
+</ul>
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/04/30/divide-and-conquer/" data-toggle="tooltip" data-placement="top" title="常用算法--分治(Divide And Conquer)">
+                        Previous<br>
+                        <span>常用算法--分治(Divide And Conquer)</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#JavaScript" title="JavaScript" rel="7">
+                                    JavaScript
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#算法" title="算法" rel="3">
+                                    算法
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#Linux" title="Linux" rel="2">
+                                    Linux
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://minghuanliu.com/">Ericonaldo(Minghuan Liu)</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/喝酒的猫">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a target="_blank" href="http://weibo.com/成都市民张先生">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Z1hgq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Z1hgq 2020
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+
+    <!-- <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet"> -->
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
