@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>GPS轨迹抽稀：Douglas-Peuker算法 - Z1hgq | Z1hgq Blog</title>
+    <title>linux常用命令 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2020/02/23/sparse-gps-points/">
+    <link rel="canonical" href="http://localhost:4000/2020/05/30/linux-com-used-cmd/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -170,17 +170,19 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        <a class="tag" href="/tags/#linux" title="linux">linux</a>
                         
-                        <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                        <a class="tag" href="/tags/#shell" title="shell">shell</a>
+                        
+                        <a class="tag" href="/tags/#centos" title="centos">centos</a>
                         
                     </div>
-                    <h1>GPS轨迹抽稀：Douglas-Peuker算法</h1>
+                    <h1>linux常用命令</h1>
                     
                     
                     <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by Z1hgq on February 23, 2020</span>
+                    <span class="meta">Posted by Z1hgq on May 30, 2020</span>
                 </div>
             </div>
         </div>
@@ -202,118 +204,38 @@
                 
 
 				<blockquote>
-  <p>“其实，人间路是一条向死而生的路，每个人的生命都是走向死亡的一个过程。在这条路上我们无法回头，也终会走到终点。没有永远，只有永别。这一路上你的所作所为，你所经历的事务，见过的风景同伴，便是你这一行的意义所在。我们都是彼此路上的意义。”</p>
+  <p>“”</p>
 </blockquote>
 
 <hr />
-<h3 id="背景">背景</h3>
 
-<p>在对行车轨迹在地图上进行展示时，往往需要绘制大量的坐标点，但是设备取点的间隔往往是固定的，传统的做法是将所有的点绘制出来，极大地消耗了浏览器的性能。然而在一条轨迹上，两点便可以确定一条直线，因此在行驶路径比较直的区域，很多坐标点都是可以舍弃的，同时，当对地图进行缩小，使可视区域变大时，坐标点也不必绘制地十分精确，往往取一些关键点就能绘制出行驶轨迹。<code class="highlighter-rouge">Douglas-Peuker</code>正是一个对坐标关键点进行抽取的算法。</p>
+<h4 id="磁盘逻辑卷拓展">磁盘逻辑卷拓展</h4>
 
-<hr />
-<h3 id="算法原理">算法原理</h3>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看磁盘使用情况</span>
+<span class="nb">df</span> <span class="nt">-h</span>
 
-<p><strong>1.</strong>  将轨迹的首尾点连成一条线，计算曲线上每一个点到直线的距离，找出最大距离<code class="highlighter-rouge">dmax</code>，看距离是否小于给定的阈值<code class="highlighter-rouge">max</code>（及轨迹精确度）。
-   <img src="/img/20200223/01.png" alt="01" />
-<strong>2.</strong>  a.若<code class="highlighter-rouge">dmax &lt; max</code>，则舍弃这条曲线上的所有中间点，将曲线首尾点连成的直线作为这段曲线的近似，这条线段便处理完毕。</p>
+<span class="c"># 减少逻辑卷/dev/mapper/centos-home的容量10G</span>
+lvreduce <span class="nt">-L</span> <span class="nt">-10G</span> /dev/mapper/centos-home
 
-<p>b.若<code class="highlighter-rouge">dmax &gt;= max</code>，则以<code class="highlighter-rouge">dmax</code>所在点作为分割点，将原来的曲线分为两段，分出来的两条曲线继续直线步骤1、2，直到所有的<code class="highlighter-rouge">dmax &lt; max</code>。
-   <img src="/img/20200223/02.png" alt="02" />
-   <img src="/img/20200223/03.png" alt="03" />
-   <img src="/img/20200223/04.png" alt="04" />
-   <img src="/img/20200223/05.png" alt="05" />
-   <img src="/img/20200223/06.png" alt="06" /></p>
+<span class="c"># 拓展逻辑卷/dev/mapper/centos-root的容量10G</span>
+lvextend <span class="nt">-L</span> +10G /dev/mapper/centos-root
 
-<p>显然，算法的抽稀精读是和阈值相关的，阈值越大，舍弃的点越多，提取的关键点越少。若绘制的轨迹较长，可在对地图进行缩放时动态调整阈值。</p>
+<span class="c"># 刷新，重新加载逻辑卷</span>
+resize2fs /dev/mapper/centos-root
 
-<hr />
-<h3 id="代码实现">代码实现</h3>
-
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
- * gps轨迹抽稀算法
- * @author: Z1hgq
- */</span>
-<span class="cm">/**
- * 点到直线的距离，直线方程为 ax + by + c = 0
- * @param {Number} a 直线参数a
- * @param {Number} b 直线参数b
- * @param {Number} c 直线参数c
- * @param {Object} xy 点坐标例如{ lat: 2, lng: 2 }
- * @return {Number}
- */</span>
-<span class="kd">function</span> <span class="nx">getDistanceFromPointToLine</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">xy</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">xy</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span>
-    <span class="kd">const</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">xy</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span>
-    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">((</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">*</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">c</span><span class="p">)</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">*</span> <span class="nx">b</span><span class="p">));</span>
-<span class="p">}</span>
-
-<span class="cm">/**
- * 根据两个点求直线方程 ax+by+c=0
- * @param {Object} xy1 点1,例如{ lat: 1, lng: 1 }
- * @param {Object} xy2 点2,例如{ lat: 2, lng: 2 }
- * @return {Array} [a,b,c] 直线方程的三个参数
- */</span>
-<span class="kd">function</span> <span class="nx">getLineByPoint</span><span class="p">(</span><span class="nx">xy1</span><span class="p">,</span> <span class="nx">xy2</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">x1</span> <span class="o">=</span> <span class="nx">xy1</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span> <span class="c1">// 第一个点的经度</span>
-    <span class="kd">const</span> <span class="nx">y1</span> <span class="o">=</span> <span class="nx">xy1</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span> <span class="c1">// 第一个点的纬度</span>
-    <span class="kd">const</span> <span class="nx">x2</span> <span class="o">=</span> <span class="nx">xy2</span><span class="p">.</span><span class="nx">lng</span><span class="p">;</span> <span class="c1">// 第二个点的经度</span>
-    <span class="kd">const</span> <span class="nx">y2</span> <span class="o">=</span> <span class="nx">xy2</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span> <span class="c1">// 第二个点的纬度</span>
-
-    <span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">y2</span> <span class="o">-</span> <span class="nx">y1</span><span class="p">;</span>
-    <span class="kd">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">x1</span> <span class="o">-</span> <span class="nx">x2</span><span class="p">;</span>
-    <span class="kd">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">(</span><span class="nx">y1</span> <span class="o">-</span> <span class="nx">y2</span><span class="p">)</span> <span class="o">*</span> <span class="nx">x1</span> <span class="o">-</span> <span class="nx">y1</span> <span class="o">*</span> <span class="p">(</span><span class="nx">x1</span> <span class="o">-</span> <span class="nx">x2</span><span class="p">);</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">];</span>
-<span class="p">}</span>
-<span class="cm">/**
- * 稀疏点
- * @param {Array} points 参数为[{lat: 1, lng: 2},{lat: 3, lng: 4}]点集
- * @param {Number} max 阈值,越大稀疏效果越好但是细节越差
- * @return {Array} 稀疏后的点集[{lat: 1, lng: 2},{lat: 3, lng: 4}]，保持和输入点集的顺序一致
- */</span>
-<span class="kd">function</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">,</span> <span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">points</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="kd">const</span> <span class="nx">xy1</span> <span class="o">=</span> <span class="nx">points</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 取第一个点</span>
-    <span class="kd">const</span> <span class="nx">xy2</span> <span class="o">=</span> <span class="nx">points</span><span class="p">[</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="c1">// 取最后一个点</span>
-    <span class="kd">const</span> <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">]</span> <span class="o">=</span> <span class="nx">getLineByPoint</span><span class="p">(</span><span class="nx">xy1</span><span class="p">,</span> <span class="nx">xy2</span><span class="p">);</span> <span class="c1">// 获取直线方程的a,b,c值</span>
-
-    <span class="kd">let</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// 最后稀疏以后的点集</span>
-    <span class="kd">let</span> <span class="nx">dmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 记录点到直线的最大距离</span>
-    <span class="kd">let</span> <span class="nx">split</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 分割位置</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">const</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">getDistanceFromPointToLine</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">points</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="nx">dmax</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">split</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
-            <span class="nx">dmax</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="nx">dmax</span> <span class="o">&gt;</span> <span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// 如果存在点到首位点连成直线的距离大于max的,即需要再次划分</span>
-        <span class="c1">// 按split分成左边一份，递归</span>
-        <span class="kd">const</span> <span class="nx">child1</span> <span class="o">=</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">split</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nx">max</span><span class="p">);</span>
-        <span class="c1">// 按split分成右边一份，递归</span>
-        <span class="kd">const</span> <span class="nx">child2</span> <span class="o">=</span> <span class="nx">sparsePoints</span><span class="p">(</span><span class="nx">points</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">split</span><span class="p">),</span> <span class="nx">max</span><span class="p">);</span>
-        <span class="c1">// 因为child1的最后一个点和child2的第一个点,肯定是同一个（即为分割点）,合并的时候,需要注意一下</span>
-        <span class="nx">ret</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">child1</span><span class="p">,</span> <span class="nx">child2</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="c1">// 如果不存在点到直线的距离大于阈值的,那么就直接是首尾点了</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nx">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">points</span><span class="p">[</span><span class="nx">points</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]];</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="k">export</span> <span class="k">default</span> <span class="nx">sparsePoints</span><span class="p">;</span>
+<span class="c"># 上述刷新无效或者报错的话，尝试使用一下命令，xfs_growfs不支持减小</span>
+xfs_growfs /dev/mapper/centos-root
 </code></pre></div></div>
 
-<hr />
-<h3 id="效果展示">效果展示</h3>
+<h4 id="查看端口使用情况">查看端口使用情况</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat <span class="nt">-nlp</span>| <span class="nb">grep</span> &lt;端口号&gt;
+</code></pre></div></div>
 
-<p>数据点类型为类似<code class="highlighter-rouge">30.664147,104.067232</code>，抽稀阈值为<code class="highlighter-rouge">0.000005</code>，第一张图为原始gps数据，共265个点，第二张图为抽稀之后的数据，共108个点。
-<img src="/img/20200223/08.png" alt="08" />
-<img src="/img/20200223/07.png" alt="07" /></p>
+<h4 id="查看服务运行情况">查看服务运行情况</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps -ef|grep &lt;服务名称&gt;
+</code></pre></div></div>
+
 
 
                 <hr style="visibility: hidden;">
@@ -321,19 +243,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2020/01/03/cross-domain/" data-toggle="tooltip" data-placement="top" title="前端跨域">
+                        <a href="/2020/05/07/react-unit-test/" data-toggle="tooltip" data-placement="top" title="React单元测试方案">
                         Previous<br>
-                        <span>前端跨域</span>
+                        <span>React单元测试方案</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2020/04/30/divide-and-conquer/" data-toggle="tooltip" data-placement="top" title="常用算法--分治(Divide And Conquer)">
-                        Next<br>
-                        <span>常用算法--分治(Divide And Conquer)</span>
-                        </a>
-                    </li>
                     
                 </ul>
 

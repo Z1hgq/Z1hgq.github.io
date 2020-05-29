@@ -180,6 +180,43 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2020/05/30/linux-com-used-cmd/">
+        <h2 class="post-title">
+            linux常用命令
+        </h2>
+        
+        <h3 class="post-subtitle">
+            
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  “”
+
+
+
+
+磁盘逻辑卷拓展
+
+# 查看磁盘使用情况
+df -h
+
+# 减少逻辑卷/dev/mapper/centos-home的容量10G
+lvreduce -L -10G /dev/mapper/centos-home
+
+# 拓展逻辑卷/dev/mapper/centos-root的容量10G
+lvextend -L +10G /dev/mapper/centos-root
+
+# ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Z1hgq on May 30, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2020/05/07/react-unit-test/">
         <h2 class="post-title">
             React单元测试方案
@@ -503,35 +540,6 @@ DOWNLOAD_URL  = 'https://...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/10/15/mongo-remote-connection-settings/">
-        <h2 class="post-title">
-            mongo远程连接设置
-        </h2>
-        
-        <h3 class="post-subtitle">
-            mongo远程连接设置
-        </h3>
-        
-        <div class="post-content-preview">
-            
-  “自然界没有凤凤雨雨，大地就不会有春华秋实”
-
-
-
-服务器设置
-0. 创建配置文件/etc/mongod.conf
-bind_ip = 0.0.0.0        #允许访问本机mongo服务的ip
-port = 27017             #mongo服务监听的端口
-auth=false               #是否开启用户验证，false：不必使用用户名和密码就可以...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by Z1hgq on October 15, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -579,6 +587,12 @@ auth=false               #是否开启用户验证，false：不必使用用户�
                                 <a href="/tags/#Linux" title="Linux" rel="2">
                                     Linux
                                 </a>
+                            
+                        
+                            
+                        
+                            
+                        
                             
                         
                             

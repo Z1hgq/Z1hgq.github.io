@@ -5,9 +5,58 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 07 May 2020 15:55:01 +0800</pubDate>
-    <lastBuildDate>Thu, 07 May 2020 15:55:01 +0800</lastBuildDate>
+    <pubDate>Fri, 29 May 2020 17:01:53 +0800</pubDate>
+    <lastBuildDate>Fri, 29 May 2020 17:01:53 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>linux常用命令</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;“”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;磁盘逻辑卷拓展&quot;&gt;磁盘逻辑卷拓展&lt;/h4&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 查看磁盘使用情况&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;df&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 减少逻辑卷/dev/mapper/centos-home的容量10G&lt;/span&gt;
+lvreduce &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-10G&lt;/span&gt; /dev/mapper/centos-home
+
+&lt;span class=&quot;c&quot;&gt;# 拓展逻辑卷/dev/mapper/centos-root的容量10G&lt;/span&gt;
+lvextend &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; +10G /dev/mapper/centos-root
+
+&lt;span class=&quot;c&quot;&gt;# 刷新，重新加载逻辑卷&lt;/span&gt;
+resize2fs /dev/mapper/centos-root
+
+&lt;span class=&quot;c&quot;&gt;# 上述刷新无效或者报错的话，尝试使用一下命令，xfs_growfs不支持减小&lt;/span&gt;
+xfs_growfs /dev/mapper/centos-root
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;查看端口使用情况&quot;&gt;查看端口使用情况&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;netstat &lt;span class=&quot;nt&quot;&gt;-nlp&lt;/span&gt;| &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &amp;lt;端口号&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;查看服务运行情况&quot;&gt;查看服务运行情况&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ps -ef|grep &amp;lt;服务名称&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Sat, 30 May 2020 00:32:33 +0800</pubDate>
+        <link>http://localhost:4000/2020/05/30/linux-com-used-cmd/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/05/30/linux-com-used-cmd/</guid>
+        
+        <category>linux</category>
+        
+        <category>shell</category>
+        
+        <category>centos</category>
+        
+        
+      </item>
     
       <item>
         <title>React单元测试方案</title>
@@ -2086,105 +2135,6 @@ git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; &lt;span class
         <category>爬虫</category>
         
         <category>Python</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>mongo远程连接设置</title>
-        <description>&lt;blockquote&gt;
-  &lt;p&gt;“自然界没有凤凤雨雨，大地就不会有春华秋实”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-&lt;h2 id=&quot;服务器设置&quot;&gt;服务器设置&lt;/h2&gt;
-&lt;h4 id=&quot;0-创建配置文件etcmongodconf&quot;&gt;0. 创建配置文件&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/mongod.conf&lt;/code&gt;&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bind_ip = 0.0.0.0        #允许访问本机mongo服务的ip
-port = 27017             #mongo服务监听的端口
-auth=false               #是否开启用户验证，false：不必使用用户名和密码就可以连接
-dbpath=/data/db          #mongo的本地数据文件地址
-logpath=/log/mongodb.log #mongo日志记录文件地址
-logappend=true
-fork=true                #后台启动配置
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;1-重启mongo服务&quot;&gt;1. 重启mongo服务&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ps -ef|grep mongo&lt;/code&gt;查看mongod服务的&lt;strong&gt;pid&lt;/strong&gt;，如：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root     19978     1  0 15:31 ?        00:00:09 mongod -f /etc/mongod.conf
-root     20076 18938  0 16:05 pts/2    00:00:00 vi /etc/mongod.conf
-root     20120 18938  0 16:21 pts/2    00:00:00 grep --color=auto mongo
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里使用&lt;code class=&quot;highlighter-rouge&quot;&gt;kill&lt;/code&gt;命令把进程结束掉，pid是第二列。&lt;/p&gt;
-
-&lt;p&gt;使用配置文件启动mongo服务&lt;code class=&quot;highlighter-rouge&quot;&gt;mongod -f /etc/mongod.conf &lt;/code&gt;，这样mongo就在后台运行了。&lt;/p&gt;
-
-&lt;h4 id=&quot;2添加用户&quot;&gt;2.添加用户&lt;/h4&gt;
-
-&lt;p&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;mongo&lt;/code&gt;命令进入mongo的控制命令行&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//添加管理员用户（role:root表示最高权限）
-use admin
-
-db.createUser({
-    user:&quot;admin&quot;,
-    pwd:&quot;admin&quot;,
-    roles:[{
-        role:&quot;root&quot;,
-        db:&quot;admin&quot;
-    }]
-})
-
-db.auth(&quot;admin&quot;, &quot;admin&quot;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;3设置防火墙允许访问端口&quot;&gt;3.设置防火墙允许访问端口&lt;/h4&gt;
-
-&lt;p&gt;添加端口访问权限&lt;code class=&quot;highlighter-rouge&quot;&gt;iptables -A INPUT -p tcp --dport 27017 -j ACCEPT&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;CentOS重启防火墙&lt;code class=&quot;highlighter-rouge&quot;&gt;firewall-cmd --reload&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;如果是云服务器，在服务器的安全组配置中，将端口添加进规则即可，如下图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/20191014/1.png&quot; alt=&quot;1&quot; title=&quot;1&quot; /&gt;
-&lt;img src=&quot;/img/20191014/2.png&quot; alt=&quot;2&quot; title=&quot;2&quot; /&gt;
-&lt;img src=&quot;/img/20191014/3.png&quot; alt=&quot;3&quot; title=&quot;3&quot; /&gt;
-&lt;img src=&quot;/img/20191014/4.png&quot; alt=&quot;4&quot; title=&quot;4&quot; /&gt;
-&lt;img src=&quot;/img/20191014/5.png&quot; alt=&quot;5&quot; title=&quot;5&quot; /&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;外部连接设置&quot;&gt;外部连接设置&lt;/h2&gt;
-
-&lt;p&gt;连接地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://&amp;lt;username&amp;gt;:&amp;lt;password&amp;gt;@host:port&lt;/code&gt;，如果授权验证&lt;code class=&quot;highlighter-rouge&quot;&gt;auth&lt;/code&gt;设置的false，则地址为&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://host:port&lt;/code&gt;。配置mongodb地址时，如果不设置连接方式默认是&lt;code class=&quot;highlighter-rouge&quot;&gt;MONGODB-CR&lt;/code&gt;，如果安装的时候设置的是&lt;code class=&quot;highlighter-rouge&quot;&gt;SCRAM-SHA-1&lt;/code&gt;，连接地址为：&lt;code class=&quot;highlighter-rouge&quot;&gt;mongodb://&amp;lt;username&amp;gt;:&amp;lt;password&amp;gt;@host:port/&amp;lt;dbname&amp;gt;?authSource=admin&amp;amp;authMechanism=SCRAM-SHA-1&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;推荐一个mongo可视化工具：&lt;a href=&quot;https://github.com/mrvautin/adminMongo&quot;&gt;adminMongo&lt;/a&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-&lt;h2 id=&quot;参考文献&quot;&gt;参考文献&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/roler_/article/details/38820247&quot;&gt;&lt;em&gt;0. Mongodb后台daemon方式启动&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/zZ_life/article/details/78664794&quot;&gt;&lt;em&gt;1. MongoDB 3.4.2 添加用户、设置权限&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/AggressionStorm/article/details/79956231&quot;&gt;&lt;em&gt;2. mongoDB的远程连接配置&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/u011846257/article/details/54707864&quot;&gt;&lt;em&gt;3. Centos防火墙设置与端口开放的方法&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/mrvautin/adminMongo&quot;&gt;&lt;em&gt;4. adminMongo&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/qq_29143909/article/details/81909991&quot;&gt;&lt;em&gt;5. mongodb连接认证失败&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-</description>
-        <pubDate>Tue, 15 Oct 2019 00:04:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/10/15/mongo-remote-connection-settings/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/10/15/mongo-remote-connection-settings/</guid>
-        
-        <category>mongodb</category>
-        
-        <category>Linux</category>
         
         
       </item>
