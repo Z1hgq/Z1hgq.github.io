@@ -5,9 +5,135 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 21 Jul 2020 11:28:07 +0800</pubDate>
-    <lastBuildDate>Tue, 21 Jul 2020 11:28:07 +0800</lastBuildDate>
+    <pubDate>Tue, 20 Oct 2020 10:16:39 +0800</pubDate>
+    <lastBuildDate>Tue, 20 Oct 2020 10:16:39 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>FFmpeg常用命令</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;“生活可以没有诗歌，但不能没有诗意；行进中可以没有路，但不能没有前进的脚步；工作中可以没有经验，但不能没有学习；人生中可以没有闪光，但不能有污迹。”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;文件操作&quot;&gt;文件操作&lt;/h2&gt;
+
+&lt;p&gt;1、在.mp3（320 kbps）上保持高质量，并将.flac文件中的元数据转换为ID3v2格式&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; input.flac &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 320k &lt;span class=&quot;nt&quot;&gt;-map_metadata&lt;/span&gt; 0 &lt;span class=&quot;nt&quot;&gt;-id3v2_version&lt;/span&gt; 3 output.mp3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;2、Convert MP3 to FLV with ffmpeg&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; audio.mp3 &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; libmp3lame &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 160k &lt;span class=&quot;nt&quot;&gt;-ac&lt;/span&gt; 1 audio.flv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3、分离视频音频流&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; input_file &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-an&lt;/span&gt; output_file_video　　//分离视频流
+ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; input_file &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-vn&lt;/span&gt; output_file_audio　　//分离音频流
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;4、视频解复用&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
+ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;5、视频转码&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg –i test.mp4 –vcodec h264 –s 352&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;278 –an –f m4v test.264              //转码为码流原始文件
+ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;278 –an –f m4v test.264  //转码为码流原始文件
+ffmpeg –i test.avi &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; mpeg4 –vtag xvid –qsame test_xvid.avi            //转码为封装文件
+//-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;6、视频封装&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;7、视频录制&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;8、YUV序列播放&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffplay &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; rawvideo &lt;span class=&quot;nt&quot;&gt;-video_size&lt;/span&gt; 1920x1080 input.yuv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;9、YUV序列转AVI&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg –s w&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;h –pix_fmt yuv420p –i input.yuv –vcodec mpeg4 output.avi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;主要参数&lt;/strong&gt;： -i 设定输入流 -f 设定输出格式 -ss 开始时间 视频参数： -b 设定视频流量，默认为200Kbit/s -r 设定帧速率，默认为25 -s 设定画面的宽与高 -aspect 设定画面的比例 -vn 不处理视频 -vcodec 设定视频编解码器，未设定时则使用与输入流相同的编解码器 音频参数： -ar 设定采样率 -ac 设定声音的Channel数 -acodec 设定声音编解码器，未设定时则使用与输入流相同的编解码器 -an 不处理音频&lt;/p&gt;
+
+&lt;h2 id=&quot;采集直播&quot;&gt;采集直播&lt;/h2&gt;
+
+&lt;p&gt;1、将文件当做直播送至live&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-re&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; localFile.mp4 &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv rtmp://server/live/streamName
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;2、将直播媒体保存至本地文件&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/streamName &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; copy dump.flv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3、将其中一个直播流，视频改用h264压缩，音频不变，送至另外一个直播服务流&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/originalStream &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a copy &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v libx264 &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; slow &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv rtmp://server/live/h264Stream
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;4、将其中一个直播流，视频改用h264压缩，音频改用faac压缩，送至另外一个直播服务流&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/originalStream &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a libfaac &lt;span class=&quot;nt&quot;&gt;-ar&lt;/span&gt; 44100 &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 48k &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v libx264 &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; slow &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; baseline &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv rtmp://server/live/h264Stream
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;5、将其中一个直播流，视频不变，音频改用faac压缩，送至另外一个直播服务流&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/originalStream &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; libfaac &lt;span class=&quot;nt&quot;&gt;-ar&lt;/span&gt; 44100 &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 48k &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv rtmp://server/live/h264_AAC_Stream
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;6、将一个高清流，复制为几个不同视频清晰度的流重新发布，其中音频不变&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-re&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/high_FMLE_stream &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 640×360 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; 500k &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; medium &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; baseline rtmp://server/live/baseline_500k &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 480×272 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; 300k &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; medium &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; baseline rtmp://server/live/baseline_300k &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; copy &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 320×200 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; 150k &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; medium &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; baseline rtmp://server/live/baseline_150k &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; libfaac &lt;span class=&quot;nt&quot;&gt;-vn&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 48k rtmp://server/live/audio_only_AAC_48k
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;7、功能一样，只是采用-x264opts选项&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-re&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/high_FMLE_stream &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a copy &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 640×360 &lt;span class=&quot;nt&quot;&gt;-x264opts&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bitrate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;500:profile&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;baseline:preset&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;slow rtmp://server/live/baseline_500k &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a copy &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 480×272 &lt;span class=&quot;nt&quot;&gt;-x264opts&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bitrate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;300:profile&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;baseline:preset&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;slow rtmp://server/live/baseline_300k &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a copy &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v x264lib &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 320×200 &lt;span class=&quot;nt&quot;&gt;-x264opts&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bitrate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;150:profile&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;baseline:preset&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;slow rtmp://server/live/baseline_150k &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a libfaac &lt;span class=&quot;nt&quot;&gt;-vn&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt;:a 48k rtmp://server/live/audio_only_AAC_48k
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;8、将当前摄像头及音频通过DSSHOW采集，视频h264、音频faac压缩后发布&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt; 25 &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; dshow &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 640×480 &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;”video &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;name”:audio&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;”audio &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;name” &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; libx264 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; 600k &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; slow &lt;span class=&quot;nt&quot;&gt;-acodec&lt;/span&gt; libfaac &lt;span class=&quot;nt&quot;&gt;-ab&lt;/span&gt; 128k &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv rtmp://server/application/stream_name
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;9、将一个JPG图片经过h264压缩循环输出为mp4视频&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg.exe &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; INPUT.jpg &lt;span class=&quot;nt&quot;&gt;-an&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-vcodec&lt;/span&gt; libx264 &lt;span class=&quot;nt&quot;&gt;-coder&lt;/span&gt; 1 &lt;span class=&quot;nt&quot;&gt;-flags&lt;/span&gt; +loop &lt;span class=&quot;nt&quot;&gt;-cmp&lt;/span&gt; +chroma &lt;span class=&quot;nt&quot;&gt;-subq&lt;/span&gt; 10 &lt;span class=&quot;nt&quot;&gt;-qcomp&lt;/span&gt; 0.6 &lt;span class=&quot;nt&quot;&gt;-qmin&lt;/span&gt; 10 &lt;span class=&quot;nt&quot;&gt;-qmax&lt;/span&gt; 51 &lt;span class=&quot;nt&quot;&gt;-qdiff&lt;/span&gt; 4 &lt;span class=&quot;nt&quot;&gt;-flags2&lt;/span&gt; +dct8x8 &lt;span class=&quot;nt&quot;&gt;-trellis&lt;/span&gt; 2 &lt;span class=&quot;nt&quot;&gt;-partitions&lt;/span&gt; +parti8x8+parti4x4 &lt;span class=&quot;nt&quot;&gt;-crf&lt;/span&gt; 24 &lt;span class=&quot;nt&quot;&gt;-threads&lt;/span&gt; 0 &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt; 25 &lt;span class=&quot;nt&quot;&gt;-g&lt;/span&gt; 25 &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt; OUTPUT.mp4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;10、将普通流视频改用h264压缩，音频不变，送至高清流服务(新版本FMS live=1)&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffmpeg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; rtmp://server/live/originalStream &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:a copy &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;:v libx264 &lt;span class=&quot;nt&quot;&gt;-vpre&lt;/span&gt; slow &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; flv “rtmp://server/live/h264Stream &lt;span class=&quot;nv&quot;&gt;live&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1〃
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Tue, 20 Oct 2020 17:27:55 +0800</pubDate>
+        <link>http://localhost:4000/2020/10/20/ffmpeg-command/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/10/20/ffmpeg-command/</guid>
+        
+        <category>音视频</category>
+        
+        <category>FFmpeg</category>
+        
+        <category>shell</category>
+        
+        
+      </item>
     
       <item>
         <title>React源码解析（一）setState</title>
@@ -2047,172 +2173,6 @@ git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; &lt;span class
         <guid isPermaLink="true">http://localhost:4000/2019/11/28/open-port-in-centos7_3/</guid>
         
         <category>Linux</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>JS 事件循环--宏任务与微任务</title>
-        <description>&lt;blockquote&gt;
-  &lt;p&gt;“”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-&lt;h2 id=&quot;event-loop&quot;&gt;Event Loop&lt;/h2&gt;
-
-&lt;p&gt;JavaScript是一门单线程的脚本语言，在一行代码执行的过程中，必然不会存在同时执行的另一行代码，就像使用&lt;code class=&quot;highlighter-rouge&quot;&gt;alert()&lt;/code&gt;以后进行疯狂&lt;code class=&quot;highlighter-rouge&quot;&gt;console.log&lt;/code&gt;，如果没有关闭弹框，控制台是不会显示出一条log信息的。&lt;/p&gt;
-
-&lt;p&gt;js的主线程只负责维护任务队列，并通过事件循环机制（Event Loop）按照顺序将需要执行的任务放进栈中。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/20191025/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;同步和异步任务分别进入不同的执行”场所”，同步的进入主线程，异步的进入Event Table并注册函数&lt;/li&gt;
-  &lt;li&gt;当指定的事情完成时，Event Table会将这个函数移入Event Queue。&lt;/li&gt;
-  &lt;li&gt;主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行。&lt;/li&gt;
-  &lt;li&gt;上述过程会不断重复，也就是常说的Event Loop(事件循环)。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;宏任务与微任务&quot;&gt;宏任务与微任务&lt;/h2&gt;
-
-&lt;p&gt;在Js中，有两类任务队列：宏任务队列（macro tasks）和微任务队列（micro tasks）。宏任务队列可以有多个，微任务队列只有一个。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;宏任务：script（全局任务）, setTimeout, setInterval, setImmediate, I/O, UI rendering.&lt;/p&gt;
-
-  &lt;p&gt;微任务：process.nextTick, Promise, Object.observer, MutationObserver.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/20191025/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;浏览器event-loop&quot;&gt;浏览器Event Loop&lt;/h4&gt;
-
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;取一个宏任务来执行。执行完毕后，下一步。&lt;/li&gt;
-    &lt;li&gt;取一个微任务来执行，执行完毕后，再取一个微任务来执行。直到微任务队列为空，执行下一步。&lt;/li&gt;
-    &lt;li&gt;更新UI渲染&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;每执行下一次宏任务之前重新渲染。&lt;/p&gt;
-
-&lt;h4 id=&quot;nodejs-event-loop&quot;&gt;NodeJs Event Loop&lt;/h4&gt;
-
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;初始化 Event Loop&lt;/li&gt;
-    &lt;li&gt;执行您的主代码。这里同样，遇到异步处理，就会分配给对应的队列。直到主代码执行完毕。&lt;/li&gt;
-    &lt;li&gt;执行主代码中出现的所有微任务：先执行完所有nextTick()，然后在执行其它所有微任务。&lt;/li&gt;
-    &lt;li&gt;开始 Event Loop&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;NodeJs 的 Event Loop 分为六个阶段：timers、pending callbacks、idle\prepare、poll、check、close callbacks。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;┌───────────────────────────┐&lt;/p&gt;
-
-  &lt;p&gt;┌─│———–timers———-│&lt;/p&gt;
-
-  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
-
-  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
-
-  &lt;p&gt;│  │—- pending callbacks—–│&lt;/p&gt;
-
-  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
-
-  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
-
-  &lt;p&gt;│  │——-idle, prepare——-│&lt;/p&gt;
-
-  &lt;p&gt;│  └─────────────┬─────────────┘      ┌───────────────┐&lt;/p&gt;
-
-  &lt;p&gt;│  ┌─────────────┴─────────────┐      │   incoming:   │&lt;/p&gt;
-
-  &lt;p&gt;│  │———–poll————│&amp;lt;─────┤  connections, │&lt;/p&gt;
-
-  &lt;p&gt;│  └─────────────┬─────────────┘      │   data, etc.  │&lt;/p&gt;
-
-  &lt;p&gt;│  ┌─────────────┴─────────────┐      └───────────────┘&lt;/p&gt;
-
-  &lt;p&gt;│  │———–check———–│&lt;/p&gt;
-
-  &lt;p&gt;│  └─────────────┬─────────────┘&lt;/p&gt;
-
-  &lt;p&gt;│  ┌─────────────┴─────────────┐&lt;/p&gt;
-
-  &lt;p&gt;└──┤——close callbacks——│&lt;/p&gt;
-
-  &lt;p&gt;└───────────────────────────┘&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;timers: 这个阶段执行setTimeout()和setInterval()设定的回调。&lt;/li&gt;
-  &lt;li&gt;pending callbacks: 上一轮循环中有少数的 I/O callback 会被延迟到这一轮的这一阶段执行。&lt;/li&gt;
-  &lt;li&gt;idle, prepare: 仅内部使用。&lt;/li&gt;
-  &lt;li&gt;poll: 执行 I/O callback，在适当的条件下会阻塞在这个阶段&lt;/li&gt;
-  &lt;li&gt;check: 执行setImmediate()设定的回调。&lt;/li&gt;
-  &lt;li&gt;close callbacks: 执行比如socket.on(‘close’, …)的回调。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;示例分析&quot;&gt;示例分析&lt;/h2&gt;
-
-&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nextTick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在上面的代码中，node环境下的输出顺序为&lt;code class=&quot;highlighter-rouge&quot;&gt;7\6\8\2\4\9\11\3\10\5\12&lt;/code&gt;,在浏览器中的输出顺序为&lt;code class=&quot;highlighter-rouge&quot;&gt;7\8\2\4\5\9\11\12&lt;/code&gt;,在浏览器中去除了&lt;code class=&quot;highlighter-rouge&quot;&gt;Process.nextTick()&lt;/code&gt;这个方法。&lt;/p&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/20191025/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;参考文献&quot;&gt;参考文献&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000011198232&quot;&gt;&lt;em&gt;0. JavaScript 异步、栈、事件循环、任务队列&lt;/em&gt;&lt;/a&gt;
-&lt;a href=&quot;https://juejin.im/post/5b498d245188251b193d4059&quot;&gt;&lt;em&gt;1. JS事件循环机制（event loop）之宏任务/微任务&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Wed, 23 Oct 2019 21:54:57 +0800</pubDate>
-        <link>http://localhost:4000/2019/10/23/js-mac-mic-task/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/10/23/js-mac-mic-task/</guid>
-        
-        <category>JavaScript</category>
         
         
       </item>

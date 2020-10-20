@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>一段表情包爬虫demo - Z1hgq | Z1hgq Blog</title>
+    <title>FFmpeg常用命令 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/10/15/emoji-spider/">
+    <link rel="canonical" href="http://localhost:4000/2020/10/20/ffmpeg-command/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-universe.jpg" width="0" height="0"> -->
+<!-- <img src="/img/home-bg-o.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-universe.jpg')
+        background-image: url('/img/home-bg-o.jpg')
     }
 
     
@@ -170,17 +170,19 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#爬虫" title="爬虫">爬虫</a>
+                        <a class="tag" href="/tags/#音视频" title="音视频">音视频</a>
                         
-                        <a class="tag" href="/tags/#Python" title="Python">Python</a>
+                        <a class="tag" href="/tags/#FFmpeg" title="FFmpeg">FFmpeg</a>
+                        
+                        <a class="tag" href="/tags/#shell" title="shell">shell</a>
                         
                     </div>
-                    <h1>一段表情包爬虫demo</h1>
+                    <h1>FFmpeg常用命令</h1>
                     
                     
-                    <h2 class="subheading">py-spider</h2>
+                    <h2 class="subheading">ffmpeg version 4.3</h2>
                     
-                    <span class="meta">Posted by Z1hgq on October 15, 2019</span>
+                    <span class="meta">Posted by Z1hgq on October 20, 2020</span>
                 </div>
             </div>
         </div>
@@ -202,75 +204,115 @@
                 
 
 				<blockquote>
-  <p>“活在世界上，有时候人家不害你，就是对你最大的帮忙。”</p>
+  <p>“生活可以没有诗歌，但不能没有诗意；行进中可以没有路，但不能没有前进的脚步；工作中可以没有经验，但不能没有学习；人生中可以没有闪光，但不能有污迹。”</p>
 </blockquote>
 
 <hr />
 
-<h2 id="源码">源码</h2>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python
-# encoding=utf-8
-</span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">string</span>
+<h2 id="文件操作">文件操作</h2>
 
-<span class="n">DOWNLOAD_URL</span>  <span class="o">=</span> <span class="s">'https://pic.sogou.com/pic/emo/searchList.jsp?statref=home_form&amp;spver=0&amp;rcer=&amp;keyword='</span>
+<p>1、在.mp3（320 kbps）上保持高质量，并将.flac文件中的元数据转换为ID3v2格式</p>
 
-
-<span class="k">def</span> <span class="nf">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
-    <span class="s">"""获取url地址页面内容"""</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36'</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14"</span><span class="p">,</span>
-        <span class="s">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)"</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">random_header</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">"User-Agent"</span><span class="p">:</span> <span class="n">random_header</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">"utf-8"</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s">'html.parser'</span><span class="p">)</span>
-    <span class="n">img</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="s">r'rsrc="(.+?)"'</span><span class="p">)</span>
-    <span class="n">imgList</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">imgList</span>
-
-<span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">):</span>
-		<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">'img/'</span><span class="o">+</span><span class="n">key</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="n">mkdir</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">imgList</span><span class="p">:</span>
-        <span class="n">img_content</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
-        <span class="n">img_path</span> <span class="o">=</span> <span class="s">'img/'</span><span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">'/'</span> <span class="o">+</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span> <span class="o">+</span> <span class="s">'.jfif'</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img_content</span><span class="p">)</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s">"giao"</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">DOWNLOAD_URL</span> <span class="o">+</span> <span class="n">key</span>
-    <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
-        <span class="n">html</span> <span class="o">=</span> <span class="n">download_page</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="n">imgList</span> <span class="o">=</span> <span class="n">getImgList</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
-        <span class="n">download_img</span><span class="p">(</span><span class="n">imgList</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> input.flac <span class="nt">-ab</span> 320k <span class="nt">-map_metadata</span> 0 <span class="nt">-id3v2_version</span> 3 output.mp3
 </code></pre></div></div>
 
-<h2 id="爬取结果">爬取结果</h2>
-<p><img src="/img/20191018/1.png" alt="res" title="res" /></p>
+<p>2、Convert MP3 to FLV with ffmpeg</p>
 
-<hr />
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-y</span> <span class="nt">-i</span> audio.mp3 <span class="nt">-f</span> flv <span class="nt">-acodec</span> libmp3lame <span class="nt">-ab</span> 160k <span class="nt">-ac</span> 1 audio.flv
+</code></pre></div></div>
 
+<p>3、分离视频音频流</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> input_file <span class="nt">-vcodec</span> copy <span class="nt">-an</span> output_file_video　　//分离视频流
+ffmpeg <span class="nt">-i</span> input_file <span class="nt">-acodec</span> copy <span class="nt">-vn</span> output_file_audio　　//分离音频流
+</code></pre></div></div>
+
+<p>4、视频解复用</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
+ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
+</code></pre></div></div>
+
+<p>5、视频转码</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg –i test.mp4 –vcodec h264 –s 352<span class="k">*</span>278 –an –f m4v test.264              //转码为码流原始文件
+ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352<span class="k">*</span>278 –an –f m4v test.264  //转码为码流原始文件
+ffmpeg –i test.avi <span class="nt">-vcodec</span> mpeg4 –vtag xvid –qsame test_xvid.avi            //转码为封装文件
+//-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制
+</code></pre></div></div>
+
+<p>6、视频封装</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
+</code></pre></div></div>
+
+<p>7、视频录制</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
+</code></pre></div></div>
+
+<p>8、YUV序列播放</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffplay <span class="nt">-f</span> rawvideo <span class="nt">-video_size</span> 1920x1080 input.yuv
+</code></pre></div></div>
+
+<p>9、YUV序列转AVI</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg –s w<span class="k">*</span>h –pix_fmt yuv420p –i input.yuv –vcodec mpeg4 output.avi
+</code></pre></div></div>
+<p><strong>主要参数</strong>： -i 设定输入流 -f 设定输出格式 -ss 开始时间 视频参数： -b 设定视频流量，默认为200Kbit/s -r 设定帧速率，默认为25 -s 设定画面的宽与高 -aspect 设定画面的比例 -vn 不处理视频 -vcodec 设定视频编解码器，未设定时则使用与输入流相同的编解码器 音频参数： -ar 设定采样率 -ac 设定声音的Channel数 -acodec 设定声音编解码器，未设定时则使用与输入流相同的编解码器 -an 不处理音频</p>
+
+<h2 id="采集直播">采集直播</h2>
+
+<p>1、将文件当做直播送至live</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-re</span> <span class="nt">-i</span> localFile.mp4 <span class="nt">-c</span> copy <span class="nt">-f</span> flv rtmp://server/live/streamName
+</code></pre></div></div>
+
+<p>2、将直播媒体保存至本地文件</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> rtmp://server/live/streamName <span class="nt">-c</span> copy dump.flv
+</code></pre></div></div>
+
+<p>3、将其中一个直播流，视频改用h264压缩，音频不变，送至另外一个直播服务流</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> rtmp://server/live/originalStream <span class="nt">-c</span>:a copy <span class="nt">-c</span>:v libx264 <span class="nt">-vpre</span> slow <span class="nt">-f</span> flv rtmp://server/live/h264Stream
+</code></pre></div></div>
+
+<p>4、将其中一个直播流，视频改用h264压缩，音频改用faac压缩，送至另外一个直播服务流</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> rtmp://server/live/originalStream <span class="nt">-c</span>:a libfaac <span class="nt">-ar</span> 44100 <span class="nt">-ab</span> 48k <span class="nt">-c</span>:v libx264 <span class="nt">-vpre</span> slow <span class="nt">-vpre</span> baseline <span class="nt">-f</span> flv rtmp://server/live/h264Stream
+</code></pre></div></div>
+
+<p>5、将其中一个直播流，视频不变，音频改用faac压缩，送至另外一个直播服务流</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> rtmp://server/live/originalStream <span class="nt">-acodec</span> libfaac <span class="nt">-ar</span> 44100 <span class="nt">-ab</span> 48k <span class="nt">-vcodec</span> copy <span class="nt">-f</span> flv rtmp://server/live/h264_AAC_Stream
+</code></pre></div></div>
+
+<p>6、将一个高清流，复制为几个不同视频清晰度的流重新发布，其中音频不变</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-re</span> <span class="nt">-i</span> rtmp://server/live/high_FMLE_stream <span class="nt">-acodec</span> copy <span class="nt">-vcodec</span> x264lib <span class="nt">-s</span> 640×360 <span class="nt">-b</span> 500k <span class="nt">-vpre</span> medium <span class="nt">-vpre</span> baseline rtmp://server/live/baseline_500k <span class="nt">-acodec</span> copy <span class="nt">-vcodec</span> x264lib <span class="nt">-s</span> 480×272 <span class="nt">-b</span> 300k <span class="nt">-vpre</span> medium <span class="nt">-vpre</span> baseline rtmp://server/live/baseline_300k <span class="nt">-acodec</span> copy <span class="nt">-vcodec</span> x264lib <span class="nt">-s</span> 320×200 <span class="nt">-b</span> 150k <span class="nt">-vpre</span> medium <span class="nt">-vpre</span> baseline rtmp://server/live/baseline_150k <span class="nt">-acodec</span> libfaac <span class="nt">-vn</span> <span class="nt">-ab</span> 48k rtmp://server/live/audio_only_AAC_48k
+</code></pre></div></div>
+
+<p>7、功能一样，只是采用-x264opts选项</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-re</span> <span class="nt">-i</span> rtmp://server/live/high_FMLE_stream <span class="nt">-c</span>:a copy <span class="nt">-c</span>:v x264lib <span class="nt">-s</span> 640×360 <span class="nt">-x264opts</span> <span class="nv">bitrate</span><span class="o">=</span>500:profile<span class="o">=</span>baseline:preset<span class="o">=</span>slow rtmp://server/live/baseline_500k <span class="nt">-c</span>:a copy <span class="nt">-c</span>:v x264lib <span class="nt">-s</span> 480×272 <span class="nt">-x264opts</span> <span class="nv">bitrate</span><span class="o">=</span>300:profile<span class="o">=</span>baseline:preset<span class="o">=</span>slow rtmp://server/live/baseline_300k <span class="nt">-c</span>:a copy <span class="nt">-c</span>:v x264lib <span class="nt">-s</span> 320×200 <span class="nt">-x264opts</span> <span class="nv">bitrate</span><span class="o">=</span>150:profile<span class="o">=</span>baseline:preset<span class="o">=</span>slow rtmp://server/live/baseline_150k <span class="nt">-c</span>:a libfaac <span class="nt">-vn</span> <span class="nt">-b</span>:a 48k rtmp://server/live/audio_only_AAC_48k
+</code></pre></div></div>
+
+<p>8、将当前摄像头及音频通过DSSHOW采集，视频h264、音频faac压缩后发布</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-r</span> 25 <span class="nt">-f</span> dshow <span class="nt">-s</span> 640×480 <span class="nt">-i</span> <span class="nv">video</span><span class="o">=</span>”video <span class="nb">source </span>name”:audio<span class="o">=</span>”audio <span class="nb">source </span>name” <span class="nt">-vcodec</span> libx264 <span class="nt">-b</span> 600k <span class="nt">-vpre</span> slow <span class="nt">-acodec</span> libfaac <span class="nt">-ab</span> 128k <span class="nt">-f</span> flv rtmp://server/application/stream_name
+</code></pre></div></div>
+
+<p>9、将一个JPG图片经过h264压缩循环输出为mp4视频</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg.exe <span class="nt">-i</span> INPUT.jpg <span class="nt">-an</span> <span class="nt">-vcodec</span> libx264 <span class="nt">-coder</span> 1 <span class="nt">-flags</span> +loop <span class="nt">-cmp</span> +chroma <span class="nt">-subq</span> 10 <span class="nt">-qcomp</span> 0.6 <span class="nt">-qmin</span> 10 <span class="nt">-qmax</span> 51 <span class="nt">-qdiff</span> 4 <span class="nt">-flags2</span> +dct8x8 <span class="nt">-trellis</span> 2 <span class="nt">-partitions</span> +parti8x8+parti4x4 <span class="nt">-crf</span> 24 <span class="nt">-threads</span> 0 <span class="nt">-r</span> 25 <span class="nt">-g</span> 25 <span class="nt">-y</span> OUTPUT.mp4
+</code></pre></div></div>
+
+<p>10、将普通流视频改用h264压缩，音频不变，送至高清流服务(新版本FMS live=1)</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> rtmp://server/live/originalStream <span class="nt">-c</span>:a copy <span class="nt">-c</span>:v libx264 <span class="nt">-vpre</span> slow <span class="nt">-f</span> flv “rtmp://server/live/h264Stream <span class="nv">live</span><span class="o">=</span>1〃
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -278,19 +320,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/10/15/mongo-remote-connection-settings/" data-toggle="tooltip" data-placement="top" title="mongo远程连接设置">
+                        <a href="/2020/07/21/react-setState/" data-toggle="tooltip" data-placement="top" title="React源码解析（一）setState">
                         Previous<br>
-                        <span>mongo远程连接设置</span>
+                        <span>React源码解析（一）setState</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/10/23/js-mac-mic-task/" data-toggle="tooltip" data-placement="top" title="JS 事件循环--宏任务与微任务">
-                        Next<br>
-                        <span>JS 事件循环--宏任务与微任务</span>
-                        </a>
-                    </li>
                     
                 </ul>
 

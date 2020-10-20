@@ -180,6 +180,36 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2020/10/20/ffmpeg-command/">
+        <h2 class="post-title">
+            FFmpeg常用命令
+        </h2>
+        
+        <h3 class="post-subtitle">
+            ffmpeg version 4.3
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  “生活可以没有诗歌，但不能没有诗意；行进中可以没有路，但不能没有前进的脚步；工作中可以没有经验，但不能没有学习；人生中可以没有闪光，但不能有污迹。”
+
+
+
+
+文件操作
+
+1、在.mp3（320 kbps）上保持高质量，并将.flac文件中的元数据转换为ID3v2格式
+
+ffmpeg -i input.flac -ab 320k -map_metadata 0 -id3v2_versio...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Z1hgq on October 20, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2020/07/21/react-setState/">
         <h2 class="post-title">
             React源码解析（一）setState
@@ -501,40 +531,6 @@ git config --global https.proxy ...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/10/23/js-mac-mic-task/">
-        <h2 class="post-title">
-            JS 事件循环--宏任务与微任务
-        </h2>
-        
-        <h3 class="post-subtitle">
-            Event Loop
-        </h3>
-        
-        <div class="post-content-preview">
-            
-  “”
-
-
-
-Event Loop
-
-JavaScript是一门单线程的脚本语言，在一行代码执行的过程中，必然不会存在同时执行的另一行代码，就像使用alert()以后进行疯狂console.log，如果没有关闭弹框，控制台是不会显示出一条log信息的。
-
-js的主线程只负责维护任务队列，并通过事件循环机制（Event Loop）按照顺序将需要执行的任务放进栈中。
-
-
-
-
-  同步和异步任...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by Z1hgq on October 23, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -606,6 +602,14 @@ js的主线程只负责维护任务队列，并通过事件循环机制（Event 
                         
                             
                         
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#shell" title="shell" rel="2">
+                                    shell
+                                </a>
                             
                         
                             
