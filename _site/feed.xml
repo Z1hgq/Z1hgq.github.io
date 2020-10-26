@@ -5,9 +5,171 @@
     <description>关于前端与设计、摄影 | Z1hgq, Web &amp; Python Lover，Software Engineer | 这里是 @Z1hgq 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 20 Oct 2020 10:16:39 +0800</pubDate>
-    <lastBuildDate>Tue, 20 Oct 2020 10:16:39 +0800</lastBuildDate>
+    <pubDate>Mon, 26 Oct 2020 18:04:59 +0800</pubDate>
+    <lastBuildDate>Mon, 26 Oct 2020 18:04:59 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Redux基本概念</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;世上只有想不通的人，没有走不通的路&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;redux-是什么&quot;&gt;redux 是什么&lt;/h2&gt;
+
+&lt;p&gt;react 是一个将DOM抽象出来的框架，但是它没有解决组件通信的问题。因此，在此基础上先出现了&lt;code class=&quot;highlighter-rouge&quot;&gt;flux&lt;/code&gt;，在&lt;code class=&quot;highlighter-rouge&quot;&gt;flux&lt;/code&gt;的基础上，2015年出现了&lt;code class=&quot;highlighter-rouge&quot;&gt;redux&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;redux&lt;/code&gt;是一种前端数据管理机制，它认为Web应用是一个状态机，数据和视图是一一对应的，同时它将所有的数据都保存在一个对象里面。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;redux&lt;/code&gt;的&lt;strong&gt;三大原则&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;单一数据源&lt;/li&gt;
+  &lt;li&gt;state是只读的&lt;/li&gt;
+  &lt;li&gt;使用纯函数对state执行修改
+    &lt;h2 id=&quot;为什么要用redux&quot;&gt;为什么要用redux&lt;/h2&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;从业务层面来说，&lt;code class=&quot;highlighter-rouge&quot;&gt;redux&lt;/code&gt;解决了以下问题：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;用户使用方式复杂&lt;/li&gt;
+    &lt;li&gt;不同用户身份有不同的使用方式&lt;/li&gt;
+    &lt;li&gt;多个用户之间可以协作&lt;/li&gt;
+    &lt;li&gt;与服务器之间有大量的交互，或者使用了WebSocket&lt;/li&gt;
+    &lt;li&gt;View要从多个数据源获取数据&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;从组件层面来说，&lt;code class=&quot;highlighter-rouge&quot;&gt;redux&lt;/code&gt;解决了以下问题&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;某个组件的状态需要共享&lt;/li&gt;
+    &lt;li&gt;某个状态在任何地方都可以拿到&lt;/li&gt;
+    &lt;li&gt;一个组件需要改变全局状态&lt;/li&gt;
+    &lt;li&gt;一个组件需要改另一个组件的状态&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;redux的执行流程&quot;&gt;redux的执行流程&lt;/h2&gt;
+
+&lt;h3 id=&quot;基本概念&quot;&gt;基本概念&lt;/h3&gt;
+
+&lt;h4 id=&quot;store&quot;&gt;store&lt;/h4&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Store&lt;/code&gt; 就是保存数据的地方，你可以把它看成一个容器。整个应用只能有一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Store&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h4 id=&quot;state&quot;&gt;state&lt;/h4&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Store&lt;/code&gt;对象包含所有数据。如果想得到某个时点的数据，就要对 &lt;code class=&quot;highlighter-rouge&quot;&gt;Store&lt;/code&gt; 生成快照。这种时点的数据集合，就叫做 &lt;code class=&quot;highlighter-rouge&quot;&gt;State&lt;/code&gt;。
+  Redux 规定， 一个 State 对应一个 View。只要 State 相同，View 就相同。你知道 State，就知道 View 是什么样，反之亦然。&lt;/p&gt;
+
+&lt;h4 id=&quot;action&quot;&gt;action&lt;/h4&gt;
+
+&lt;p&gt;State 的变化，会导致 View 的变化。但是，用户接触不到 State，只能接触到 View。所以，State 的变化必须是 View 导致的。Action 就是 View 发出的通知，表示 State 应该要发生变化了。
+  Action 是一个对象。其中的type属性是必须的，表示 Action 的名称。其他属性可以自由设置，社区有一个&lt;a href=&quot;https://github.com/redux-utilities/flux-standard-action&quot;&gt;规范&lt;/a&gt;可以参考。&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ADD_TODO&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Learn Redux&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;上面代码中，Action 的名称是ADD_TODO，它携带的信息是字符串Learn Redux。&lt;/p&gt;
+
+&lt;p&gt;可以这样理解，Action 描述当前发生的事情。改变 State 的唯一办法，就是使用 Action。它会运送数据到 Store。&lt;/p&gt;
+&lt;h4 id=&quot;dispatch&quot;&gt;dispatch&lt;/h4&gt;
+&lt;p&gt;dispatch是View触发action的唯一方法。&lt;/p&gt;
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;dispatch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ADD_TODO&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Learn Redux&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;上面代码中 dispatch 接受一个 action 对象作为参数，将它发送出去。&lt;/p&gt;
+
+&lt;h4 id=&quot;reducers&quot;&gt;reducers&lt;/h4&gt;
+&lt;p&gt;Store 收到 Action 以后，必须给出一个新的 State，这样 View 才会发生变化。这种 State 的计算过程就叫做 Reducer。&lt;/p&gt;
+
+&lt;p&gt;Reducer 是一个函数，它接受 Action 和当前 State 作为参数，返回一个新的 State。&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reducer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;new_state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;整个应用的初始状态，可以作为 State 的默认值。下面是一个实际的例子。&lt;/p&gt;
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;defaultState&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reducer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;defaultState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;switch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ADD&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nl&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reducer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ADD&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;上面代码中，reducer函数收到名为ADD的 Action 以后，就返回一个新的 State，作为加法的计算结果。其他运算的逻辑（比如减法），也可以根据 Action 的不同来实现。&lt;/p&gt;
+
+&lt;h4 id=&quot;effects&quot;&gt;effects&lt;/h4&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;effects&lt;/code&gt;意为副作用，上面说到reducer必须是纯函数，那么effect对于state的修改就是带副作用的。我们常常将数据请求放在effect中，拿到数据后，再调用reducer修改state。&lt;/p&gt;
+
+&lt;h4 id=&quot;subscribe&quot;&gt;subscribe&lt;/h4&gt;
+
+&lt;p&gt;store 允许通过 subscribe 方法设置监听函数，一旦 state 发生变化就立即执行这个函数，例如在 react 中，redux store 的 state 发生更新之后自动执行react的render进行组件的从新渲染&lt;/p&gt;
+
+&lt;h4 id=&quot;纯函数&quot;&gt;纯函数&lt;/h4&gt;
+
+&lt;p&gt;Reducer 函数最重要的特征是，它是一个纯函数。也就是说，只要是同样的输入，必定得到同样的输出。&lt;/p&gt;
+
+&lt;p&gt;纯函数是函数式编程的概念，必须遵守以下一些约束。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;不得改写参数&lt;/li&gt;
+  &lt;li&gt;不能调用系统 I/O 的API&lt;/li&gt;
+  &lt;li&gt;不能调用Date.now()或者Math.random()等不纯的方法，因为每次会得到不一样的结果&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;由于 Reducer 是纯函数，就可以保证同样的State，必定得到同样的 View。但也正因为这一点，Reducer 函数里面不能改变 State，必须返回一个全新的对象，请参考下面的写法。&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// State 是一个对象&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reducer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;assign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;thingToChange&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// 或者&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;newState&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// State 是一个数组&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reducer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;newItem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;最好把 State 对象设成只读。你没法改变它，要得到新的 State，唯一办法就是生成一个新对象。这样的好处是，任何时候，与某个 View 对应的 State 总是一个不变的对象。&lt;/p&gt;
+
+&lt;h3 id=&quot;执行过程&quot;&gt;执行过程&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/20201026/1.jpg&quot; alt=&quot;执行流程&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;如何实现一个redux&quot;&gt;如何实现一个redux&lt;/h2&gt;
+</description>
+        <pubDate>Sun, 25 Oct 2020 18:47:40 +0800</pubDate>
+        <link>http://localhost:4000/2020/10/25/front-end-redux/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/10/25/front-end-redux/</guid>
+        
+        <category>redux</category>
+        
+        <category>JavaScript</category>
+        
+        
+      </item>
     
       <item>
         <title>FFmpeg常用命令</title>
@@ -2133,46 +2295,6 @@ git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; &lt;span class
         <guid isPermaLink="true">http://localhost:4000/2019/12/11/js-verify-file-authenticity/</guid>
         
         <category>JavaScript</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>centos 7.3 开放端口并对外开放</title>
-        <description>&lt;blockquote&gt;
-  &lt;p&gt;“用吾人数十年必死之生命，立国家一万年不死之根基，其价值之重可知。 –孙中山”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. 查看已打开的端口  # netstat -anp
-2. 查看想开的端口是否已开 # firewall-cmd --query-port=666/tcp
-   若此提示 FirewallD is not running 
-   表示为不可知的防火墙 需要查看状态并开启防火墙
-
-3. 查看防火墙状态  # systemctl status firewalld 
-   running 状态即防火墙已经开启
-   dead 状态即防火墙未开启
-4. 开启防火墙，# systemctl start firewalld  没有任何提示即开启成功
-5. 开启防火墙 # service firewalld start  
-   关闭防火墙 # systemctl stop firewalld
-   centos7.3 上述方式可能无法开启，可以先#systemctl unmask firewalld.service 然后 # systemctl start firewalld.service
-
-6. 查看想开的端口是否已开 # firewall-cmd --query-port=666/tcp    提示no表示未开
-7. 开永久端口号 firewall-cmd --add-port=666/tcp --permanent   提示    success 表示成功
-8. 重新载入配置  # firewall-cmd --reload    比如添加规则之后，需要执行此命令
-9. 再次查看想开的端口是否已开  # firewall-cmd --query-port=666/tcp  提示yes表示成功
-10. 若移除端口 # firewall-cmd --permanent --remove-port=666/tcp
-
-11. 修改iptables  有些版本需要安装iptables-services # yum install iptables-services 然后修改进目录 /etc/sysconfig/iptables   修改内容
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-</description>
-        <pubDate>Thu, 28 Nov 2019 19:37:44 +0800</pubDate>
-        <link>http://localhost:4000/2019/11/28/open-port-in-centos7_3/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/11/28/open-port-in-centos7_3/</guid>
-        
-        <category>Linux</category>
         
         
       </item>

@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Z1hgq, 博客, 互联网, Web, JavaScript, 前端, 摄影, Python, 机器人">
     <meta name="theme-color" content="#000000">
     
-    <title>Mac OS git操作加速设置 - Z1hgq | Z1hgq Blog</title>
+    <title>Redux基本概念 - Z1hgq | Z1hgq Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/12/29/mac-git-accelerate/">
+    <link rel="canonical" href="http://localhost:4000/2020/10/25/front-end-redux/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -151,13 +151,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-rwd.jpg" width="0" height="0"> -->
+<!-- <img src="/img/home-bg-o.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-rwd.jpg')
+        background-image: url('/img/home-bg-o.jpg')
     }
 
     
@@ -170,15 +170,17 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#git" title="git">git</a>
+                        <a class="tag" href="/tags/#redux" title="redux">redux</a>
+                        
+                        <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
                         
                     </div>
-                    <h1>Mac OS git操作加速设置</h1>
+                    <h1>Redux基本概念</h1>
                     
                     
-                    <h2 class="subheading"></h2>
+                    <h2 class="subheading">Redux</h2>
                     
-                    <span class="meta">Posted by Z1hgq on December 29, 2019</span>
+                    <span class="meta">Posted by Z1hgq on October 25, 2020</span>
                 </div>
             </div>
         </div>
@@ -200,30 +202,153 @@
                 
 
 				<blockquote>
-  <p>“修养的花儿在寂静中开过去了，成功的果子便要在光明里结实 ——冰心”</p>
+  <p>世上只有想不通的人，没有走不通的路</p>
 </blockquote>
 
 <hr />
-<h3 id="vpn搭建">vpn搭建</h3>
 
-<p>推荐<a href="https://ssrclouddingyuelianjie029319ajdnsjdf.com/" title="ssrcloud">ssrcloud</a>，目前比较稳定，且性价比高</p>
+<h2 id="redux-是什么">redux 是什么</h2>
 
-<h3 id="查看代理的端口">查看代理的端口</h3>
+<p>react 是一个将DOM抽象出来的框架，但是它没有解决组件通信的问题。因此，在此基础上先出现了<code class="highlighter-rouge">flux</code>，在<code class="highlighter-rouge">flux</code>的基础上，2015年出现了<code class="highlighter-rouge">redux</code>。</p>
 
-<p>点击小飞机,http代理设置,如图
-<img src="/img/20191228/port.png" alt="port" /></p>
+<p><code class="highlighter-rouge">redux</code>是一种前端数据管理机制，它认为Web应用是一个状态机，数据和视图是一一对应的，同时它将所有的数据都保存在一个对象里面。</p>
 
-<h3 id="git代理设置">git代理设置</h3>
+<p><code class="highlighter-rouge">redux</code>的<strong>三大原则</strong>:</p>
+<ul>
+  <li>单一数据源</li>
+  <li>state是只读的</li>
+  <li>使用纯函数对state执行修改
+    <h2 id="为什么要用redux">为什么要用redux</h2>
+  </li>
+</ul>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> https.proxy http://127.0.0.1:1087
-git config <span class="nt">--global</span> https.proxy https://127.0.0.1:1087
+<p>从业务层面来说，<code class="highlighter-rouge">redux</code>解决了以下问题：</p>
+
+<blockquote>
+  <ul>
+    <li>用户使用方式复杂</li>
+    <li>不同用户身份有不同的使用方式</li>
+    <li>多个用户之间可以协作</li>
+    <li>与服务器之间有大量的交互，或者使用了WebSocket</li>
+    <li>View要从多个数据源获取数据</li>
+  </ul>
+</blockquote>
+
+<p>从组件层面来说，<code class="highlighter-rouge">redux</code>解决了以下问题</p>
+
+<blockquote>
+  <ul>
+    <li>某个组件的状态需要共享</li>
+    <li>某个状态在任何地方都可以拿到</li>
+    <li>一个组件需要改变全局状态</li>
+    <li>一个组件需要改另一个组件的状态</li>
+  </ul>
+</blockquote>
+
+<h2 id="redux的执行流程">redux的执行流程</h2>
+
+<h3 id="基本概念">基本概念</h3>
+
+<h4 id="store">store</h4>
+
+<p><code class="highlighter-rouge">Store</code> 就是保存数据的地方，你可以把它看成一个容器。整个应用只能有一个 <code class="highlighter-rouge">Store</code>。</p>
+
+<h4 id="state">state</h4>
+
+<p><code class="highlighter-rouge">Store</code>对象包含所有数据。如果想得到某个时点的数据，就要对 <code class="highlighter-rouge">Store</code> 生成快照。这种时点的数据集合，就叫做 <code class="highlighter-rouge">State</code>。
+  Redux 规定， 一个 State 对应一个 View。只要 State 相同，View 就相同。你知道 State，就知道 View 是什么样，反之亦然。</p>
+
+<h4 id="action">action</h4>
+
+<p>State 的变化，会导致 View 的变化。但是，用户接触不到 State，只能接触到 View。所以，State 的变化必须是 View 导致的。Action 就是 View 发出的通知，表示 State 应该要发生变化了。
+  Action 是一个对象。其中的type属性是必须的，表示 Action 的名称。其他属性可以自由设置，社区有一个<a href="https://github.com/redux-utilities/flux-standard-action">规范</a>可以参考。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ADD_TODO</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">payload</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Learn Redux</span><span class="dl">'</span>
+<span class="p">};</span>
 </code></pre></div></div>
-<p>取消代理，因为在代理下push代码可能会失败，<code class="highlighter-rouge">Failed to connect to 127.0.0.1 port 1087: Connection refused</code></p>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> <span class="nt">--unset</span> http.proxy
-git config <span class="nt">--global</span> <span class="nt">--unset</span> https.proxy
-</code></pre></div></div>
+<p>上面代码中，Action 的名称是ADD_TODO，它携带的信息是字符串Learn Redux。</p>
 
-<p>亲测速度clone可达1M/s</p>
+<p>可以这样理解，Action 描述当前发生的事情。改变 State 的唯一办法，就是使用 Action。它会运送数据到 Store。</p>
+<h4 id="dispatch">dispatch</h4>
+<p>dispatch是View触发action的唯一方法。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">dispatch</span><span class="p">({</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ADD_TODO</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">payload</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Learn Redux</span><span class="dl">'</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>上面代码中 dispatch 接受一个 action 对象作为参数，将它发送出去。</p>
+
+<h4 id="reducers">reducers</h4>
+<p>Store 收到 Action 以后，必须给出一个新的 State，这样 View 才会发生变化。这种 State 的计算过程就叫做 Reducer。</p>
+
+<p>Reducer 是一个函数，它接受 Action 和当前 State 作为参数，返回一个新的 State。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">reducer</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="k">return</span> <span class="nx">new_state</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>整个应用的初始状态，可以作为 State 的默认值。下面是一个实际的例子。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">defaultState</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">reducer</span> <span class="o">=</span> <span class="p">(</span><span class="nx">state</span> <span class="o">=</span> <span class="nx">defaultState</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="dl">'</span><span class="s1">ADD</span><span class="dl">'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nx">state</span> <span class="o">+</span> <span class="nx">action</span><span class="p">.</span><span class="nx">payload</span><span class="p">;</span>
+        <span class="nl">default</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="nx">state</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">reducer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ADD</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">payload</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>上面代码中，reducer函数收到名为ADD的 Action 以后，就返回一个新的 State，作为加法的计算结果。其他运算的逻辑（比如减法），也可以根据 Action 的不同来实现。</p>
+
+<h4 id="effects">effects</h4>
+
+<p><code class="highlighter-rouge">effects</code>意为副作用，上面说到reducer必须是纯函数，那么effect对于state的修改就是带副作用的。我们常常将数据请求放在effect中，拿到数据后，再调用reducer修改state。</p>
+
+<h4 id="subscribe">subscribe</h4>
+
+<p>store 允许通过 subscribe 方法设置监听函数，一旦 state 发生变化就立即执行这个函数，例如在 react 中，redux store 的 state 发生更新之后自动执行react的render进行组件的从新渲染</p>
+
+<h4 id="纯函数">纯函数</h4>
+
+<p>Reducer 函数最重要的特征是，它是一个纯函数。也就是说，只要是同样的输入，必定得到同样的输出。</p>
+
+<p>纯函数是函数式编程的概念，必须遵守以下一些约束。</p>
+
+<ul>
+  <li>不得改写参数</li>
+  <li>不能调用系统 I/O 的API</li>
+  <li>不能调用Date.now()或者Math.random()等不纯的方法，因为每次会得到不一样的结果</li>
+</ul>
+
+<p>由于 Reducer 是纯函数，就可以保证同样的State，必定得到同样的 View。但也正因为这一点，Reducer 函数里面不能改变 State，必须返回一个全新的对象，请参考下面的写法。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// State 是一个对象</span>
+<span class="kd">function</span> <span class="nx">reducer</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span> <span class="nx">thingToChange</span> <span class="p">});</span>
+  <span class="c1">// 或者</span>
+  <span class="k">return</span> <span class="p">{</span> <span class="p">...</span><span class="nx">state</span><span class="p">,</span> <span class="p">...</span><span class="nx">newState</span> <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c1">// State 是一个数组</span>
+<span class="kd">function</span> <span class="nx">reducer</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">[...</span><span class="nx">state</span><span class="p">,</span> <span class="nx">newItem</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>最好把 State 对象设成只读。你没法改变它，要得到新的 State，唯一办法就是生成一个新对象。这样的好处是，任何时候，与某个 View 对应的 State 总是一个不变的对象。</p>
+
+<h3 id="执行过程">执行过程</h3>
+
+<p><img src="/img/20201026/1.jpg" alt="执行流程" /></p>
+
+<h2 id="如何实现一个redux">如何实现一个redux</h2>
 
 
                 <hr style="visibility: hidden;">
@@ -231,19 +356,12 @@ git config <span class="nt">--global</span> <span class="nt">--unset</span> http
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/12/11/js-verify-file-authenticity/" data-toggle="tooltip" data-placement="top" title="js利用文件头判断文件类型">
+                        <a href="/2020/10/20/ffmpeg-command/" data-toggle="tooltip" data-placement="top" title="FFmpeg常用命令">
                         Previous<br>
-                        <span>js利用文件头判断文件类型</span>
+                        <span>FFmpeg常用命令</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2020/01/03/cross-domain/" data-toggle="tooltip" data-placement="top" title="前端跨域">
-                        Next<br>
-                        <span>前端跨域</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -254,6 +372,20 @@ git config <span class="nt">--global</span> <span class="nt">--unset</span> http
             </div>  
 
     <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
         
 
     <!-- Sidebar Container -->
@@ -543,6 +675,64 @@ git config <span class="nt">--global</span> <span class="nt">--unset</span> http
 
 
 <!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
 
 
 
